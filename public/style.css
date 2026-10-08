@@ -274,5 +274,5 @@ a:hover>.thumb .play,.vcard:hover .play{transform:scale(1.12)}
 @media(max-width:480px){.actions .pill.solid span{display:none}.actions .pill.solid{padding:10px}.bento{grid-template-columns:1fr}.card.big{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
-  html{scroll-behavior:auto}.rv{opacity:0;transform:none}
+  html{scroll-behavior:auto}.rv{opacity:1;transform:none}
 }
