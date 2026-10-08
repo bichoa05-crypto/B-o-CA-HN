@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo Công an Hà Nội</title>
+<meta name="description" content="Báo Công an Hà Nội - Thông tin an ninh trật tự, pháp luật, giao thông và đời sống Thủ đô.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <a class="brand" href="#">
+    <img src="assets/logo.png" alt="Huy hiệu Công an nhân dân">
+    <span>BÁO CÔNG AN<br>HÀ NỘI</span>
+  </a>
+  <nav class="nav" id="nav">
+    <a href="#hero">Trang chủ</a>
+    <a href="#thoi-su">Thời sự</a>
+    <a href="#an-ninh">An ninh - Trật tự</a>
+    <a href="#phap-luat">Pháp luật</a>
+    <a href="#giao-thong">Giao thông</a>
+    <a href="#video">Video</a>
+    <a href="#lien-he">Liên hệ</a>
+  </nav>
+  <div class="actions">
+    <button class="icon-btn" aria-label="Tìm kiếm" id="searchBtn">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    </button>
+    <a class="pill outline" href="#">Đặt báo</a>
+    <a class="pill solid" href="admin.html">Quản trị</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<form class="search-bar" id="searchBar" role="search" onsubmit="return false">
+  <input type="search" placeholder="Tìm kiếm bài viết, chuyên mục..." aria-label="Tìm kiếm">
+  <button type="submit">Tìm</button>
+</form>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="slides" id="slides"></div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<div class="ticker">
+  <strong>TIN MỚI</strong>
+  <div class="ticker-track"><span id="tickerText"></span></div>
+</div>
+
+<main>
+  <section class="section" id="thoi-su"><h2 class="title" data-title="thoi-su">THỜI SỰ</h2><div class="grid-news" id="list-thoi-su"></div></section>
+  <section class="section dark" id="an-ninh"><div class="wrap"><h2 class="title light" data-title="an-ninh">AN NINH - TRẬT TỰ</h2><div class="cards-row" id="list-an-ninh"></div></div></section>
+  <section class="section two-col">
+    <div id="phap-luat"><h2 class="title" data-title="phap-luat">PHÁP LUẬT</h2><ul class="list" id="list-phap-luat"></ul></div>
+    <div id="giao-thong"><h2 class="title" data-title="giao-thong">GIAO THÔNG</h2><ul class="list" id="list-giao-thong"></ul></div>
+  </section>
+  <section class="section" id="video"><h2 class="title" data-title="video">VIDEO</h2><div class="cards-row" id="list-video"></div></section>
+</main>
+
+<footer class="footer" id="lien-he">
+  <div class="foot-brand">
+    <img src="assets/logo.png" alt="">
+    <div>
+      <strong>BÁO CÔNG AN HÀ NỘI</strong>
+      <p>Cơ quan ngôn luận của Công an thành phố Hà Nội</p>
+    </div>
+  </div>
+  <div class="foot-info">
+    <p>Địa chỉ: Thành phố Hà Nội</p>
+    <p>Điện thoại: (024) 0000 0000</p>
+    <p>Email: toasoan@baocongan.example</p>
+  </div>
+  <p class="copy">© 2026 Báo Công an Hà Nội. Bản quyền thuộc về Báo Công an Hà Nội.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
