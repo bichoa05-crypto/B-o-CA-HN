@@ -123,13 +123,26 @@ function upload(file, onProgress) {
   });
 }
 $('#vidPick').onclick = () => $('#vidFile').click();
+const BLOB_CLIENT = 'https://esm.sh/@vercel/blob@2.8.1/client';
+async function uploadVideo(file, onProgress) {
+  const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+  if (!cfg.blob) return upload(file, onProgress); // chạy máy cục bộ
+  const { upload: blobUpload } = await import(BLOB_CLIENT);
+  const r = await blobUpload('videos/' + file.name.replace(/[^\w.-]/g, '_'), file, {
+    access: 'public', handleUploadUrl: '/api/admin/blob-token', multipart: true,
+    onUploadProgress: p => onProgress && onProgress(p.percentage / 100),
+  });
+  return r.url;
+}
 $('#vidFile').onchange = async e => {
   const f = e.target.files[0]; e.target.value = '';
   if (!f) return;
-  const prog = $('#vidProg'); prog.hidden = false;
-  try { state.video = await upload(f, p => prog.firstElementChild.style.width = p * 100 + '%'); syncMedia(); }
-  catch (err) { $('#ferr').textContent = err.message; }
-  prog.hidden = true; prog.firstElementChild.style.width = 0;
+  if (f.size > 500 * 1024 * 1024) { $('#ferr').textContent = 'Video tối đa 500MB'; return; }
+  const prog = $('#vidProg'); prog.hidden = false; $('#ferr').textContent = '';
+  $('#vidPick').disabled = true;
+  try { state.video = await uploadVideo(f, p => prog.firstElementChild.style.width = p * 100 + '%'); syncMedia(); }
+  catch (err) { $('#ferr').textContent = 'Tải video thất bại: ' + err.message; }
+  $('#vidPick').disabled = false; prog.hidden = true; prog.firstElementChild.style.width = 0;
 };
 
 // ---------- image editor ----------
