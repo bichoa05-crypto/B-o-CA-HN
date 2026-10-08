@@ -13,8 +13,9 @@ const blob = BLOB ? require('@vercel/blob') : null;
 const DB_FILE = path.join(ROOT, 'data', 'db.json');
 const UPLOAD_DIR = path.join(ROOT, 'uploads');
 const SECRET_FILE = path.join(ROOT, 'data', '.secret');
-const ENV_USER = process.env.ADMIN_USER || 'admin';
-const ENV_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const ENV_USER = (process.env.ADMIN_USER || 'admin').trim();
+const ENV_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
+const isNotFound = e => !!e && ((blob && blob.BlobNotFoundError && e instanceof blob.BlobNotFoundError) || /not.?found|does not exist/i.test(String(e.name) + ' ' + String(e.message)));
 
 const DEFAULT_SECTIONS = [
   { id: 'thoi-su', name: 'Thời sự' },
@@ -52,7 +53,7 @@ async function loadDb(fresh = false) {
       const r = await fetch(info.url + '?t=' + Date.now(), { cache: 'no-store' });
       db = await r.json();
     } catch (e) {
-      if (!/not.?found/i.test(String(e && (e.name || e.message)))) throw e;
+      if (!isNotFound(e)) throw e;
       db = { sections: DEFAULT_SECTIONS, articles: [] };
       await saveDb(db);
     }
@@ -84,7 +85,7 @@ const USERS_FILE = path.join(ROOT, 'data', 'users.json');
 async function loadUsers() {
   if (BLOB) {
     try { const info = await blob.head(USERS_KEY); return await (await fetch(info.url + '?t=' + Date.now(), { cache: 'no-store' })).json(); }
-    catch (e) { if (/not.?found/i.test(String(e && (e.name || e.message)))) return []; throw e; }
+    catch (e) { if (isNotFound(e)) return []; throw e; }
   }
   return fs.existsSync(USERS_FILE) ? JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')) : [];
 }
@@ -167,7 +168,7 @@ app.post('/api/login', rateLimitLogin, wrap(async (req, res) => {
   const u = username.trim();
   // quản trị viên
   let isAdminLogin = false;
-  if (ENV_PASSWORD) isAdminLogin = !!(safeEq(u.toLowerCase(), ENV_USER.toLowerCase()) & safeEq(password, ENV_PASSWORD));
+  if (ENV_PASSWORD) isAdminLogin = !!(safeEq(u.toLowerCase(), ENV_USER.toLowerCase()) & safeEq(password.trim(), ENV_PASSWORD));
   else if (!BLOB) {
     const { admin } = await loadDb();
     isAdminLogin = u.toLowerCase() === admin.username.toLowerCase() && crypto.timingSafeEqual(Buffer.from(hashPassword(password, admin.salt).hash), Buffer.from(admin.hash));
