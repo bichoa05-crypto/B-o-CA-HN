@@ -5,46 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Báo Công an Hà Nội</title>
 <meta name="description" content="Báo Công an Hà Nội - Thông tin an ninh trật tự, pháp luật, giao thông và đời sống Thủ đô.">
+<meta name="theme-color" content="#3d0506">
+<meta property="og:title" content="Báo Công an Hà Nội">
+<meta property="og:description" content="Thông tin an ninh trật tự, pháp luật, giao thông và đời sống Thủ đô.">
+<meta property="og:image" content="assets/logo.png">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="site-header" id="header">
-  <a class="brand" href="#">
-    <img src="assets/logo.png" alt="Huy hiệu Công an nhân dân">
-    <span>BÁO CÔNG AN<br>HÀ NỘI</span>
+  <a class="brand" href="#hero" aria-label="Báo Công an Hà Nội - Trang chủ">
+    <img src="assets/logo.png" alt="">
+    <span>Báo Công an<br>Hà Nội<small>CƠ QUAN NGÔN LUẬN</small></span>
   </a>
-  <nav class="nav" id="nav">
+  <nav class="nav" id="nav" aria-label="Chuyên mục">
     <a href="#hero">Trang chủ</a>
     <a href="#thoi-su">Thời sự</a>
     <a href="#an-ninh">An ninh - Trật tự</a>
     <a href="#phap-luat">Pháp luật</a>
     <a href="#giao-thong">Giao thông</a>
     <a href="#video">Video</a>
-    <a href="#lien-he">Liên hệ</a>
   </nav>
   <div class="actions">
-    <button class="icon-btn" aria-label="Tìm kiếm" id="searchBtn">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     </button>
-    <a class="pill outline" href="#">Đặt báo</a>
-    <a class="pill solid" href="admin.html">Quản trị</a>
-    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <a class="pill outline" href="#lien-he">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>Đặt báo
+    </a>
+    <a class="pill solid" href="admin.html">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.6-4.4 4-7 8.5-7s7.9 2.6 8.5 7z"/></svg><span>Quản trị</span>
+    </a>
+    <button class="icon-btn burger" id="burger" aria-label="Mở menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
 
 <form class="search-bar" id="searchBar" role="search" onsubmit="return false">
-  <input type="search" placeholder="Tìm kiếm bài viết, chuyên mục..." aria-label="Tìm kiếm">
+  <label class="sr" for="q">Tìm kiếm</label>
+  <input id="q" type="search" placeholder="Tìm bài viết, chuyên mục..." autocomplete="off">
   <button type="submit">Tìm</button>
 </form>
 
-<!-- HERO -->
-<section class="hero" id="hero">
+<section class="hero" id="hero" aria-label="Tin nổi bật" aria-roledescription="carousel">
   <div class="slides" id="slides"></div>
-  <div class="dots" id="dots"></div>
+  <div class="beams" aria-hidden="true"></div>
+  <div class="hero-ui">
+    <div class="count" id="count">01 <span>/ 04</span></div>
+    <div class="dots" id="dots"></div>
+    <div class="arrows">
+      <button id="prev" aria-label="Tin trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
+      <button id="next" aria-label="Tin sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+  </div>
 </section>
 
 <div class="ticker">
@@ -53,31 +69,69 @@
 </div>
 
 <main>
-  <section class="section" id="thoi-su"><h2 class="title" data-title="thoi-su">THỜI SỰ</h2><div class="grid-news" id="list-thoi-su"></div></section>
-  <section class="section dark" id="an-ninh"><div class="wrap"><h2 class="title light" data-title="an-ninh">AN NINH - TRẬT TỰ</h2><div class="cards-row" id="list-an-ninh"></div></div></section>
-  <section class="section two-col">
-    <div id="phap-luat"><h2 class="title" data-title="phap-luat">PHÁP LUẬT</h2><ul class="list" id="list-phap-luat"></ul></div>
-    <div id="giao-thong"><h2 class="title" data-title="giao-thong">GIAO THÔNG</h2><ul class="list" id="list-giao-thong"></ul></div>
+  <section class="section light-bg" id="thoi-su">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="title" data-title="thoi-su">Thời sự</h2></div>
+      <div class="bento" id="list-thoi-su"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
   </section>
-  <section class="section" id="video"><h2 class="title" data-title="video">VIDEO</h2><div class="cards-row" id="list-video"></div></section>
+
+  <section class="section dark" id="an-ninh">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="title light" data-title="an-ninh">An ninh - Trật tự</h2></div>
+      <div class="row3" id="list-an-ninh"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap two-col">
+      <div id="phap-luat"><div class="sec-head rv"><h2 class="title" data-title="phap-luat">Pháp luật</h2></div><ul class="list" id="list-phap-luat"></ul></div>
+      <div id="giao-thong"><div class="sec-head rv"><h2 class="title" data-title="giao-thong">Giao thông</h2></div><ul class="list" id="list-giao-thong"></ul></div>
+    </div>
+  </section>
+
+  <section class="section light-bg" id="video">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="title" data-title="video">Video</h2></div>
+      <div class="row3" id="list-video"></div>
+    </div>
+  </section>
+
+  <section class="hotline">
+    <div class="wrap">
+      <div class="rv"><h2>Đường dây nóng</h2><p>Gọi ngay khi cần hỗ trợ khẩn cấp. Miễn phí, 24/7.</p></div>
+      <div class="hot-grid">
+        <a class="hot rv" href="tel:113" style="--d:.05s"><b>113</b><span>Công an</span></a>
+        <a class="hot rv" href="tel:114" style="--d:.15s"><b>114</b><span>Cứu hoả - Cứu nạn</span></a>
+        <a class="hot rv" href="tel:115" style="--d:.25s"><b>115</b><span>Cấp cứu y tế</span></a>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="footer" id="lien-he">
-  <div class="foot-brand">
-    <img src="assets/logo.png" alt="">
+  <div class="foot-grid">
     <div>
-      <strong>BÁO CÔNG AN HÀ NỘI</strong>
-      <p>Cơ quan ngôn luận của Công an thành phố Hà Nội</p>
+      <div class="foot-brand"><img src="assets/logo.png" alt=""><strong>Báo Công an<br>Hà Nội</strong></div>
+      <p>Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.</p>
+    </div>
+    <div>
+      <h4>Chuyên mục</h4>
+      <ul><li><a href="#thoi-su">Thời sự</a></li><li><a href="#an-ninh">An ninh - Trật tự</a></li><li><a href="#phap-luat">Pháp luật</a></li><li><a href="#giao-thong">Giao thông</a></li><li><a href="#video">Video</a></li></ul>
+    </div>
+    <div>
+      <h4>Liên hệ</h4>
+      <ul><li>Thành phố Hà Nội</li><li>Điện thoại: (024) 0000 0000</li><li>Email: toasoan@baocongan.example</li></ul>
+    </div>
+    <div>
+      <h4>Cộng đồng</h4>
+      <div class="social"><a href="#" aria-label="Facebook">Fb</a><a href="#" aria-label="YouTube">Yt</a><a href="#" aria-label="TikTok">Tt</a><a href="#" aria-label="Zalo">Za</a></div>
     </div>
   </div>
-  <div class="foot-info">
-    <p>Địa chỉ: Thành phố Hà Nội</p>
-    <p>Điện thoại: (024) 0000 0000</p>
-    <p>Email: toasoan@baocongan.example</p>
-  </div>
-  <p class="copy">© 2026 Báo Công an Hà Nội. Bản quyền thuộc về Báo Công an Hà Nội.</p>
+  <p class="copy">© 2026 Báo Công an Hà Nội. Mọi quyền được bảo lưu.</p>
 </footer>
 
+<script src="demo.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

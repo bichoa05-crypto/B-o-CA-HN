@@ -5,32 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Báo Công an Hà Nội</title>
 <link rel="icon" href="assets/logo.png">
+<meta name="theme-color" content="#3d0506">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="site-header solid-always">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span>BÁO CÔNG AN<br>HÀ NỘI</span></a>
-  <a class="pill outline" href="index.html">← Trang chủ</a>
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span>Báo Công an<br>Hà Nội</span></a>
+  <span></span>
+  <div class="actions"><a class="pill outline" href="index.html">← Trang chủ</a></div>
 </header>
+<section class="article-hero"><div class="wrap" id="ahead"></div></section>
 <article class="article-page" id="article"><p class="empty">Đang tải...</p></article>
+<script src="demo.js"></script>
 <script>
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 (async () => {
   const el = document.getElementById('article');
-  const id = new URLSearchParams(location.search).get('id');
-  const r = await fetch('/api/articles/' + encodeURIComponent(id));
-  if (!r.ok) { el.innerHTML = '<p class="empty">Không tìm thấy bài viết. <a class="back" href="index.html">Về trang chủ</a></p>'; return; }
-  const a = await r.json();
-  const secs = await fetch('/api/sections').then(r => r.json());
+  const id = new URLSearchParams(location.search).get('id') || '';
+  let a = null, secs = [];
+  try {
+    secs = await fetch('/api/sections').then(r => r.json());
+    const r = await fetch('/api/articles/' + encodeURIComponent(id));
+    if (r.ok) a = await r.json();
+  } catch {}
+  if (!a && window.DEMO_ARTICLES) a = window.DEMO_ARTICLES.find(x => x.id === id);
+  if (!a) { document.getElementById('ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
+  const sec = (Array.isArray(secs) ? secs : []).find(s => s.id === a.section);
   document.title = a.title + ' - Báo Công an Hà Nội';
+  document.getElementById('ahead').innerHTML = `
+    <span class="tag">${esc(sec ? sec.name : '')}</span>
+    <h1>${esc(a.title)}</h1><time>${new Date(a.createdAt).toLocaleString('vi-VN')}</time>`;
   let yt = '';
   const m = a.videoUrl && a.videoUrl.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
   if (m) yt = `<iframe src="https://www.youtube.com/embed/${m[1]}" allowfullscreen></iframe>`;
   el.innerHTML = `
-    <span class="tag">${esc((secs.find(s => s.id === a.section) || {}).name)}</span>
-    <h1>${esc(a.title)}</h1>
-    <time>${new Date(a.createdAt).toLocaleString('vi-VN')}</time>
+    ${a.demo ? '<span class="demo-note">Bài viết mẫu</span>' : ''}
     ${a.summary ? `<p class="lead">${esc(a.summary)}</p>` : ''}
     ${a.video ? `<video src="${esc(a.video)}" controls poster="${esc(a.image)}"></video>` : yt}
     ${!a.video && !yt && a.image ? `<img class="cover" src="${esc(a.image)}" alt="">` : ''}

@@ -5,76 +5,120 @@ const ago = t => {
   if (m < 1) return 'Vừa xong';
   if (m < 60) return m + ' phút trước';
   if (m < 1440) return Math.floor(m / 60) + ' giờ trước';
+  if (m < 10080) return Math.floor(m / 1440) + ' ngày trước';
   return new Date(t).toLocaleDateString('vi-VN');
 };
 const href = a => 'article.html?id=' + encodeURIComponent(a.id);
+const hasVideo = a => !!(a.video || a.videoUrl);
+const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>';
+const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
+let names = {};
 const thumb = (a, i = 0, play = false) =>
-  `<div class="thumb t${(i % 5) + 1} ${a.image ? 'has-img' : ''}">${a.image ? `<img src="${esc(a.image)}" alt="" loading="lazy">` : ''}${play || a.video || a.videoUrl ? '<span class="play">▶</span>' : ''}</div>`;
+  `<div class="thumb t${(i % 5) + 1}${a.image ? ' has-img' : ''}">${a.image ? `<img src="${esc(a.image)}" alt="" loading="lazy">` : ''}${play || hasVideo(a) ? `<span class="play">${ICON_PLAY}</span>` : ''}</div>`;
+const meta = a => `<div class="meta"><b>${esc(names[a.section] || '')}</b><time>${ago(a.createdAt)}</time></div>`;
 
-// header
-const header = $('#header');
-const onScroll = () => header.classList.toggle('solid', window.scrollY > 60);
-onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
-const nav = $('#nav');
-$('#burger').addEventListener('click', () => nav.classList.toggle('open'));
-nav.addEventListener('click', e => { if (e.target.tagName === 'A') nav.classList.remove('open'); });
-$('#searchBtn').addEventListener('click', () => $('#searchBar').classList.toggle('open'));
+/* ---------- header ---------- */
+const header = $('#header'), nav = $('#nav'), burger = $('#burger');
+const onScroll = () => header.classList.toggle('solid', scrollY > 40);
+onScroll(); addEventListener('scroll', onScroll, { passive: true });
+function setMenu(open) {
+  nav.classList.toggle('open', open); burger.classList.toggle('open', open);
+  burger.setAttribute('aria-expanded', open); document.body.style.overflow = open ? 'hidden' : '';
+}
+burger.onclick = () => setMenu(!nav.classList.contains('open'));
+nav.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); setSearch(false); } });
+const bar = $('#searchBar');
+function setSearch(open) { bar.classList.toggle('open', open); $('#searchBtn').setAttribute('aria-expanded', open); if (open) setTimeout(() => $('#q').focus(), 200); }
+$('#searchBtn').onclick = () => setSearch(!bar.classList.contains('open'));
 
-// slider
+// active nav link
+const links = [...nav.querySelectorAll('a')];
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id));
+}), { rootMargin: '-45% 0px -50% 0px' });
+['hero', 'thoi-su', 'an-ninh', 'phap-luat', 'giao-thong', 'video'].forEach(id => $('#' + id) && io.observe($('#' + id)));
+
+// reveal on scroll
+const rvIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rvIO.unobserve(e.target); } }), { threshold: .12 });
+const reveal = root => (root || document).querySelectorAll('.rv:not(.in)').forEach(el => rvIO.observe(el));
+
+/* ---------- slider ---------- */
 let slides = [], dots = [], cur = 0, timer;
 function go(i) {
   cur = (i + slides.length) % slides.length;
-  slides.forEach((s, k) => s.classList.toggle('active', k === cur));
-  dots.forEach((d, k) => d.classList.toggle('on', k === cur));
+  slides.forEach((s, k) => { s.classList.toggle('active', k === cur); s.setAttribute('aria-hidden', k !== cur); });
+  dots.forEach((d, k) => { d.className = k === cur ? 'on' : k < cur ? 'done' : ''; });
+  $('#count').innerHTML = String(cur + 1).padStart(2, '0') + ` <span>/ ${String(slides.length).padStart(2, '0')}</span>`;
 }
-function initSlider(list, names) {
-  const wrap = $('#slides'), dotsEl = $('#dots');
+function restart() { clearTimeout(timer); if (slides.length > 1) timer = setTimeout(() => { go(cur + 1); restart(); }, 6000); }
+function initSlider(list) {
   if (!list.length) list = [{ id: '', title: 'Báo Công an Hà Nội', summary: 'Thông tin an ninh trật tự, pháp luật, giao thông và đời sống Thủ đô.', section: '' }];
-  wrap.innerHTML = list.map((a, i) => `
-    <article class="slide s${(i % 4) + 1}" ${a.image ? `style="background-image:url('${esc(a.image)}')"` : ''}>
+  $('#slides').innerHTML = list.map((a, i) => `
+    <article class="slide">
+      <div class="bg ${a.image ? '' : 'art a' + ((i % 4) + 1)}" ${a.image ? `style="background-image:url('${esc(a.image)}')"` : ''}></div>
       <div class="slide-inner">
         ${a.section ? `<span class="tag">${esc(names[a.section] || '')}</span>` : ''}
-        <h1>${esc(a.title)}</h1><p>${esc(a.summary)}</p>
-        ${a.id ? `<a class="pill solid" href="${href(a)}">Đọc bài viết</a>` : ''}
+        <h1>${esc(a.title)}</h1>${a.summary ? `<p>${esc(a.summary)}</p>` : ''}
+        ${a.id ? `<a class="pill solid" href="${href(a)}">Đọc bài viết ${ICON_ARROW}</a>` : ''}
       </div></article>`).join('');
-  slides = [...wrap.children];
-  dotsEl.innerHTML = '';
-  dots = slides.map((_, i) => {
-    const b = document.createElement('button');
-    b.setAttribute('aria-label', 'Slide ' + (i + 1));
-    b.onclick = () => { go(i); restart(); };
-    dotsEl.appendChild(b); return b;
-  });
+  slides = [...$('#slides').children];
+  $('#dots').innerHTML = slides.map((_, i) => `<button aria-label="Tin ${i + 1}"><i></i></button>`).join('');
+  dots = [...$('#dots').children];
+  dots.forEach((d, i) => d.onclick = () => { go(i); restart(); });
+  $('#prev').onclick = () => { go(cur - 1); restart(); };
+  $('#next').onclick = () => { go(cur + 1); restart(); };
+  $('.arrows').hidden = slides.length < 2;
+  const hero = $('#hero');
+  hero.addEventListener('pointerenter', () => clearTimeout(timer));
+  hero.addEventListener('pointerleave', () => { restart(); });
+  let sx = null;
+  hero.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
+  hero.addEventListener('touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 50) { go(cur + (d < 0 ? 1 : -1)); restart(); } sx = null; });
   go(0); restart();
 }
-function restart() { clearInterval(timer); if (slides.length > 1) timer = setInterval(() => go(cur + 1), 6000); }
 
-const empty = '<p class="empty">Chưa có bài viết.</p>';
-const renderers = {
-  'thoi-su': list => list.length ? list.slice(0, 5).map((a, i) => i === 0
-    ? `<a class="card big" href="${href(a)}">${thumb(a, 0)}<div class="card-body"><span class="tag small">Mới nhất</span><h3>${esc(a.title)}</h3><p>${esc(a.summary)}</p><time>${ago(a.createdAt)}</time></div></a>`
-    : `<a class="card" href="${href(a)}">${thumb(a, i)}<div class="card-body"><h3>${esc(a.title)}</h3><time>${ago(a.createdAt)}</time></div></a>`).join('') : empty,
-  'an-ninh': list => list.length ? list.slice(0, 3).map((a, i) =>
-    `<a class="mcard" href="${href(a)}">${thumb(a, i)}<div class="mbody"><time>${ago(a.createdAt)}</time><h3>${esc(a.title)}</h3></div></a>`).join('') : empty,
-  list: list => list.length ? list.slice(0, 5).map((a, i) =>
-    `<li><span class="num">${String(i + 1).padStart(2, '0')}</span><a href="${href(a)}">${esc(a.title)}</a></li>`).join('') : `<li>${empty}</li>`,
-  video: list => list.length ? list.slice(0, 3).map((a, i) =>
-    `<a class="vcard" href="${href(a)}">${thumb(a, i, true)}<h3>${esc(a.title)}</h3></a>`).join('') : empty,
+/* ---------- renderers ---------- */
+const empty = '<p class="empty">Chưa có bài viết trong chuyên mục này.</p>';
+const R = {
+  bento: l => l.length ? l.slice(0, 5).map((a, i) => i === 0
+    ? `<a class="card big rv" href="${href(a)}">${thumb(a, 0)}<div class="body">${meta(a)}<h3>${esc(a.title)}</h3>${a.summary ? `<p>${esc(a.summary)}</p>` : ''}</div></a>`
+    : `<a class="card rv" style="--d:${i * .08}s" href="${href(a)}">${thumb(a, i)}<div class="body">${meta(a)}<h3>${esc(a.title)}</h3></div></a>`).join('') : empty,
+  cards: l => l.length ? l.slice(0, 3).map((a, i) =>
+    `<a class="mcard rv" style="--d:${i * .1}s" href="${href(a)}">${thumb(a, i)}<div class="body">${meta(a)}<h3>${esc(a.title)}</h3></div></a>`).join('') : empty,
+  list: l => l.length ? l.slice(0, 5).map((a, i) =>
+    `<li class="rv" style="--d:${i * .06}s"><a href="${href(a)}"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(a.title)}<time>${ago(a.createdAt)}</time></span>${ICON_ARROW}</a></li>`).join('') : `<li>${empty}</li>`,
+  video: l => l.length ? l.slice(0, 3).map((a, i) =>
+    `<a class="vcard rv" style="--d:${i * .1}s" href="${href(a)}">${thumb(a, i, true)}<h3>${esc(a.title)}</h3>${meta(a)}</a>`).join('') : empty,
 };
+const MAP = { 'thoi-su': 'bento', 'an-ninh': 'cards', 'phap-luat': 'list', 'giao-thong': 'list', video: 'video' };
 
-(async () => {
+async function load() {
+  let sections = [], all = [];
   try {
-    const [sections, all] = await Promise.all([fetch('/api/sections').then(r => r.json()), fetch('/api/articles').then(r => r.json())]);
-    const names = Object.fromEntries(sections.map(s => [s.id, s.name]));
-    document.querySelectorAll('[data-title]').forEach(el => { if (names[el.dataset.title]) el.textContent = names[el.dataset.title].toUpperCase(); });
-    for (const s of sections) {
-      const el = $('#list-' + s.id);
-      if (!el) continue;
-      const list = all.filter(a => a.section === s.id);
-      el.innerHTML = (renderers[s.id] || renderers.list)(list);
-      if (s.id === 'phap-luat' || s.id === 'giao-thong') el.innerHTML = renderers.list(list);
-    }
-    initSlider(all.filter(a => a.featured).slice(0, 5), names);
-    $('#tickerText').textContent = all.slice(0, 6).map(a => a.title).join('  •  ') || 'Chào mừng bạn đến với Báo Công an Hà Nội';
-  } catch (e) { initSlider([], {}); }
-})();
+    [sections, all] = await Promise.all([fetch('/api/sections').then(r => r.json()), fetch('/api/articles').then(r => r.json())]);
+    if (!Array.isArray(sections) || !Array.isArray(all)) throw 0;
+  } catch { sections = []; all = []; }
+  if (!sections.length) sections = [['thoi-su', 'Thời sự'], ['an-ninh', 'An ninh - Trật tự'], ['phap-luat', 'Pháp luật'], ['giao-thong', 'Giao thông'], ['video', 'Video']].map(([id, name]) => ({ id, name }));
+  if (!all.length && window.DEMO_ARTICLES) all = window.DEMO_ARTICLES; // chưa có bài thật → hiển thị bài mẫu
+  names = Object.fromEntries(sections.map(s => [s.id, s.name]));
+  document.querySelectorAll('[data-title]').forEach(el => { if (names[el.dataset.title]) el.textContent = names[el.dataset.title]; });
+  for (const s of sections) {
+    const el = $('#list-' + s.id); if (!el) continue;
+    el.innerHTML = R[MAP[s.id] || 'list'](all.filter(a => a.section === s.id));
+  }
+  reveal();
+  initSlider(all.filter(a => a.featured).slice(0, 5));
+  $('#tickerText').textContent = all.slice(0, 8).map(a => a.title).join('   •   ') || 'Chào mừng bạn đến với Báo Công an Hà Nội';
+  window.__all = all;
+}
+reveal();
+load();
+
+/* ---------- search ---------- */
+$('#searchBar').addEventListener('submit', () => {
+  const q = $('#q').value.trim().toLowerCase();
+  if (!q) return;
+  const hit = (window.__all || []).find(a => (a.title + ' ' + a.summary).toLowerCase().includes(q));
+  if (hit) location.href = href(hit); else { $('#q').value = ''; $('#q').placeholder = 'Không tìm thấy kết quả cho "' + q + '"'; }
+});
