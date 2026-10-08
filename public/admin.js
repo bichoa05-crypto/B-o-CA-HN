@@ -27,7 +27,11 @@ async function showApp() {
 }
 $('#login').addEventListener('submit', async e => {
   e.preventDefault();
-  try { await api('/api/login', 'POST', { username: $('#lu').value, password: $('#lp').value }); $('#lp').value = ''; await showApp(); }
+  try {
+    const d = await api('/api/login', 'POST', { username: $('#lu').value, password: $('#lp').value }); $('#lp').value = '';
+    if (d.role !== 'admin') { await api('/api/logout', 'POST'); throw new Error('Tài khoản này không có quyền quản trị'); }
+    await showApp();
+  }
   catch (err) { $('#lerr').textContent = err.message; }
 });
 $('#outBtn').onclick = async () => { await api('/api/logout', 'POST'); showLogin(); };

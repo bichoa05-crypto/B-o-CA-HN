@@ -78,16 +78,35 @@ async function saveDb(db) {
   cache = db; cacheAt = Date.now();
 }
 
-// ---------- auth ----------
-function makeToken() { const exp = String(Date.now() + 12 * 3600 * 1000); return exp + '.' + sign(exp); }
-function validToken(t) {
-  if (!t) return false;
-  const [exp, sig] = t.split('.');
-  if (!exp || !sig) return false;
-  const good = Buffer.from(sign(exp)), got = Buffer.from(sig);
-  return got.length === good.length && crypto.timingSafeEqual(got, good) && Number(exp) > Date.now();
+// ---------- users (kho riêng, tên tệp khó đoán) ----------
+const USERS_KEY = 'data/users-' + sign('users').slice(0, 24) + '.json';
+const USERS_FILE = path.join(ROOT, 'data', 'users.json');
+async function loadUsers() {
+  if (BLOB) {
+    try { const info = await blob.head(USERS_KEY); return await (await fetch(info.url + '?t=' + Date.now(), { cache: 'no-store' })).json(); }
+    catch (e) { if (/not.?found/i.test(String(e && (e.name || e.message)))) return []; throw e; }
+  }
+  return fs.existsSync(USERS_FILE) ? JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')) : [];
 }
-const requireAdmin = (req, res, next) => validToken(req.cookies.token) ? next() : res.status(401).json({ error: 'Chưa đăng nhập' });
+async function saveUsers(list) {
+  if (BLOB) await blob.put(USERS_KEY, JSON.stringify(list), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
+  else { fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true }); fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2)); }
+}
+
+// ---------- auth ----------
+function makeToken(role, id) { const p = `${role}.${id}.${Date.now() + 12 * 3600 * 1000}`; return p + '.' + sign(p); }
+function session(req) {
+  const t = req.cookies.token;
+  if (!t) return null;
+  const i = t.lastIndexOf('.');
+  const p = t.slice(0, i), sig = t.slice(i + 1);
+  const good = Buffer.from(sign(p)), got = Buffer.from(sig);
+  if (got.length !== good.length || !crypto.timingSafeEqual(got, good)) return null;
+  const [role, id, exp] = p.split('.');
+  return Number(exp) > Date.now() ? { role, id } : null;
+}
+const isAdmin = req => (session(req) || {}).role === 'admin';
+const requireAdmin = (req, res, next) => isAdmin(req) ? next() : res.status(401).json({ error: 'Cần đăng nhập bằng tài khoản quản trị' });
 const safeEq = (a, b) => { const x = crypto.createHash('sha256').update(String(a)).digest(), y = crypto.createHash('sha256').update(String(b)).digest(); return crypto.timingSafeEqual(x, y); };
 
 const attempts = new Map();
@@ -135,28 +154,55 @@ app.get('/api/articles', wrap(async (req, res) => {
   res.json(list);
 }));
 app.get('/api/articles/:id', wrap(async (req, res) => {
-  const isAdmin = validToken(req.cookies.token);
-  const a = (await loadDb(isAdmin)).articles.find(x => x.id === req.params.id && (x.published || isAdmin));
+  const adm = isAdmin(req);
+  const a = (await loadDb(adm)).articles.find(x => x.id === req.params.id && (x.published || adm));
   a ? res.json(a) : res.status(404).json({ error: 'Không tìm thấy' });
 }));
 
 // auth
+const setSession = (req, res, role, id) => res.cookie('token', makeToken(role, id), { httpOnly: true, sameSite: 'strict', secure: req.secure, maxAge: 12 * 3600 * 1000 });
 app.post('/api/login', rateLimitLogin, wrap(async (req, res) => {
   const { username, password } = req.body || {};
   if (typeof username !== 'string' || typeof password !== 'string') return res.status(400).json({ error: 'Thiếu thông tin' });
-  let ok = false;
-  if (ENV_PASSWORD) ok = safeEq(username, ENV_USER) & safeEq(password, ENV_PASSWORD);
-  else if (BLOB) return res.status(503).json({ error: 'Chưa cấu hình biến môi trường ADMIN_PASSWORD trên Vercel' });
-  else {
+  const u = username.trim();
+  // quản trị viên
+  let isAdminLogin = false;
+  if (ENV_PASSWORD) isAdminLogin = !!(safeEq(u.toLowerCase(), ENV_USER.toLowerCase()) & safeEq(password, ENV_PASSWORD));
+  else if (!BLOB) {
     const { admin } = await loadDb();
-    ok = username === admin.username && crypto.timingSafeEqual(Buffer.from(hashPassword(password, admin.salt).hash), Buffer.from(admin.hash));
+    isAdminLogin = u.toLowerCase() === admin.username.toLowerCase() && crypto.timingSafeEqual(Buffer.from(hashPassword(password, admin.salt).hash), Buffer.from(admin.hash));
   }
-  if (!ok) return res.status(401).json({ error: 'Sai tên đăng nhập hoặc mật khẩu' });
-  res.cookie('token', makeToken(), { httpOnly: true, sameSite: 'strict', secure: req.secure, maxAge: 12 * 3600 * 1000 });
-  res.json({ ok: true });
+  if (isAdminLogin) { setSession(req, res, 'admin', 'admin'); return res.json({ ok: true, role: 'admin', name: 'Quản trị viên' }); }
+  if (BLOB && !ENV_PASSWORD && u.toLowerCase() === ENV_USER.toLowerCase()) return res.status(503).json({ error: 'Chưa cấu hình biến môi trường ADMIN_PASSWORD trên Vercel' });
+  // người dùng thường
+  const user = (await loadUsers()).find(x => x.email === u.toLowerCase());
+  if (user && crypto.timingSafeEqual(Buffer.from(hashPassword(password, user.salt).hash), Buffer.from(user.hash))) {
+    setSession(req, res, 'user', user.id); return res.json({ ok: true, role: 'user', name: user.name });
+  }
+  res.status(401).json({ error: 'Sai tài khoản hoặc mật khẩu' });
+}));
+app.post('/api/register', rateLimitLogin, wrap(async (req, res) => {
+  const name = String((req.body || {}).name || '').trim().slice(0, 60);
+  const email = String((req.body || {}).email || '').trim().toLowerCase();
+  const password = (req.body || {}).password;
+  if (!name) return res.status(400).json({ error: 'Vui lòng nhập họ tên' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) return res.status(400).json({ error: 'Email không hợp lệ' });
+  if (typeof password !== 'string' || password.length < 8) return res.status(400).json({ error: 'Mật khẩu tối thiểu 8 ký tự' });
+  const users = await loadUsers();
+  if (users.some(x => x.email === email)) return res.status(409).json({ error: 'Email này đã được đăng ký' });
+  const user = { id: crypto.randomBytes(6).toString('hex'), name, email, ...hashPassword(password), createdAt: Date.now() };
+  users.push(user); await saveUsers(users);
+  setSession(req, res, 'user', user.id);
+  res.json({ ok: true, role: 'user', name });
 }));
 app.post('/api/logout', (req, res) => { res.clearCookie('token'); res.json({ ok: true }); });
-app.get('/api/me', (req, res) => res.json({ admin: validToken(req.cookies.token) }));
+app.get('/api/me', wrap(async (req, res) => {
+  const s = session(req);
+  if (!s) return res.json({ admin: false, role: null });
+  if (s.role === 'admin') return res.json({ admin: true, role: 'admin', name: 'Quản trị viên' });
+  const u = (await loadUsers()).find(x => x.id === s.id);
+  res.json({ admin: false, role: u ? 'user' : null, name: u ? u.name : '' });
+}));
 app.post('/api/password', requireAdmin, wrap(async (req, res) => {
   if (ENV_PASSWORD) return res.status(400).json({ error: 'Mật khẩu đang được đặt bằng biến môi trường ADMIN_PASSWORD trên Vercel; hãy đổi ở đó.' });
   const { password } = req.body || {};
@@ -224,7 +270,7 @@ app.post('/api/admin/blob-token', wrap(async (req, res) => {
   if (!BLOB) return res.status(400).json({ error: 'Chưa bật Vercel Blob' });
   const { handleUpload } = require('@vercel/blob/client');
   const body = req.body || {};
-  if (body.type === 'blob.generate-client-token' && !validToken(req.cookies.token)) return res.status(401).json({ error: 'Chưa đăng nhập' });
+  if (body.type === 'blob.generate-client-token' && !isAdmin(req)) return res.status(401).json({ error: 'Chưa đăng nhập' });
   const json = await handleUpload({
     body, request: req,
     onBeforeGenerateToken: async () => ({

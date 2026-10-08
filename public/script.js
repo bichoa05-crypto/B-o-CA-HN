@@ -122,3 +122,53 @@ $('#searchBar').addEventListener('submit', () => {
   const hit = (window.__all || []).find(a => (a.title + ' ' + a.summary).toLowerCase().includes(q));
   if (hit) location.href = href(hit); else { $('#q').value = ''; $('#q').placeholder = 'Không tìm thấy kết quả cho "' + q + '"'; }
 });
+
+/* ---------- tài khoản ---------- */
+const modal = $('#authModal');
+let mode = 'login', me = { role: null };
+function setMode(m) {
+  mode = m;
+  modal.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  modal.querySelector('.f-name').hidden = m !== 'register';
+  $('#authSubmit').textContent = m === 'login' ? 'Đăng nhập' : 'Tạo tài khoản';
+  $('#aPass').autocomplete = m === 'login' ? 'current-password' : 'new-password';
+  $('#aUser').previousSibling.textContent = m === 'login' ? 'Email hoặc tên đăng nhập' : 'Email';
+  $('#authErr').textContent = '';
+}
+function openAuth(m = 'login') { setMode(m); modal.hidden = false; document.body.style.overflow = 'hidden'; setTimeout(() => (m === 'login' ? $('#aUser') : $('#aName')).focus(), 50); }
+function closeAuth() { modal.hidden = true; document.body.style.overflow = ''; }
+modal.querySelectorAll('.seg button').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+$('#authClose').onclick = closeAuth;
+modal.addEventListener('pointerdown', e => { if (e.target === modal) closeAuth(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeAuth(); });
+
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const body = { username: $('#aUser').value, email: $('#aUser').value, name: $('#aName').value, password: $('#aPass').value };
+  $('#authSubmit').disabled = true; $('#authErr').textContent = '';
+  try {
+    const r = await fetch('/api/' + (mode === 'login' ? 'login' : 'register'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Không thể kết nối máy chủ');
+    $('#aPass').value = ''; closeAuth();
+    if (d.role === 'admin') { location.href = 'admin.html'; return; }
+    await refreshMe();
+  } catch (err) { $('#authErr').textContent = err.message; }
+  $('#authSubmit').disabled = false;
+});
+
+const menu = $('#acctMenu');
+async function refreshMe() {
+  try { me = await fetch('/api/me').then(r => r.json()); } catch { me = { role: null }; }
+  $('#acctLabel').textContent = me.role ? (me.name || 'Tài khoản').split(' ').slice(-1)[0] : 'Tài khoản';
+  $('#acctWho').textContent = me.name || '';
+  $('#acctAdmin').hidden = me.role !== 'admin';
+  menu.hidden = true; $('#acctBtn').setAttribute('aria-expanded', 'false');
+}
+$('#acctBtn').onclick = () => {
+  if (!me.role) return openAuth('login');
+  menu.hidden = !menu.hidden; $('#acctBtn').setAttribute('aria-expanded', !menu.hidden);
+};
+document.addEventListener('click', e => { if (!e.target.closest('#acct')) menu.hidden = true; });
+$('#acctOut').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); await refreshMe(); };
+refreshMe();

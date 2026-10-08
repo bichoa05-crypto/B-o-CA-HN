@@ -37,9 +37,16 @@
     <a class="pill outline" href="#lien-he">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>Đặt báo
     </a>
-    <a class="pill solid" href="admin.html">
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.6-4.4 4-7 8.5-7s7.9 2.6 8.5 7z"/></svg><span>Quản trị</span>
-    </a>
+    <div class="acct" id="acct">
+      <button class="pill solid" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.6-4.4 4-7 8.5-7s7.9 2.6 8.5 7z"/></svg><span id="acctLabel">Tài khoản</span>
+      </button>
+      <div class="menu" id="acctMenu" hidden>
+        <div class="who" id="acctWho"></div>
+        <a href="admin.html" id="acctAdmin" hidden>Quản lý bài viết, ảnh, video</a>
+        <button id="acctOut">Đăng xuất</button>
+      </div>
+    </div>
     <button class="icon-btn burger" id="burger" aria-label="Mở menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
@@ -130,6 +137,25 @@
   </div>
   <p class="copy">© 2026 Báo Công an Hà Nội. Mọi quyền được bảo lưu.</p>
 </footer>
+
+<div class="modal" id="authModal" hidden role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-box">
+    <button class="modal-x" id="authClose" aria-label="Đóng">×</button>
+    <img src="assets/logo.png" alt="" class="modal-logo">
+    <h2 id="authTitle">Tài khoản</h2>
+    <div class="seg" role="tablist">
+      <button type="button" class="on" data-mode="login">Đăng nhập</button>
+      <button type="button" data-mode="register">Đăng ký</button>
+    </div>
+    <form id="authForm" novalidate>
+      <label class="f-name" hidden>Họ và tên<input id="aName" autocomplete="name"></label>
+      <label>Email hoặc tên đăng nhập<input id="aUser" autocomplete="username" required></label>
+      <label>Mật khẩu<input id="aPass" type="password" autocomplete="current-password" required></label>
+      <p class="auth-err" id="authErr" role="alert"></p>
+      <button class="pill solid wide" id="authSubmit">Đăng nhập</button>
+    </form>
+  </div>
+</div>
 
 <script src="demo.js"></script>
 <script src="script.js"></script>
