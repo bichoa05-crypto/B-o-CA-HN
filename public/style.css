@@ -300,3 +300,8 @@ a:hover>.thumb .play,.vcard:hover .play{transform:scale(1.12)}
 .modal input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px #c8141a22}
 .auth-err{color:var(--red);font-size:13px;min-height:20px;margin-bottom:6px}
 .pill.wide{width:100%;justify-content:center;padding:14px;font-size:16px}
+
+.social a{width:42px;height:42px}
+.social svg{width:18px;height:18px;fill:currentColor}
+.social a[aria-label="Zalo"] svg{width:22px;height:22px}
+.social a:hover{transform:translateY(-3px)}
