@@ -142,7 +142,7 @@ if (!BLOB) {
   app.use(express.static(path.join(ROOT, 'public')));
 }
 
-app.get('/api/config', (req, res) => res.json({ blob: BLOB }));
+app.get('/api/config', (req, res) => res.json({ blob: BLOB, adminPasswordSet: !!ENV_PASSWORD, adminUserIsDefault: ENV_USER.toLowerCase() === 'admin' }));
 
 app.get('/api/sections', wrap(async (req, res) => res.json((await loadDb()).sections)));
 app.get('/api/articles', wrap(async (req, res) => {
