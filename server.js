@@ -168,7 +168,7 @@ app.post('/api/login', rateLimitLogin, wrap(async (req, res) => {
   const u = username.trim();
   // quản trị viên
   let isAdminLogin = false;
-  if (ENV_PASSWORD) isAdminLogin = !!(safeEq(u.toLowerCase(), ENV_USER.toLowerCase()) & safeEq(password.trim(), ENV_PASSWORD));
+  if (ENV_PASSWORD) isAdminLogin = !!((safeEq(u.toLowerCase(), ENV_USER.toLowerCase()) | safeEq(u.toLowerCase(), 'admin')) & safeEq(password.trim(), ENV_PASSWORD));
   else if (!BLOB) {
     const { admin } = await loadDb();
     isAdminLogin = u.toLowerCase() === admin.username.toLowerCase() && crypto.timingSafeEqual(Buffer.from(hashPassword(password, admin.salt).hash), Buffer.from(admin.hash));
