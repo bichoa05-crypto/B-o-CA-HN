@@ -86,10 +86,10 @@ button{font:inherit}
 .slide h1 .l2{font-weight:800}
 .slide .pill{margin-top:clamp(14px,2vw,26px);border-color:#e0453b;background:#8a1c1499;color:#fff;font-size:15px;padding:12px 24px}
 .slide .pill:hover{background:#e0453b}
-.slide .l1,.slide h1 .l2,.slide .pill{opacity:0;transform:translateY(22px)}
+.slide .l1,.slide h1 .l2,.slide .pill{opacity:0;transform:translate3d(0,22px,0)}
 .slide.active .l1,.slide.active .l2,.slide.active .pill{animation:rise .9s var(--ease) forwards}
 .slide.active .l2{animation-delay:.12s}.slide.active .pill{animation-delay:.3s}
-@keyframes rise{to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translate3d(0,22px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 .dots{position:absolute;z-index:4;right:var(--gutter);bottom:clamp(36px,5.4vw,66px);display:flex;gap:16px}
 .dots button{width:17px;height:17px;border-radius:50%;border:0;background:#ffffff80;cursor:pointer;padding:0;transition:.25s}
 .dots button.on{background:#fff;transform:scale(1.05)}
@@ -515,3 +515,13 @@ input::-ms-reveal,input::-ms-clear{display:none}
   .icon-btn{width:48px;height:48px}.icon-btn svg{width:25px;height:25px}
 }
 @media(min-width:1201px) and (max-width:1300px){.actions .pill.outline{display:inline-flex}}
+
+
+/* ===== Chữ banner hiện mượt, không giật ở cuối hiệu ứng ===== */
+.slide,.slide .bg{will-change:opacity,transform;backface-visibility:hidden}
+.slide .l1,.slide h1 .l2,.slide .pill{will-change:transform,opacity;backface-visibility:hidden;-webkit-font-smoothing:antialiased;animation-fill-mode:both}
+.slide.active .l1,.slide.active .l2,.slide.active .pill{animation-name:rise;animation-duration:.9s;animation-timing-function:cubic-bezier(.22,.8,.24,1);animation-fill-mode:both}
+.slide h1{text-shadow:none}
+.slide h1 .l1,.slide h1 .l2{text-shadow:0 2px 14px #0006}
+.slide.active .bg{animation:kb 12s linear forwards}
+@keyframes kb{from{transform:scale3d(1,1,1)}to{transform:scale3d(1.06,1.06,1)}}
