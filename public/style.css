@@ -11,7 +11,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:70px;-webkit-text-size-adjust:100%}
-body{font-family:var(--body);color:var(--text);background:#fff;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:var(--body);color:var(--text);background:#fff;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-synthesis:none;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 ul{list-style:none}
@@ -67,7 +67,7 @@ button{font:inherit}
 .acct .menu a:hover,.acct .menu button:hover{background:#f6ecea;color:var(--red)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;height:clamp(540px,54vw,900px);background:#1a0504;overflow:hidden;color:#fff;isolation:isolate}
+.hero{position:relative;height:clamp(520px,min(54vw,100vh),900px);background:#1a0504;overflow:hidden;color:#fff;isolation:isolate}
 .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1s,visibility 1s}
 .slide.active{opacity:1;visibility:visible}
 .slide .bg{position:absolute;inset:0;background-size:cover;background-position:center 30%}
@@ -320,7 +320,7 @@ img.m-logo{background:none;border:0;border-radius:0}
 .rv.in{opacity:1;transform:none}
 
 /* ---------- responsive ---------- */
-@media(max-width:1320px){
+@media(max-width:1200px){
   .burger{display:block}
   .nav{position:fixed;inset:0;z-index:-1;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;padding:var(--header) var(--gutter) 40px;background:linear-gradient(160deg,#5a0f0a,#1a0504);transform:translateY(-100%);transition:transform .55s var(--ease);visibility:hidden}
   .nav.open{transform:none;visibility:visible}
@@ -435,6 +435,27 @@ img.m-logo{background:none;border:0;border-radius:0}
 .done-box h2{font-family:var(--anton);font-weight:400;font-size:38px;text-transform:uppercase;color:var(--title);margin-bottom:12px}
 .done-box p{margin-bottom:10px}.done-box .code{font-size:24px;color:var(--red);letter-spacing:.06em}
 .done-box .bank{background:#faf3f1;border-radius:10px;padding:12px}
-@media(max-width:1320px){.home-txt{display:inline}.nav .home-link svg{display:none}}
+@media(max-width:1200px){.home-txt{display:inline}.nav .home-link svg{display:none}}
 @media(max-width:900px){.shop-grid{grid-template-columns:repeat(2,1fr)}.cart-grid{grid-template-columns:1fr}.checkout{position:static}.related .n-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.shop-grid{grid-template-columns:1fr 1fr;gap:12px}.prod{padding:10px}.prod-act .pill{flex-basis:100%}.cart-line{grid-template-columns:56px 1fr 28px;grid-template-areas:"p i x" "p q s"}.cl-pic{width:56px;height:56px;grid-area:p}.cl-info{grid-area:i}.qty{grid-area:q;justify-self:start}.cl-sum{grid-area:s;text-align:right}.cl-rm{grid-area:x}.big-search{flex-direction:column}}
+
+/* ===== tối ưu cho Windows (thanh cuộn, màn hình 125%/150%, laptop 1366/1280) ===== */
+html{scrollbar-width:thin;scrollbar-color:#b92a22 #f3ebe8}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:#f3ebe8}
+::-webkit-scrollbar-thumb{background:#b92a22;border-radius:8px;border:3px solid #f3ebe8}
+::-webkit-scrollbar-thumb:hover{background:#8a1c14}
+select,.h-sel{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a1c14' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:38px!important}
+input,textarea,select,button{font-family:inherit}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
+@media(min-width:1201px) and (max-width:1480px){
+  :root{--gutter:clamp(16px,3vw,44px)}
+  .site-header{gap:clamp(12px,1.4vw,22px)}
+  .nav{gap:clamp(11px,1.15vw,18px)}
+  .nav a{font-size:13.5px;letter-spacing:.01em}
+  .actions{gap:6px}
+  .actions .pill{padding:9px 14px;font-size:13px}
+  .brand img{width:50px;height:50px}
+}
+@media(min-width:1201px) and (max-width:1300px){.actions .pill.outline{display:none}}
+@media (forced-colors:active){.pill,.card,.prod{border:1px solid CanvasText}}
