@@ -117,7 +117,7 @@ async function load() {
   renderHero([...(site.hero || []), ...featured]);
   renderMatches(site.tournaments);
   $('#list-dong-chay').innerHTML = renderFlow(by('dong-chay'));
-  const g = $('#glitch'); g.innerHTML = `<span>${esc(site.intro.line1)}</span><span>${esc(site.intro.line2)}</span>`;
+  const g = $('#glitch'); g.innerHTML = [site.intro.line1, site.intro.line2].map(t => `<span data-t="${esc(t)}">${esc(t)}</span>`).join('');
   renderSquad(site.squad);
   $('#list-lan-bong').innerHTML = renderBento(by('lan-bong'));
   $('#list-ben-le-san-co').innerHTML = renderList(by('ben-le-san-co'));
