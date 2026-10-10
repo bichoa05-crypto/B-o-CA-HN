@@ -54,7 +54,7 @@
       { year: '1962', name: 'Giải hạng A miền Bắc', result: 'champion' }, { year: '1962', name: 'Giải vô địch thống nhất miền Bắc', result: 'champion' },
       { year: '1980', name: 'Giải bóng đá A1 toàn quốc', result: 'runner' }, { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'third' },
       { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'champion' }] },
-    footer: { about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.', address: 'Thành phố Hà Nội', phone: '', email: '', facebook: '', youtube: '', tiktok: '', zalo: '', bank: '' },
+    footer: { about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.', facebook: '', youtube: '', instagram: '', tiktok: '', zalo: '', bank: '' },
     sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
   };
 })();

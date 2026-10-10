@@ -67,8 +67,9 @@ const DEFAULT_SITE = {
   sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
   footer: {
     about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.',
-    address: 'Thành phố Hà Nội', phone: '(024) 0000 0000', email: 'toasoan@baocongan.example',
-    facebook: '', youtube: '', tiktok: '', zalo: '',
+    brand: 'Công an Hà Nội FC', licenses: 'Logo kèm tên website Câu lạc bộ Bóng đá Công An Hà Nội\nCơ quan chủ quản: Công an Thành phố Hà Nội\nChủ sở hữu: Công ty TNHH Bóng đá Công an Thành phố Hà Nội\nChịu trách nhiệm nội dung: Đại tá Nguyễn Tiến Đạt\nGiấy phép thiết lập trang thông tin điện tử số 4593/GP-TTĐT do Sở TT&TT Hà Nội cấp ngày 09/01/2023',
+    address: 'Số 79 Trần Hưng Đạo, phường Cửa Nam, thành phố Hà Nội', phone: '02438211052 - 0969848888', email: 'conganhanoifc@gmail.com',
+    copyright: '© Bản quyền thuộc về website CLB Công An Hà Nội', facebook: '', youtube: '', instagram: '', tiktok: '', zalo: '',
     bank: 'Chuyển khoản: (chưa cấu hình) — quản trị viên cập nhật số tài khoản trong mục Trang chủ → Chân trang',
   },
 };
@@ -131,6 +132,12 @@ function migrate(db) {
     changed = true;
   }
   if (db.site && !db.site.footer) { db.site.footer = DEFAULT_SITE.footer; changed = true; }
+  // chân trang mới: nạp nội dung mặc định nếu còn là bản cũ (chưa có giấy phép)
+  if (db.site && db.site.footer && db.site.footer.licenses === undefined) {
+    const d = DEFAULT_SITE.footer, o = db.site.footer;
+    db.site.footer = { ...d, facebook: o.facebook || '', youtube: o.youtube || '', tiktok: o.tiktok || '', zalo: o.zalo || '', bank: o.bank || d.bank };
+    changed = true;
+  }
   if (db.site && db.site.shop) for (const [i, p] of db.site.shop.products.entries()) {
     if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
     if (p.price === undefined) { p.price = 0; p.description = p.description || ''; changed = true; }
@@ -342,7 +349,7 @@ function cleanSite(i = {}) {
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
     shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
-    footer: { about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
+    footer: { brand: T((i.footer || {}).brand, 80), licenses: T((i.footer || {}).licenses, 1500), copyright: T((i.footer || {}).copyright, 200), instagram: LINK((i.footer || {}).instagram), about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
     sponsors: L(i.sponsors, 60, x => ({ name: T(x.name, 60), image: MEDIA(x.image), url: LINK(x.url) })),
   };
 }

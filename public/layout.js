@@ -43,22 +43,40 @@
     tiktok: ['TikTok', '<path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>', '0 0 24 24'],
     zalo: ['Zalo', '<path d="M24 4C12.4 4 4 11.9 4 21.7c0 5.6 2.8 10.4 7.2 13.5L9.5 43l7.6-4.1c2.2.6 4.5.9 6.9.9 11.6 0 20-7.9 20-17.7S35.6 4 24 4z"/><text x="24" y="27" text-anchor="middle" font-family="Be Vietnam Pro,Arial,sans-serif" font-weight="800" font-size="13" fill="#1d0203">Zalo</text>', '0 0 48 48'],
   };
-  const F0 = { about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.', address: 'Thành phố Hà Nội', phone: '', email: '', facebook: '', youtube: '', tiktok: '', zalo: '' };
-  const footer = f => `
+  const IG = ['Instagram', '<path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 4 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7C8.3 24 8.7 24 12 24s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/>', '0 0 24 24'];
+  const socials = { facebook: social.facebook, youtube: social.youtube, instagram: IG, tiktok: social.tiktok, zalo: social.zalo };
+  const F0 = {
+    brand: 'Công an Hà Nội FC', about: '',
+    licenses: 'Logo kèm tên website Câu lạc bộ Bóng đá Công An Hà Nội\nCơ quan chủ quản: Công an Thành phố Hà Nội\nChủ sở hữu: Công ty TNHH Bóng đá Công an Thành phố Hà Nội\nChịu trách nhiệm nội dung: Đại tá Nguyễn Tiến Đạt\nGiấy phép thiết lập trang thông tin điện tử số 4593/GP-TTĐT do Sở TT&TT Hà Nội cấp ngày 09/01/2023',
+    address: 'Số 79 Trần Hưng Đạo, phường Cửa Nam, thành phố Hà Nội', phone: '02438211052 - 0969848888', email: 'conganhanoifc@gmail.com',
+    copyright: '© Bản quyền thuộc về website CLB Công An Hà Nội', facebook: '', youtube: '', instagram: '', tiktok: '', zalo: '',
+  };
+  const spRows = list => { const rows = []; let i = 0; for (const n of [5, 7, 7, 7, 7, 7, 7]) { if (i >= list.length) break; rows.push(list.slice(i, i + n)); i += n; } return rows; };
+  const footer = (f, sponsors = []) => {
+    const v = (k) => f[k] || F0[k];
+    const lic = String(v('licenses')).split('\n').map(x => x.trim()).filter(Boolean);
+    return `
 <footer class="footer" id="lien-he">
-  <div class="foot-grid">
-    <div>
-      <div class="foot-brand"><img src="assets/logo.png" alt=""><strong>Báo Công an<br>Hà Nội</strong></div>
-      <p>${esc(f.about)}</p>
-    </div>
-    <div><h4>Chuyên mục</h4><ul>${SECS.map(([id, n]) => `<li><a href="section.html?s=${id}" data-sec="${id}">${n}</a></li>`).join('')}</ul></div>
-    <div><h4>Liên hệ</h4><ul><li>${esc(f.address)}</li>${f.phone ? `<li>Điện thoại: <a href="tel:${esc(f.phone.replace(/[^\d+]/g, ''))}">${esc(f.phone)}</a></li>` : ''}${f.email ? `<li>Email: <a href="mailto:${esc(f.email)}">${esc(f.email)}</a></li>` : ''}</ul></div>
-    <div><h4>Cộng đồng</h4>
-      <div class="social">${Object.entries(social).map(([k, [n, path, vb]]) => { const u = safeLink(f[k]); const on = f[k] && u !== '#'; return `<a ${on ? `href="${esc(u)}" target="_blank" rel="noopener"` : 'class="off" aria-disabled="true" tabindex="-1"'} aria-label="${n}" title="${n}${on ? '' : ' (chưa cập nhật)'}"><svg viewBox="${vb}" aria-hidden="true">${path}</svg></a>`; }).join('')}</div>
+  ${sponsors.length ? `<div class="f-spons" aria-label="Nhà tài trợ">${spRows(sponsors).map(r => `<div class="sp-row">${r.map(x => x.image
+    ? `<a class="sp" ${x.url ? `href="${esc(safeLink(x.url))}" target="_blank" rel="noopener"` : ''} title="${esc(x.name)}"><img src="${esc(x.image)}" alt="${esc(x.name)}" loading="lazy"></a>`
+    : `<span class="sp txt">${esc(x.name)}</span>`).join('')}</div>`).join('')}</div>` : ''}
+  <div class="f-brand">
+    <div class="f-id"><img src="assets/logo.png" alt=""><strong>${esc(v('brand'))}</strong></div>
+    <div class="f-comm"><h5>Cộng đồng</h5>
+      <div class="social">${Object.entries(socials).filter(([k]) => k !== 'zalo' || f.zalo).map(([k, [n, path, vb]]) => { const u = safeLink(f[k]); const on = f[k] && u !== '#'; return `<a ${on ? `href="${esc(u)}" target="_blank" rel="noopener"` : 'class="off" aria-disabled="true" tabindex="-1"'} aria-label="${n}" title="${n}${on ? '' : ' (chưa cập nhật)'}"><svg viewBox="${vb}" aria-hidden="true">${path}</svg></a>`; }).join('')}</div>
     </div>
   </div>
-  <p class="copy">© 2026 Báo Công an Hà Nội. Mọi quyền được bảo lưu.</p>
+  <div class="f-info">
+    <div class="f-col"><h4>Giấy phép</h4>${lic.map(l => `<p>${esc(l)}</p>`).join('')}</div>
+    <div class="f-col"><h4>Thông tin liên hệ</h4>
+      <p>Địa chỉ: ${esc(v('address'))}</p>
+      <p>Email: <a href="mailto:${esc(v('email'))}">${esc(v('email'))}</a></p>
+      <p>Hotline: ${esc(v('phone'))}</p>
+    </div>
+  </div>
+  <p class="copy">${esc(v('copyright'))}</p>
 </footer>`;
+  };
   const modal = `
 <div class="modal" id="authModal" hidden role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal-box">
@@ -78,7 +96,7 @@
   document.body.insertAdjacentHTML('afterbegin', header);
   document.body.insertAdjacentHTML('beforeend', footer(F0) + modal);
   // cập nhật chân trang + tên chuyên mục từ máy chủ
-  fetch('/api/site').then(r => r.ok ? r.json() : null).then(s => { if (s && s.footer) { document.getElementById('lien-he').outerHTML = footer({ ...F0, ...s.footer }); } }).catch(() => {});
+  fetch('/api/site').then(r => r.ok ? r.json() : null).then(s => { if (s) { document.getElementById('lien-he').outerHTML = footer(s.footer || {}, Array.isArray(s.sponsors) ? s.sponsors : []); } }).catch(() => {});
   fetch('/api/sections').then(r => r.ok ? r.json() : null).then(list => { if (Array.isArray(list)) list.forEach(x => document.querySelectorAll('[data-sec="' + x.id + '"]').forEach(a => { a.textContent = x.name; })); }).catch(() => {});
 })();
 

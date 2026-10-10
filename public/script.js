@@ -128,10 +128,6 @@ async function load() {
   $('#mmList').innerHTML = renderMM(by('multimedia'));
   renderShop(site.shop);
   renderHonors(site.honors);
-  $('#sponsors').innerHTML = site.sponsors.map(s => s.image
-    ? `<a class="sp" ${s.url ? `href="${esc(safeLink(s.url))}" target="_blank" rel="noopener"` : ''} title="${esc(s.name)}"><img src="${esc(s.image)}" alt="${esc(s.name)}" loading="lazy"></a>`
-    : `<span class="sp txt">${esc(s.name)}</span>`).join('');
-  $('.sponsors').hidden = !site.sponsors.length;
   reveal(); sqUpdate();
   window.__all = all;
 }
