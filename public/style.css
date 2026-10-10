@@ -2,10 +2,10 @@
 :root{
   --red:#c8201a; --red-600:#a81b15; --maroon:#8a1c14; --maroon-dark:#6e130d; --ink:#1a1210; --text:#2b2321;
   --title:#a31f19; --gold:#f3c93c; --muted:#6f6762; --line:#e6dcd8; --white:#fff;
-  --anton:'Anton','Barlow Condensed',Impact,sans-serif;
-  --nav:'Barlow Semi Condensed','Barlow Condensed',sans-serif;
-  --hero:'Barlow','Be Vietnam Pro',sans-serif;
-  --body:'Be Vietnam Pro',system-ui,sans-serif;
+  --anton:'Anton','Barlow Condensed','Bahnschrift','Arial Narrow',Impact,sans-serif;
+  --nav:'Barlow Semi Condensed','Barlow Condensed','Bahnschrift','Segoe UI',sans-serif;
+  --hero:'Barlow','Be Vietnam Pro','Segoe UI',sans-serif;
+  --body:'Be Vietnam Pro','Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
   --ease:cubic-bezier(.22,.8,.24,1);
   --gutter:clamp(16px,4.2vw,60px); --max:1240px; --header:84px;
 }
@@ -440,11 +440,6 @@ img.m-logo{background:none;border:0;border-radius:0}
 @media(max-width:560px){.shop-grid{grid-template-columns:1fr 1fr;gap:12px}.prod{padding:10px}.prod-act .pill{flex-basis:100%}.cart-line{grid-template-columns:56px 1fr 28px;grid-template-areas:"p i x" "p q s"}.cl-pic{width:56px;height:56px;grid-area:p}.cl-info{grid-area:i}.qty{grid-area:q;justify-self:start}.cl-sum{grid-area:s;text-align:right}.cl-rm{grid-area:x}.big-search{flex-direction:column}}
 
 /* ===== tối ưu cho Windows (thanh cuộn, màn hình 125%/150%, laptop 1366/1280) ===== */
-html{scrollbar-width:thin;scrollbar-color:#b92a22 #f3ebe8}
-::-webkit-scrollbar{width:12px;height:12px}
-::-webkit-scrollbar-track{background:#f3ebe8}
-::-webkit-scrollbar-thumb{background:#b92a22;border-radius:8px;border:3px solid #f3ebe8}
-::-webkit-scrollbar-thumb:hover{background:#8a1c14}
 select,.h-sel{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a1c14' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:38px!important}
 input,textarea,select,button{font-family:inherit}
 input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
@@ -459,3 +454,50 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
 }
 @media(min-width:1201px) and (max-width:1300px){.actions .pill.outline{display:none}}
 @media (forced-colors:active){.pill,.card,.prod{border:1px solid CanvasText}}
+
+
+/* ===== Windows polish: thanh cuộn mảnh kiểu macOS, chữ mịn, cảm giác mượt ===== */
+:root{color-scheme:light;accent-color:#c8201a}
+html{scrollbar-gutter:stable;-webkit-tap-highlight-color:transparent;text-size-adjust:100%}
+body{font-kerning:normal;font-optical-sizing:auto;font-variant-ligatures:common-ligatures;text-wrap:pretty;-webkit-text-stroke:.01px transparent}
+::selection{background:#c8201a;color:#fff}
+img,video,svg{image-rendering:auto}
+img{-ms-interpolation-mode:bicubic}
+
+/* thanh cuộn: Chrome/Edge */
+::-webkit-scrollbar{width:14px;height:14px;background:transparent}
+::-webkit-scrollbar-track{background:#faf5f3;border-left:1px solid #efe4e0}
+::-webkit-scrollbar-thumb{background:linear-gradient(#d8352c,#a81b15);border-radius:10px;border:3px solid #faf5f3;min-height:48px;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(#e8453b,#8a1c14);background-clip:padding-box}
+::-webkit-scrollbar-thumb:active{background:#6e130d;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:#faf5f3}
+/* Firefox */
+@supports not selector(::-webkit-scrollbar){html{scrollbar-width:thin;scrollbar-color:#c8201a #faf5f3}}
+
+/* khung cuộn con (menu mobile, giỏ hàng, modal…) */
+.modal *,.nav,.cart-lines{scrollbar-width:thin}
+
+/* GPU: header kính mờ và hiệu ứng hover mượt trên Windows */
+.site-header,.search-bar,.modal{transform:translateZ(0);backface-visibility:hidden}
+.hero .slide,.m-card,.card,.prod,.pd .pic{backface-visibility:hidden}
+.card,.prod,.m-card{transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+@media(hover:hover) and (pointer:fine){
+  .card:hover,.prod:hover{transform:translateY(-4px);box-shadow:0 18px 40px -18px #4a0d0955}
+  .pill{will-change:transform}
+  .pill:hover{transform:translateY(-1px)}
+  .pill:active{transform:translateY(0) scale(.98)}
+}
+/* ảnh bài viết lấy nét hơn trên màn hình 125%/150% */
+.card img,.prod img,.cover img{image-rendering:-webkit-optimize-contrast;image-rendering:auto}
+/* viền mảnh không bị nhòe ở tỉ lệ 125%/150% */
+@media(min-resolution:1.25dppx){.card,.prod,.pill{border-width:max(1px,.0625rem)}}
+/* focus ring tinh tế */
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;box-shadow:0 0 0 5px #f3c93c33}
+/* form control đồng nhất giữa Windows và macOS */
+input,textarea,select{-webkit-appearance:none;appearance:none;border-radius:10px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--red)!important;box-shadow:0 0 0 4px #c8201a1f}
+input[type=checkbox],input[type=radio]{appearance:auto;-webkit-appearance:auto}
+input::placeholder,textarea::placeholder{color:#a79d98;opacity:1}
+input::-ms-reveal,input::-ms-clear{display:none}
+/* giảm tải GPU khi máy yếu hoặc bật tiết kiệm */
+@media(prefers-reduced-transparency:reduce){.site-header.solid,.site-header.solid-always,.search-bar,.modal{backdrop-filter:none;-webkit-backdrop-filter:none}}
