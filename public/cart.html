@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giỏ hàng - Báo Công an Hà Nội</title>
+<meta name="theme-color" content="#4a0d09">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-header="solid">
+<section class="article-hero"><div class="wrap list-wrap"><h1>Giỏ hàng</h1></div></section>
+<main class="list-page cart-page">
+  <div id="done" hidden class="done-box"></div>
+  <div id="box" class="cart-grid">
+    <div><div id="items"></div><a class="back" href="shop.html">← Tiếp tục mua sắm</a></div>
+    <form class="checkout" id="co" novalidate>
+      <h2>Thông tin đặt hàng</h2>
+      <label>Họ và tên<input name="name" autocomplete="name" required></label>
+      <label>Số điện thoại<input name="phone" type="tel" autocomplete="tel" required></label>
+      <label>Địa chỉ nhận hàng<textarea name="address" rows="2" autocomplete="street-address" required></textarea></label>
+      <label>Ghi chú (tuỳ chọn)<textarea name="note" rows="2"></textarea></label>
+      <fieldset><legend>Thanh toán</legend>
+        <label class="radio"><input type="radio" name="payment" value="cod" checked> Thanh toán khi nhận hàng (COD)</label>
+        <label class="radio"><input type="radio" name="payment" value="bank"> Chuyển khoản ngân hàng</label>
+      </fieldset>
+      <div class="sum"><span>Tổng cộng</span><b id="total">0 ₫</b></div>
+      <p class="auth-err" id="err" role="alert"></p>
+      <button class="pill solid wide" id="submit">Đặt hàng</button>
+    </form>
+  </div>
+</main>
+<script src="demo.js"></script>
+<script src="common.js"></script>
+<script src="layout.js"></script>
+<script>
+(async () => {
+  const siteData = await getJSON('/api/site', null);
+  const site = siteData && siteData.hero ? siteData : window.DEMO_SITE;
+  const prods = site.shop.products;
+  let bank = (site.footer || {}).bank || '';
+  const render = () => {
+    const c = cart.get().filter(i => prods.some(p => p.id === i.id));
+    const lines = c.map(i => ({ ...prods.find(p => p.id === i.id), qty: i.qty }));
+    const total = lines.reduce((t, l) => t + l.price * l.qty, 0);
+    $('#items').innerHTML = lines.length ? lines.map(l => `
+      <div class="cart-line"><div class="cl-pic">${l.image ? `<img src="${esc(l.image)}" alt="">` : SHIRT}</div>
+        <div class="cl-info"><h3>${esc(l.name)}</h3><div class="price">${money(l.price)}</div></div>
+        <div class="qty"><button data-d="-1" data-id="${esc(l.id)}" aria-label="Giảm">−</button><span>${l.qty}</span><button data-d="1" data-id="${esc(l.id)}" aria-label="Tăng">+</button></div>
+        <div class="cl-sum">${money(l.price * l.qty)}</div><button class="cl-rm" data-rm="${esc(l.id)}" aria-label="Xoá">✕</button></div>`).join('') : '<p class="empty">Giỏ hàng trống. <a class="back" href="shop.html">Vào cửa hàng</a></p>';
+    $('#total').textContent = money(total); $('#submit').disabled = !lines.length;
+  };
+  render();
+  $('#items').addEventListener('click', e => {
+    const d = e.target.closest('[data-d]'), r = e.target.closest('[data-rm]');
+    const c = cart.get();
+    if (d) { const x = c.find(i => i.id === d.dataset.id); x.qty = Math.max(1, Math.min(99, x.qty + +d.dataset.d)); cart.set(c); render(); }
+    if (r) { cart.set(c.filter(i => i.id !== r.dataset.rm)); render(); }
+  });
+  $('#co').addEventListener('submit', async e => {
+    e.preventDefault(); const f = new FormData(e.target), err = $('#err'); err.textContent = '';
+    const items = cart.get(), btn = $('#submit'); btn.disabled = true;
+    try {
+      const r = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items, name: f.get('name'), phone: f.get('phone'), address: f.get('address'), note: f.get('note'), payment: f.get('payment') }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Không thể đặt hàng lúc này');
+      cart.set([]);
+      $('#box').hidden = true; $('#done').hidden = false;
+      $('#done').innerHTML = `<h2>Đặt hàng thành công</h2><p>Mã đơn của bạn: <b class="code">${esc(d.code)}</b></p><p>Tổng tiền: <b>${money(d.total)}</b></p>${d.payment === 'bank' ? `<p class="bank">${esc(bank)}<br>Nội dung chuyển khoản: <b>${esc(d.code)}</b></p>` : '<p>Bạn sẽ thanh toán khi nhận hàng.</p>'}<p>Chúng tôi sẽ liên hệ qua số điện thoại bạn đã cung cấp để xác nhận đơn.</p><a class="pill solid" href="index.html">Về trang chủ</a>`;
+      scrollTo(0, 0);
+    } catch (x) { err.textContent = x.message; btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

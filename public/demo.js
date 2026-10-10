@@ -33,6 +33,8 @@
     mk(20, 'nguoi-ham-mo', 'Giờ cao điểm: những điểm có nguy cơ ùn tắc cần lưu ý', '', 16),
     mk(21, 'nguoi-ham-mo', 'CSGT hướng dẫn tổ chức giao thông tại cầu vượt mới', '', 28),
     mk(22, 'nguoi-ham-mo', 'Khuyến cáo người dân đi xe an toàn mùa mưa bão', '', 44),
+    mk(23, 've-chung-toi', 'Hành trình hơn nửa thế kỷ của lực lượng Công an Thủ đô', '', 60),
+    mk(24, 'doi-hinh', 'Chân dung những người giữ bình yên nơi tuyến đầu', '', 50),
   ];
   window.DEMO_SITE = {
     hero: [{ image: '', line1: 'CLB CÔNG AN HÀ NỘI CHÍNH THỨC', line2: 'VÔ ĐỊCH V.LEAGUE 2025/26', button: 'Đọc bài viết', link: '#dong-chay' }],
@@ -46,12 +48,13 @@
     squad: [{ name: 'Filip Nguyen', number: '1', image: '' }, { name: 'Nguyen Quang Hai', number: '19', image: '' }, { name: 'Doan Van Hau', number: '5', image: '' }, { name: 'Cầu thủ 4', number: '10', image: '' }],
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
-      { name: 'HOME KIT V.LEAGUE 2026', image: '', link: '#' }, { name: 'AWAY KIT INTERNATIONAL 2026', image: '', link: '#' },
-      { name: 'HOME KIT INTERNATIONAL 2026', image: '', link: '#' }, { name: 'THIRD KIT INTERNATIONAL 2026', image: '', link: '#' }] },
+      { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },
+      { id: 'p3homei', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'p4third', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }] },
     honors: { title: 'CÔNG AN HÀ NỘI FC', banner: '', items: [
       { year: '1962', name: 'Giải hạng A miền Bắc', result: 'champion' }, { year: '1962', name: 'Giải vô địch thống nhất miền Bắc', result: 'champion' },
       { year: '1980', name: 'Giải bóng đá A1 toàn quốc', result: 'runner' }, { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'third' },
       { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'champion' }] },
+    footer: { about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.', address: 'Thành phố Hà Nội', phone: '', email: '', facebook: '', youtube: '', tiktok: '', zalo: '', bank: '' },
     sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
   };
 })();

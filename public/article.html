@@ -4,47 +4,104 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Báo Công an Hà Nội</title>
+<meta name="theme-color" content="#4a0d09">
 <link rel="icon" href="assets/logo.png">
-<meta name="theme-color" content="#3d0506">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<header class="site-header solid-always">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt="Trang chủ"></a>
-  <div class="actions"><a class="pill outline" href="index.html">← Trang chủ</a></div>
-</header>
+<body data-header="solid">
 <section class="article-hero"><div class="wrap" id="ahead"></div></section>
 <article class="article-page" id="article"><p class="empty">Đang tải...</p></article>
+<section class="article-page extra" id="extra" hidden>
+  <div class="comments" id="comments">
+    <h2 class="sec-h small">Bình luận <span id="cn"></span></h2>
+    <form id="cf" class="c-form" hidden><textarea id="ct" maxlength="1000" rows="3" placeholder="Viết bình luận của bạn..." required></textarea><div class="c-act"><span class="hint" id="cc">0/1000</span><button class="pill solid">Gửi bình luận</button></div><p class="auth-err" id="cerr" role="alert"></p></form>
+    <div class="c-login" id="cl" hidden>Bạn cần <button class="link" id="clb">đăng nhập</button> để bình luận.</div>
+    <div id="clist"></div>
+  </div>
+  <div class="related" id="related" hidden><h2 class="sec-h small">Bài viết liên quan</h2><div class="n-grid" id="rgrid"></div></div>
+</section>
 <script src="demo.js"></script>
+<script src="common.js"></script>
+<script src="layout.js"></script>
 <script>
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 (async () => {
-  const el = document.getElementById('article');
+  const el = $('#article');
   const id = new URLSearchParams(location.search).get('id') || '';
-  let a = null, secs = [];
-  try {
-    secs = await fetch('/api/sections').then(r => r.json());
-    const r = await fetch('/api/articles/' + encodeURIComponent(id));
-    if (r.ok) a = await r.json();
-  } catch {}
-  if (!a && window.DEMO_ARTICLES) a = window.DEMO_ARTICLES.find(x => x.id === id);
-  if (!a) { document.getElementById('ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
-  const sec = (Array.isArray(secs) ? secs : []).find(s => s.id === a.section);
+  const [secs, all] = await Promise.all([getJSON('/api/sections', []), getJSON('/api/articles', [])]);
+  let a = null;
+  const r = await fetch('/api/articles/' + encodeURIComponent(id)).catch(() => null);
+  if (r && r.ok) a = await r.json();
+  const pool = demoOr(all);
+  if (!a) a = pool.find(x => x.id === id) || null;
+  if (!a) { $('#ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
+  const sec = secs.find(s => s.id === a.section);
   document.title = a.title + ' - Báo Công an Hà Nội';
-  document.getElementById('ahead').innerHTML = `
-    <span class="tag">${esc(sec ? sec.name : '')}</span>
-    <h1>${esc(a.title)}</h1><time>${new Date(a.createdAt).toLocaleString('vi-VN')}</time>`;
+  $('#ahead').innerHTML = `<a class="tag" href="section.html?s=${esc(a.section)}">${esc(sec ? sec.name : '')}</a><h1>${esc(a.title)}</h1><time>${fmtDate(a.createdAt)}</time>`;
   let yt = '';
   const m = a.videoUrl && a.videoUrl.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
   if (m) yt = `<iframe src="https://www.youtube.com/embed/${m[1]}" allowfullscreen></iframe>`;
   el.innerHTML = `
     ${a.demo ? '<span class="demo-note">Bài viết mẫu</span>' : ''}
     ${a.summary ? `<p class="lead">${esc(a.summary)}</p>` : ''}
-    ${a.video ? `<video src="${esc(a.video)}" controls poster="${esc(a.image)}"></video>` : yt}
-    ${!a.video && !yt && a.image ? `<img class="cover" src="${esc(a.image)}" alt="">` : ''}
-    <div class="body">${a.content.split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}</div>`;
+    ${a.video ? `<video src="${esc(a.video)}" controls controlsList="nodownload noplaybackrate" disablepictureinpicture poster="${esc(a.image)}"></video>` : yt}
+    ${!a.video && !yt && a.image ? `<img class="cover" src="${esc(a.image)}" alt="" draggable="false">` : ''}
+    <div class="body">${a.content.split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}</div>
+    <p class="copyright">© Báo Công an Hà Nội. Nội dung được bảo hộ bản quyền, nghiêm cấm sao chép dưới mọi hình thức khi chưa có sự đồng ý.</p>`;
+  el.classList.add('nocopy');
+  antiCopy(el, $('#ahead'));
+
+  // ----- bài viết liên quan -----
+  const words = t => new Set(String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2));
+  const mine = words(a.title + ' ' + a.summary);
+  const rel = pool.filter(x => x.id !== a.id).map(x => {
+    let sc = x.section === a.section ? 3 : 0; for (const w of words(x.title + ' ' + x.summary)) if (mine.has(w)) sc += 1; return { x, sc };
+  }).sort((p, q) => q.sc - p.sc || q.x.createdAt - p.x.createdAt).slice(0, 4).map(o => o.x);
+  $('#extra').hidden = false;
+  if (rel.length) { $('#related').hidden = false; $('#rgrid').innerHTML = rel.map((b, i) => `<a class="n-card" href="${href(b)}"><div class="th">${b.image ? `<img src="${esc(b.image)}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`}${hasVideo(b) ? ICON_PLAY : ''}</div><h3>${esc(b.title)}</h3><time>${fmtDate(b.createdAt)}</time></a>`).join(''); }
+
+  // ----- bình luận -----
+  if (a.demo) { $('#comments').hidden = true; return; }
+  let user = null;
+  const draw = async () => {
+    const list = await getJSON('/api/articles/' + encodeURIComponent(a.id) + '/comments', []);
+    $('#cn').textContent = list.length ? '(' + list.length + ')' : '';
+    $('#clist').innerHTML = list.length ? list.map(c => `<div class="cmt"><div class="cmt-h"><b>${esc(c.name)}</b><time>${fmtDate(c.createdAt)}</time>${c.mine ? `<button class="link del" data-id="${esc(c.id)}">Xoá</button>` : ''}</div><p>${esc(c.text).replace(/\n/g, '<br>')}</p></div>`).join('') : '<p class="empty">Chưa có bình luận. Hãy là người đầu tiên!</p>';
+  };
+  const sync = () => { $('#cf').hidden = !user; $('#cl').hidden = !!user; };
+  document.addEventListener('me', e => { user = e.detail && e.detail.role ? e.detail : null; sync(); draw(); });
+  user = me && me.role ? me : null; sync(); draw();
+  $('#clb').onclick = () => openAuth('login');
+  $('#ct').oninput = () => $('#cc').textContent = $('#ct').value.length + '/1000';
+  $('#cf').addEventListener('submit', async e => {
+    e.preventDefault(); $('#cerr').textContent = '';
+    const r = await fetch('/api/articles/' + encodeURIComponent(a.id) + '/comments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: $('#ct').value }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { $('#cerr').textContent = d.error || 'Không thể gửi bình luận'; return; }
+    $('#ct').value = ''; $('#cc').textContent = '0/1000'; draw();
+  });
+  $('#clist').addEventListener('click', async e => {
+    const b = e.target.closest('.del'); if (!b || !confirm('Xoá bình luận này?')) return;
+    await fetch('/api/comments/' + b.dataset.id, { method: 'DELETE' }); draw();
+  });
 })();
+
+/* ----- chống sao chép nội dung (răn đe; không thể ngăn tuyệt đối) ----- */
+function antiCopy(...zones) {
+  const inZone = t => zones.some(z => z && z.contains(t));
+  const editable = t => t && t.closest && t.closest('input,textarea,[contenteditable]');
+  const NOTE = 'Nội dung thuộc bản quyền Báo Công an Hà Nội. Vui lòng không sao chép.';
+  for (const ev of ['copy', 'cut']) document.addEventListener(ev, e => { if (inZone(e.target) || inZone((getSelection().anchorNode || {}).parentNode)) { e.preventDefault(); e.clipboardData && e.clipboardData.setData('text/plain', NOTE); } });
+  for (const ev of ['contextmenu', 'dragstart', 'selectstart']) document.addEventListener(ev, e => { if (inZone(e.target) && !editable(e.target)) e.preventDefault(); });
+  document.addEventListener('keydown', e => {
+    if (editable(e.target)) return;
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'a', 's', 'p', 'u'].includes(k)) e.preventDefault();
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(k))) e.preventDefault();
+  });
+}
 </script>
 </body>
 </html>

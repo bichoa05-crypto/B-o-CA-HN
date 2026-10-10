@@ -3,6 +3,8 @@
   const IMG = (k, label, ratio) => ({ k, label, t: 'photo', ratio });
   const LOGO = (k, label) => ({ k, label, t: 'logo' });
   const TXT = (k, label, full) => ({ k, label, t: 'text', full });
+  const NUM = (k, label) => ({ k, label, t: 'number' });
+  const AREA = (k, label) => ({ k, label, t: 'area', full: true });
   const SCHEMA = [
     { key: 'hero', title: '1. Banner đầu trang', type: 'list', itemName: 'Slide', titleOf: o => o.line2 || o.line1 || 'Slide', blank: { image: '', line1: '', line2: '', button: 'Đọc bài viết', link: '#dong-chay' },
       hint: 'Ảnh nền nên ngang, tỉ lệ 16:9. Có thể thêm nhiều slide, tự chuyển sau vài giây.',
@@ -16,12 +18,13 @@
       fields: [TXT('name', 'Tên cầu thủ'), TXT('number', 'Số áo'), LOGO('image', 'Ảnh cầu thủ (PNG tách nền)')] },
     { key: 'multimedia', title: '5. Banner Multimedia', type: 'object', fields: [IMG('image', 'Ảnh nền', '1.45:1'), TXT('button', 'Chữ nút vàng'), TXT('link', 'Link nút')] },
     { key: 'shop', title: '6. Cửa hàng chính thức', type: 'object', fields: [TXT('title', 'Tiêu đề'), TXT('subtitle', 'Dòng phụ')],
-      sub: { key: 'products', title: 'Sản phẩm (thứ tự: số 1 là bán chạy nhất)', itemName: 'Sản phẩm', titleOf: o => o.name || 'Sản phẩm', blank: { name: '', image: '', link: '#' },
-        fields: [TXT('name', 'Tên sản phẩm', true), LOGO('image', 'Ảnh sản phẩm (PNG tách nền)'), TXT('link', 'Link sản phẩm')] } },
+      sub: { key: 'products', title: 'Sản phẩm (thứ tự: số 1 là bán chạy nhất)', itemName: 'Sản phẩm', titleOf: o => o.name || 'Sản phẩm', blank: { name: '', price: 0, description: '', image: '' },
+        fields: [TXT('name', 'Tên sản phẩm', true), NUM('price', 'Giá bán (VNĐ)'), AREA('description', 'Mô tả ngắn'), LOGO('image', 'Ảnh sản phẩm (PNG tách nền)')] } },
     { key: 'honors', title: '7. Thành tích (Công an Hà Nội FC)', type: 'object', fields: [TXT('title', 'Tiêu đề lớn'), IMG('banner', 'Ảnh banner (cúp, cờ...)', '3:1')],
       sub: { key: 'items', title: 'Danh sách thành tích', itemName: 'Thành tích', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
         fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch'], ['runner', 'Á quân'], ['third', 'Hạng ba']] }] } },
-    { key: 'sponsors', title: '8. Nhà tài trợ (thanh cuối trang)', type: 'list', itemName: 'Nhà tài trợ', titleOf: o => o.name || 'Nhà tài trợ', blank: { name: '', image: '', url: '' },
+    { key: 'footer', title: '9. Chân trang & liên kết mạng xã hội', type: 'object', fields: [AREA('about', 'Giới thiệu ngắn'), TXT('address', 'Địa chỉ', true), TXT('phone', 'Điện thoại'), TXT('email', 'Email'), TXT('facebook', 'Link Facebook của CLB'), TXT('youtube', 'Link YouTube'), TXT('tiktok', 'Link TikTok'), TXT('zalo', 'Link Zalo'), AREA('bank', 'Thông tin chuyển khoản (hiện sau khi khách chọn thanh toán chuyển khoản)')] },
+    { key: 'sponsors', title: '8. Nhà tài trợ (bấm logo sẽ mở website của nhà tài trợ)', type: 'list', itemName: 'Nhà tài trợ', titleOf: o => o.name || 'Nhà tài trợ', blank: { name: '', image: '', url: '' },
       hint: 'Logo sẽ tự chuyển thành màu trắng. Dùng PNG/SVG nền trong suốt.',
       fields: [TXT('name', 'Tên'), LOGO('image', 'Logo'), TXT('url', 'Link website', true)] },
   ];
@@ -57,6 +60,8 @@
   function field(obj, f, onChange) {
     const lab = h('label', { class: f.full ? 'full' : '' }, f.label);
     if (f.t === 'text') { const i = h('input', { type: 'text', value: obj[f.k] ?? '' }); i.oninput = () => { obj[f.k] = i.value; onChange && onChange(); }; lab.append(i); }
+    else if (f.t === 'number') { const i = h('input', { type: 'number', min: '0', step: '1000', value: obj[f.k] ?? 0 }); i.oninput = () => { obj[f.k] = Number(i.value) || 0; onChange && onChange(); }; lab.append(i); }
+    else if (f.t === 'area') { const i = h('textarea', { rows: '3' }); i.value = obj[f.k] ?? ''; i.oninput = () => { obj[f.k] = i.value; }; lab.append(i); }
     else if (f.t === 'select') { const s = h('select'); f.opts.forEach(([v, t]) => s.append(h('option', { value: v }, t))); s.value = obj[f.k]; s.onchange = () => { obj[f.k] = s.value; }; lab.append(s); }
     else { lab.append(imageField(obj, f, onChange)); lab.classList.add('full'); }
     return lab;

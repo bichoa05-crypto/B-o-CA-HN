@@ -18,7 +18,9 @@ const ENV_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
 const isNotFound = e => !!e && ((blob && blob.BlobNotFoundError && e instanceof blob.BlobNotFoundError) || /not.?found|does not exist/i.test(String(e.name) + ' ' + String(e.message)));
 
 const DEFAULT_SECTIONS = [
+  { id: 've-chung-toi', name: 'Về chúng tôi' },
   { id: 'dong-chay', name: 'Dòng chảy' },
+  { id: 'doi-hinh', name: 'Đội hình' },
   { id: 'lan-bong', name: 'Lăn bóng' },
   { id: 'ben-le-san-co', name: 'Bên lề sân cỏ' },
   { id: 'nguoi-ham-mo', name: 'Người hâm mộ' },
@@ -46,10 +48,10 @@ const DEFAULT_SITE = {
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
     products: [
-      { name: 'HOME KIT V.LEAGUE 2026', image: '', link: '#' },
-      { name: 'AWAY KIT INTERNATIONAL 2026', image: '', link: '#' },
-      { name: 'HOME KIT INTERNATIONAL 2026', image: '', link: '#' },
-      { name: 'THIRD KIT INTERNATIONAL 2026', image: '', link: '#' },
+      { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p3homei', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p4third', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
     ],
   },
   honors: {
@@ -63,6 +65,12 @@ const DEFAULT_SITE = {
     ],
   },
   sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
+  footer: {
+    about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.',
+    address: 'Thành phố Hà Nội', phone: '(024) 0000 0000', email: 'toasoan@baocongan.example',
+    facebook: '', youtube: '', tiktok: '', zalo: '',
+    bank: 'Chuyển khoản: (chưa cấu hình) — quản trị viên cập nhật số tài khoản trong mục Trang chủ → Chân trang',
+  },
 };
 
 // ---------- secret ----------
@@ -117,6 +125,16 @@ function migrate(db) {
     for (const a of db.articles) if (SECTION_MIGRATION[a.section]) a.section = SECTION_MIGRATION[a.section];
     changed = true;
   }
+  // bổ sung chuyên mục còn thiếu, giữ tên admin đã đổi và đúng thứ tự mặc định
+  if (DEFAULT_SECTIONS.some(d => !db.sections.some(x => x.id === d.id))) {
+    db.sections = DEFAULT_SECTIONS.map(d => db.sections.find(x => x.id === d.id) || d);
+    changed = true;
+  }
+  if (db.site && !db.site.footer) { db.site.footer = DEFAULT_SITE.footer; changed = true; }
+  if (db.site && db.site.shop) for (const [i, p] of db.site.shop.products.entries()) {
+    if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
+    if (p.price === undefined) { p.price = 0; p.description = p.description || ''; changed = true; }
+  }
   if (!db.site) { db.site = DEFAULT_SITE; changed = true; }
   return changed;
 }
@@ -130,20 +148,26 @@ async function saveDb(db) {
   cache = db; cacheAt = Date.now();
 }
 
-// ---------- users (kho riêng, tên tệp khó đoán) ----------
-const USERS_KEY = 'data/users-' + sign('users').slice(0, 24) + '.json';
-const USERS_FILE = path.join(ROOT, 'data', 'users.json');
-async function loadUsers() {
+// ---------- kho JSON riêng (tên tệp khó đoán), có khoá tuần tự trong một tiến trình ----------
+const storeKey = n => 'data/' + n + '-' + sign(n).slice(0, 24) + '.json';
+const locks = new Map();
+const withLock = (n, fn) => { const prev = locks.get(n) || Promise.resolve(); const run = prev.catch(() => {}).then(fn); locks.set(n, run); return run; };
+async function readStore(n, fallback) {
   if (BLOB) {
-    try { const info = await blob.head(USERS_KEY); return await (await fetch(info.url + '?t=' + Date.now(), { cache: 'no-store' })).json(); }
-    catch (e) { if (isNotFound(e)) return []; throw e; }
+    try { const info = await blob.head(storeKey(n)); return await (await fetch(info.url + '?t=' + Date.now(), { cache: 'no-store' })).json(); }
+    catch (e) { if (isNotFound(e)) return fallback; throw e; }
   }
-  return fs.existsSync(USERS_FILE) ? JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')) : [];
+  const f = path.join(ROOT, 'data', n + '.json');
+  return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : fallback;
 }
-async function saveUsers(list) {
-  if (BLOB) await blob.put(USERS_KEY, JSON.stringify(list), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
-  else { fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true }); fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2)); }
+async function writeStore(n, val) {
+  if (BLOB) await blob.put(storeKey(n), JSON.stringify(val), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
+  else { fs.mkdirSync(path.join(ROOT, 'data'), { recursive: true }); fs.writeFileSync(path.join(ROOT, 'data', n + '.json'), JSON.stringify(val, null, 2)); }
 }
+// đọc-sửa-ghi an toàn
+const mutate = (n, fallback, fn) => withLock(n, async () => { const v = await readStore(n, fallback); const out = await fn(v); await writeStore(n, v); return out; });
+const loadUsers = () => readStore('users', []);
+const saveUsers = list => writeStore('users', list);
 
 // ---------- auth ----------
 function makeToken(role, id) { const p = `${role}.${id}.${Date.now() + 12 * 3600 * 1000}`; return p + '.' + sign(p); }
@@ -316,14 +340,106 @@ function cleanSite(i = {}) {
     intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
     squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image) })),
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
-    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 12, x => ({ name: T(x.name, 80), image: MEDIA(x.image), link: LINK(x.link) })) },
+    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
+    footer: { about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
     sponsors: L(i.sponsors, 60, x => ({ name: T(x.name, 60), image: MEDIA(x.image), url: LINK(x.url) })),
   };
 }
 app.get('/api/site', wrap(async (req, res) => { res.json((await loadDb()).site || DEFAULT_SITE); }));
 app.put('/api/admin/site', requireAdmin, wrap(async (req, res) => {
   const db = await loadDb(true); db.site = cleanSite(req.body); await saveDb(db); res.json(db.site);
+}));
+
+
+// ---------- tìm kiếm ----------
+const norm = v => String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+app.get('/api/search', wrap(async (req, res) => {
+  const q = norm(req.query.q).trim().slice(0, 80);
+  if (q.length < 2) return res.json([]);
+  const words = q.split(/\s+/);
+  const out = [];
+  for (const a of (await loadDb()).articles) {
+    if (!a.published) continue;
+    const t = norm(a.title), hay = t + ' ' + norm(a.summary) + ' ' + norm(a.content);
+    if (!words.every(w => hay.includes(w))) continue;
+    out.push({ ...a, content: '', score: (t.includes(q) ? 10 : 0) + words.filter(w => t.includes(w)).length });
+  }
+  out.sort((a, b) => b.score - a.score || b.createdAt - a.createdAt);
+  res.json(out.slice(0, 50));
+}));
+
+// ---------- bình luận ----------
+const lastComment = new Map();
+const visibleComment = (c, s) => ({ id: c.id, name: c.name, text: c.text, createdAt: c.createdAt, mine: !!s && (s.role === 'admin' || s.id === c.authorId) });
+app.get('/api/articles/:id/comments', wrap(async (req, res) => {
+  const s = session(req);
+  const list = (await readStore('comments', [])).filter(c => c.articleId === req.params.id).sort((a, b) => a.createdAt - b.createdAt);
+  res.json(list.map(c => visibleComment(c, s)));
+}));
+app.post('/api/articles/:id/comments', wrap(async (req, res) => {
+  const s = session(req);
+  if (!s) return res.status(401).json({ error: 'Vui lòng đăng nhập để bình luận' });
+  const text = String((req.body || {}).text || '').trim().slice(0, 1000);
+  if (text.length < 2) return res.status(400).json({ error: 'Bình luận quá ngắn' });
+  const db = await loadDb();
+  if (!db.articles.some(a => a.id === req.params.id && a.published)) return res.status(404).json({ error: 'Không tìm thấy bài viết' });
+  const k = s.role + s.id;
+  if (Date.now() - (lastComment.get(k) || 0) < 8000) return res.status(429).json({ error: 'Bạn bình luận quá nhanh, vui lòng đợi vài giây' });
+  lastComment.set(k, Date.now());
+  let name = 'Quản trị viên';
+  if (s.role !== 'admin') { const u = (await loadUsers()).find(x => x.id === s.id); if (!u) return res.status(401).json({ error: 'Tài khoản không tồn tại' }); name = u.name; }
+  const c = { id: crypto.randomBytes(6).toString('hex'), articleId: req.params.id, authorId: s.id, name, text, createdAt: Date.now() };
+  await mutate('comments', [], list => { list.push(c); if (list.length > 20000) list.splice(0, list.length - 20000); });
+  res.json(visibleComment(c, s));
+}));
+app.delete('/api/comments/:id', wrap(async (req, res) => {
+  const s = session(req);
+  if (!s) return res.status(401).json({ error: 'Chưa đăng nhập' });
+  let removed = false;
+  await mutate('comments', [], list => { const i = list.findIndex(c => c.id === req.params.id && (s.role === 'admin' || c.authorId === s.id)); if (i >= 0) { list.splice(i, 1); removed = true; } });
+  removed ? res.json({ ok: true }) : res.status(404).json({ error: 'Không tìm thấy hoặc không có quyền' });
+}));
+
+// ---------- đơn hàng ----------
+const orderHits = new Map();
+const STATUSES = ['new', 'confirmed', 'shipping', 'done', 'cancelled'];
+app.post('/api/orders', wrap(async (req, res) => {
+  const now = Date.now(), hits = (orderHits.get(req.ip) || []).filter(t => now - t < 3600e3);
+  if (hits.length >= 10) return res.status(429).json({ error: 'Bạn đặt hàng quá nhiều lần, vui lòng thử lại sau' });
+  const b = req.body || {};
+  const name = T(b.name, 80).trim(), phone = T(b.phone, 20).trim(), address = T(b.address, 250).trim(), note = T(b.note, 300).trim();
+  if (name.length < 2) return res.status(400).json({ error: 'Vui lòng nhập họ tên' });
+  if (!/^[0-9+\s().-]{8,16}$/.test(phone)) return res.status(400).json({ error: 'Số điện thoại không hợp lệ' });
+  if (address.length < 5) return res.status(400).json({ error: 'Vui lòng nhập địa chỉ nhận hàng' });
+  const products = ((await loadDb()).site || DEFAULT_SITE).shop.products;
+  const items = [];
+  for (const it of (Array.isArray(b.items) ? b.items : []).slice(0, 30)) {
+    const p = products.find(x => x.id === it.id), qty = Math.round(Number(it.qty));
+    if (!p || !(p.price > 0) || !(qty >= 1 && qty <= 99)) continue;
+    const ex = items.find(x => x.id === p.id);
+    if (ex) ex.qty = Math.min(99, ex.qty + qty); else items.push({ id: p.id, name: p.name, price: p.price, qty });
+  }
+  if (!items.length) return res.status(400).json({ error: 'Giỏ hàng trống hoặc sản phẩm không còn bán' });
+  const order = {
+    id: crypto.randomBytes(6).toString('hex'), code: 'DH' + String(crypto.randomInt(0, 1e6)).padStart(6, '0'),
+    items, total: items.reduce((t, x) => t + x.price * x.qty, 0), name, phone, address, note,
+    payment: b.payment === 'bank' ? 'bank' : 'cod', status: 'new', createdAt: now,
+  };
+  await mutate('orders', [], list => { list.push(order); });
+  hits.push(now); orderHits.set(req.ip, hits);
+  res.json({ code: order.code, total: order.total, payment: order.payment });
+}));
+app.get('/api/admin/orders', requireAdmin, wrap(async (req, res) => res.json((await readStore('orders', [])).sort((a, b) => b.createdAt - a.createdAt))));
+app.put('/api/admin/orders/:id', requireAdmin, wrap(async (req, res) => {
+  if (!STATUSES.includes((req.body || {}).status)) return res.status(400).json({ error: 'Trạng thái không hợp lệ' });
+  let ok = false;
+  await mutate('orders', [], list => { const o = list.find(x => x.id === req.params.id); if (o) { o.status = req.body.status; ok = true; } });
+  ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Không tìm thấy đơn' });
+}));
+app.delete('/api/admin/orders/:id', requireAdmin, wrap(async (req, res) => {
+  await mutate('orders', [], list => { const i = list.findIndex(x => x.id === req.params.id); if (i >= 0) list.splice(i, 1); });
+  res.json({ ok: true });
 }));
 
 // upload ảnh (qua máy chủ) — ảnh đã được chỉnh/nén ở trình duyệt nên nhỏ

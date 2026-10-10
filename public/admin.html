@@ -60,6 +60,13 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
 #cv:active{cursor:grabbing}
 .ctl{display:grid;grid-template-columns:90px 1fr;gap:6px 12px;align-items:center;margin:12px 0;font-size:14px}
 .ctl input[type=range]{width:100%}
+textarea{min-height:0}
+.ord{background:#fff;border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.ord-h{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.ord-h b{font-size:16px}
+.ord ul{margin:6px 0 6px 18px}
+.ord select{width:auto}
+.ord .meta{color:var(--muted);font-size:13px}
 .sgroup{background:#fff;border-radius:10px;margin-bottom:14px;box-shadow:0 1px 4px #0001}
 .sgroup>summary{cursor:pointer;padding:16px 20px;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;align-items:center}
 .sgroup>summary::after{content:"▾";color:var(--muted)}
@@ -100,7 +107,7 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
     <button class="btn ghost sm" id="outBtn">Đăng xuất</button>
   </div>
   <div class="wrap">
-    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="site">Trang chủ</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
+    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="site">Trang chủ</div><div class="tab" data-tab="orders">Đơn hàng</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
 
     <!-- list -->
     <div id="posts">
@@ -151,7 +158,7 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
         </div>
 
         <div class="checks">
-          <label hidden><input type="checkbox" id="f_featured"></label>
+          <label><input type="checkbox" id="f_featured"> Tin nổi bật (hiện ở banner đầu trang chủ)</label>
           <label><input type="checkbox" id="f_published"> Xuất bản</label>
         </div>
         <div class="err" id="ferr"></div>
@@ -161,6 +168,9 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
 
     <!-- trang chủ -->
     <div id="site" hidden></div>
+
+    <!-- đơn hàng -->
+    <div id="orders" hidden></div>
 
     <!-- sections -->
     <div id="secs" class="card" hidden>
@@ -196,5 +206,6 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
 
 <script src="admin.js"></script>
 <script src="site-editor.js"></script>
+<script src="orders.js"></script>
 </body>
 </html>

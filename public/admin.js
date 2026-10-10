@@ -45,7 +45,7 @@ $('#pwBtn').onclick = async () => {
 // ---------- tabs ----------
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-  ['posts', 'secs', 'site'].forEach(k => { $('#' + k).hidden = t.dataset.tab !== k; });
+  ['posts', 'secs', 'site', 'orders'].forEach(k => { $('#' + k).hidden = t.dataset.tab !== k; });
 });
 
 // ---------- list ----------
