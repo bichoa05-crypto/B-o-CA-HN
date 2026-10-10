@@ -68,7 +68,7 @@ button{font:inherit}
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:clamp(560px,min(60vw,100vh),940px);background:#8a1c14;margin-bottom:-1px;overflow:hidden;color:#fff;isolation:isolate}
-.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1s,visibility 1s}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility .7s}
 .slide.active{opacity:1;visibility:visible}
 .slide .bg{position:absolute;inset:0 0 16% 0;background-size:cover;background-position:center 22%}
 .slide.active .bg{animation:kb 10s ease-out forwards}
@@ -521,7 +521,10 @@ input::-ms-reveal,input::-ms-clear{display:none}
 .slide .bg{will-change:transform;backface-visibility:hidden}
 .slide-inner{z-index:3}
 .slide .l1,.slide h1 .l2,.slide .pill{will-change:transform,opacity;backface-visibility:hidden;animation-fill-mode:both}
-.slide.active .l1,.slide.active .l2,.slide.active .pill{animation-name:rise;animation-duration:.9s;animation-timing-function:cubic-bezier(.22,.8,.24,1);animation-fill-mode:both}
+.slide.active .l1,.slide.active .l2,.slide.active .pill{animation:rise-move 1.2s cubic-bezier(.16,.84,.3,1) both,rise-fade .9s cubic-bezier(.45,0,.25,1) both}
+.slide.active .l1{animation-delay:.05s,.05s}.slide.active .l2{animation-delay:.2s,.2s}.slide.active .pill{animation-delay:.4s,.4s}
+@keyframes rise-move{from{transform:translate3d(0,26px,0)}to{transform:translate3d(0,0,0)}}
+@keyframes rise-fade{from{opacity:0}to{opacity:1}}
 .slide h1{text-shadow:0 3px 22px #0007}
 .slide.active .bg{animation:kb 12s linear forwards}
 @keyframes kb{from{transform:scale3d(1,1,1)}to{transform:scale3d(1.06,1.06,1)}}
