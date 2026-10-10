@@ -501,3 +501,17 @@ input::placeholder,textarea::placeholder{color:#a79d98;opacity:1}
 input::-ms-reveal,input::-ms-clear{display:none}
 /* giảm tải GPU khi máy yếu hoặc bật tiết kiệm */
 @media(prefers-reduced-transparency:reduce){.site-header.solid,.site-header.solid-always,.search-bar,.modal{backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+/* ===== Header trải đầy màn hình: logo | menu giãn đều | tìm kiếm + cửa hàng + tài khoản ===== */
+@media(min-width:1201px){
+  :root{--header:96px}
+  .site-header{gap:clamp(20px,3vw,56px);padding:0 clamp(24px,3.4vw,64px)}
+  .brand img{width:66px;height:66px}
+  .nav{flex:1;min-width:0;justify-content:space-between;gap:clamp(10px,1.4vw,28px);padding:0 clamp(4px,1.5vw,28px)}
+  .nav a{font-size:clamp(14px,1.18vw,19px);letter-spacing:.03em;padding:10px 0}
+  .nav a::after{bottom:4px;height:3px;border-radius:2px;background:var(--gold)}
+  .actions{margin-left:0;gap:clamp(8px,.9vw,16px)}
+  .actions .pill{padding:12px clamp(16px,1.5vw,26px);font-size:clamp(13px,1.05vw,16px)}
+  .icon-btn{width:48px;height:48px}.icon-btn svg{width:25px;height:25px}
+}
+@media(min-width:1201px) and (max-width:1300px){.actions .pill.outline{display:inline-flex}}
