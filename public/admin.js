@@ -172,7 +172,7 @@ function geom() {
 }
 function clampPan() {
   const { w, h, s } = geom();
-  const mx = Math.max(0, (w * s - cv.width) / 2), my = Math.max(0, (h * s - cv.height) / 2);
+  const mx = Math.abs(w * s - cv.width) / 2, my = Math.abs(h * s - cv.height) / 2;
   ed.x = Math.min(mx, Math.max(-mx, ed.x)); ed.y = Math.min(my, Math.max(-my, ed.y));
 }
 function draw() {
@@ -193,13 +193,17 @@ $('#reset').onclick = () => { resetEd(); syncCtl(); draw(); };
 $('#edCancel').onclick = () => $('#ed').hidden = true;
 
 let drag = null;
-cv.onpointerdown = e => { drag = { px: e.clientX, py: e.clientY, x: ed.x, y: ed.y }; cv.setPointerCapture(e.pointerId); };
+cv.style.cursor = 'grab'; cv.style.touchAction = 'none';
+const setZoom = z => { ed.zoom = Math.min(4, Math.max(0.2, +z.toFixed(2))); $('#zoom').value = ed.zoom; draw(); };
+cv.addEventListener('wheel', e => { e.preventDefault(); setZoom(ed.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
+cv.ondblclick = () => setZoom(1);
+cv.onpointerdown = e => { cv.style.cursor = 'grabbing'; drag = { px: e.clientX, py: e.clientY, x: ed.x, y: ed.y }; cv.setPointerCapture(e.pointerId); };
 cv.onpointermove = e => {
   if (!drag) return;
   const k = cv.width / cv.getBoundingClientRect().width;
   ed.x = drag.x + (e.clientX - drag.px) * k; ed.y = drag.y + (e.clientY - drag.py) * k; draw();
 };
-cv.onpointerup = () => drag = null;
+cv.onpointerup = cv.onpointercancel = () => { drag = null; cv.style.cursor = 'grab'; };
 
 $('#edOk').onclick = () => {
   $('#edOk').disabled = true;
