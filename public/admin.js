@@ -45,7 +45,7 @@ $('#pwBtn').onclick = async () => {
 // ---------- tabs ----------
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-  $('#posts').hidden = t.dataset.tab !== 'posts'; $('#secs').hidden = t.dataset.tab !== 'secs';
+  ['posts', 'secs', 'site'].forEach(k => { $('#' + k).hidden = t.dataset.tab !== k; });
 });
 
 // ---------- list ----------
@@ -153,7 +153,11 @@ $('#vidFile').onchange = async e => {
 const cv = $('#cv'), ctx = cv.getContext('2d');
 let img = null, ed = {};
 const resetEd = () => ed = { rot: 0, zoom: 1, x: 0, y: 0, bri: 100, con: 100, sat: 100 };
-function openEditor(src) {
+let edDone = null;
+function openEditor(src, ratio = '16:10', done = null) {
+  const [rw, rh] = ratio.split(':').map(Number);
+  cv.width = 1600; cv.height = Math.round(1600 * rh / rw); cv.style.aspectRatio = rw + '/' + rh;
+  edDone = done || (url => { state.image = url; syncMedia(); });
   const im = new Image();
   im.onload = () => { img = im; resetEd(); syncCtl(); draw(); $('#edErr').textContent = ''; $('#ed').hidden = false; };
   im.onerror = () => alert('Không đọc được ảnh');
@@ -201,8 +205,8 @@ $('#edOk').onclick = () => {
   $('#edOk').disabled = true;
   cv.toBlob(async blob => {
     try {
-      state.image = await upload(new File([blob], 'cover.jpg', { type: 'image/jpeg' }));
-      syncMedia(); $('#ed').hidden = true;
+      const url = await upload(new File([blob], 'photo.jpg', { type: 'image/jpeg' }));
+      edDone(url); $('#ed').hidden = true;
     } catch (err) { $('#edErr').textContent = err.message; }
     $('#edOk').disabled = false;
   }, 'image/jpeg', 0.88);

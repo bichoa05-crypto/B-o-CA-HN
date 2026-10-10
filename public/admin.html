@@ -60,6 +60,23 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
 #cv:active{cursor:grabbing}
 .ctl{display:grid;grid-template-columns:90px 1fr;gap:6px 12px;align-items:center;margin:12px 0;font-size:14px}
 .ctl input[type=range]{width:100%}
+.sgroup{background:#fff;border-radius:10px;margin-bottom:14px;box-shadow:0 1px 4px #0001}
+.sgroup>summary{cursor:pointer;padding:16px 20px;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.sgroup>summary::after{content:"▾";color:var(--muted)}
+.sgroup[open]>summary::after{content:"▴"}
+.sbody{padding:4px 20px 20px;border-top:1px solid var(--line)}
+.item{border:1px solid var(--line);border-radius:8px;margin:12px 0;background:#fcfaf9}
+.item>summary{cursor:pointer;padding:10px 14px;font-weight:600;display:flex;gap:8px;align-items:center}
+.item>summary .tt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .ib{padding:4px 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.item .ib .full{grid-column:1/-1}
+.mini{border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 9px;cursor:pointer;font-size:13px}
+.mini:hover{background:#f6ecea}
+.imgf{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}
+.imgf img{height:64px;max-width:140px;object-fit:contain;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0/14px 14px;border-radius:6px;border:1px solid var(--line)}
+.savebar{position:sticky;bottom:0;background:#fffe;backdrop-filter:blur(6px);padding:12px 0;display:flex;gap:12px;align-items:center;z-index:5}
+.okmsg{color:#1a7a3a;font-weight:600}
+@media(max-width:700px){.item .ib{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -83,7 +100,7 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
     <button class="btn ghost sm" id="outBtn">Đăng xuất</button>
   </div>
   <div class="wrap">
-    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
+    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="site">Trang chủ</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
 
     <!-- list -->
     <div id="posts">
@@ -134,13 +151,16 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
         </div>
 
         <div class="checks">
-          <label><input type="checkbox" id="f_featured"> Hiện trên slider trang chủ</label>
+          <label hidden><input type="checkbox" id="f_featured"></label>
           <label><input type="checkbox" id="f_published"> Xuất bản</label>
         </div>
         <div class="err" id="ferr"></div>
         <div class="actions"><button class="btn">Lưu bài viết</button><button type="button" class="btn ghost" id="cancelBtn">Huỷ</button></div>
       </form>
     </div>
+
+    <!-- trang chủ -->
+    <div id="site" hidden></div>
 
     <!-- sections -->
     <div id="secs" class="card" hidden>
@@ -175,5 +195,6 @@ td img{width:72px;height:45px;object-fit:cover;border-radius:4px;display:block;b
 </div>
 
 <script src="admin.js"></script>
+<script src="site-editor.js"></script>
 </body>
 </html>

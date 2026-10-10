@@ -18,12 +18,52 @@ const ENV_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
 const isNotFound = e => !!e && ((blob && blob.BlobNotFoundError && e instanceof blob.BlobNotFoundError) || /not.?found|does not exist/i.test(String(e.name) + ' ' + String(e.message)));
 
 const DEFAULT_SECTIONS = [
-  { id: 'thoi-su', name: 'Thời sự' },
-  { id: 'an-ninh', name: 'An ninh - Trật tự' },
-  { id: 'phap-luat', name: 'Pháp luật' },
-  { id: 'giao-thong', name: 'Giao thông' },
-  { id: 'video', name: 'Video' },
+  { id: 'dong-chay', name: 'Dòng chảy' },
+  { id: 'lan-bong', name: 'Lăn bóng' },
+  { id: 'ben-le-san-co', name: 'Bên lề sân cỏ' },
+  { id: 'nguoi-ham-mo', name: 'Người hâm mộ' },
+  { id: 'multimedia', name: 'Multimedia' },
 ];
+// bản cũ -> bản mới
+const SECTION_MIGRATION = { 'thoi-su': 'lan-bong', 'an-ninh': 'dong-chay', 'phap-luat': 'ben-le-san-co', 'giao-thong': 'nguoi-ham-mo', video: 'multimedia' };
+
+// Nội dung trang chủ mặc định (quản trị viên chỉnh sửa trong admin)
+const DEFAULT_SITE = {
+  hero: [{ image: '', line1: 'CLB CÔNG AN HÀ NỘI CHÍNH THỨC', line2: 'VÔ ĐỊCH V.LEAGUE 2025/26', button: 'Đọc bài viết', link: '#dong-chay' }],
+  tournaments: [
+    { name: 'LPBANK V.LEAGUE 1 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Hà Nội', awayLogo: '', date: '18/10', time: '19:15', ticketUrl: '#' },
+    { name: 'AFC CHAMPIONS LEAGUE ELITE 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Đông Á Thanh Hóa', awayLogo: '', date: '22/10', time: '19:15', ticketUrl: '#' },
+    { name: 'ASEAN CLUB CHAMPIONSHIP SHOPEE CUP 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Sông Lam Nghệ An', awayLogo: '', date: '31/10', time: '18:00', ticketUrl: '#' },
+    { name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
+  ],
+  intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
+  squad: [
+    { name: 'Filip Nguyen', number: '1', image: '' },
+    { name: 'Nguyen Quang Hai', number: '19', image: '' },
+    { name: 'Doan Van Hau', number: '5', image: '' },
+  ],
+  multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
+  shop: {
+    title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
+    products: [
+      { name: 'HOME KIT V.LEAGUE 2026', image: '', link: '#' },
+      { name: 'AWAY KIT INTERNATIONAL 2026', image: '', link: '#' },
+      { name: 'HOME KIT INTERNATIONAL 2026', image: '', link: '#' },
+      { name: 'THIRD KIT INTERNATIONAL 2026', image: '', link: '#' },
+    ],
+  },
+  honors: {
+    title: 'CÔNG AN HÀ NỘI FC', banner: '',
+    items: [
+      { year: '1962', name: 'Giải hạng A miền Bắc', result: 'champion' },
+      { year: '1962', name: 'Giải vô địch thống nhất miền Bắc', result: 'champion' },
+      { year: '1980', name: 'Giải bóng đá A1 toàn quốc', result: 'runner' },
+      { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'third' },
+      { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'champion' },
+    ],
+  },
+  sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
+};
 
 // ---------- secret ----------
 let SECRET;
@@ -54,20 +94,31 @@ async function loadDb(fresh = false) {
       db = await r.json();
     } catch (e) {
       if (!isNotFound(e)) throw e;
-      db = { sections: DEFAULT_SECTIONS, articles: [] };
+      db = { sections: DEFAULT_SECTIONS, articles: [], site: DEFAULT_SITE };
       await saveDb(db);
     }
   } else {
     if (!fs.existsSync(DB_FILE)) {
       fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
       const pw = ENV_PASSWORD || 'admin123';
-      fs.writeFileSync(DB_FILE, JSON.stringify({ admin: { username: ENV_USER, ...hashPassword(pw) }, sections: DEFAULT_SECTIONS, articles: [] }, null, 2));
+      fs.writeFileSync(DB_FILE, JSON.stringify({ admin: { username: ENV_USER, ...hashPassword(pw) }, sections: DEFAULT_SECTIONS, articles: [], site: DEFAULT_SITE }, null, 2));
       console.log(`Đã tạo tài khoản admin: ${ENV_USER} / ${pw}`);
     }
     db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
   }
+  if (migrate(db)) await saveDb(db);
   cache = db; cacheAt = Date.now();
   return db;
+}
+function migrate(db) {
+  let changed = false;
+  if (db.sections.some(x => SECTION_MIGRATION[x.id])) {
+    db.sections = DEFAULT_SECTIONS;
+    for (const a of db.articles) if (SECTION_MIGRATION[a.section]) a.section = SECTION_MIGRATION[a.section];
+    changed = true;
+  }
+  if (!db.site) { db.site = DEFAULT_SITE; changed = true; }
+  return changed;
 }
 async function saveDb(db) {
   if (BLOB) {
@@ -249,6 +300,30 @@ app.put('/api/admin/sections/:id', requireAdmin, wrap(async (req, res) => {
   const db = await loadDb(true), s = db.sections.find(x => x.id === req.params.id);
   if (!s || !req.body.name) return res.status(400).json({ error: 'Dữ liệu không hợp lệ' });
   s.name = String(req.body.name); await saveDb(db); res.json(s);
+}));
+
+
+// ---------- nội dung trang chủ ----------
+const T = (v, n = 200) => String(v ?? '').slice(0, n);
+const MEDIA = v => { v = String(v ?? ''); return v === '' || MEDIA_URL.test(v) ? v : ''; };
+const LINK = v => { v = String(v ?? '').trim().slice(0, 300); return /^(#|\/(?!\/)|https?:\/\/|tel:|mailto:|[\w-]+\.html)/i.test(v) ? v : ''; };
+const L = (arr, max, fn) => (Array.isArray(arr) ? arr : []).slice(0, max).map(fn);
+function cleanSite(i = {}) {
+  const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
+  return {
+    hero: L(i.hero, 10, x => ({ image: MEDIA(x.image), line1: T(x.line1, 120), line2: T(x.line2, 120), button: T(x.button, 40), link: LINK(x.link) })),
+    tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl) })),
+    intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
+    squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image) })),
+    multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
+    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 12, x => ({ name: T(x.name, 80), image: MEDIA(x.image), link: LINK(x.link) })) },
+    honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
+    sponsors: L(i.sponsors, 60, x => ({ name: T(x.name, 60), image: MEDIA(x.image), url: LINK(x.url) })),
+  };
+}
+app.get('/api/site', wrap(async (req, res) => { res.json((await loadDb()).site || DEFAULT_SITE); }));
+app.put('/api/admin/site', requireAdmin, wrap(async (req, res) => {
+  const db = await loadDb(true); db.site = cleanSite(req.body); await saveDb(db); res.json(db.site);
 }));
 
 // upload ảnh (qua máy chủ) — ảnh đã được chỉnh/nén ở trình duyệt nên nhỏ
