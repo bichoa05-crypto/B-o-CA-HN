@@ -518,7 +518,8 @@ input::-ms-reveal,input::-ms-clear{display:none}
 
 
 /* ===== Chữ banner hiện mượt, không giật ở cuối hiệu ứng ===== */
-.slide,.slide .bg{will-change:opacity,transform;backface-visibility:hidden}
+.slide .bg{will-change:transform;backface-visibility:hidden}
+.slide-inner{z-index:3}
 .slide .l1,.slide h1 .l2,.slide .pill{will-change:transform,opacity;backface-visibility:hidden;animation-fill-mode:both}
 .slide.active .l1,.slide.active .l2,.slide.active .pill{animation-name:rise;animation-duration:.9s;animation-timing-function:cubic-bezier(.22,.8,.24,1);animation-fill-mode:both}
 .slide h1{text-shadow:0 3px 22px #0007}
