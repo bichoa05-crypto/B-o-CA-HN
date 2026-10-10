@@ -78,7 +78,7 @@ button{font:inherit}
   radial-gradient(50% 60% at 12% 95%,#5c070a 0%,transparent 70%),
   linear-gradient(160deg,#3a0a08,#10090a)}
 .art::before{content:"";position:absolute;right:6%;top:50%;width:min(44vw,600px);aspect-ratio:1;transform:translateY(-52%);background:url(assets/logo.png) center/contain no-repeat;opacity:.16}
-.hero::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,#8a1c14 0%,#8a1c14 12%,#8a1c14e6 20%,#8a1c14b8 29%,#8a1c1486 38%,#8a1c1457 47%,#8a1c1432 56%,#8a1c1414 65%,#8a1c1400 74%),linear-gradient(to bottom,#0008,#0000 24%)}
+.slide::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,#8a1c14 0%,#8a1c14 12%,#8a1c14e6 20%,#8a1c14b8 29%,#8a1c1486 38%,#8a1c1457 47%,#8a1c1432 56%,#8a1c1414 65%,#8a1c1400 74%),linear-gradient(to bottom,#0008,#0000 24%)}
 .slide-inner{position:absolute;z-index:3;left:var(--gutter);right:var(--gutter);bottom:clamp(28px,5vw,60px)}
 .slide h1{font-family:var(--hero);font-style:italic;text-transform:uppercase;line-height:1.02;text-shadow:0 3px 22px #0007;font-size:clamp(30px,5.2vw,78px);letter-spacing:-.01em}
 .slide h1 span{display:block}
