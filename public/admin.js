@@ -159,8 +159,15 @@ function openEditor(src, ratio = '16:10', done = null) {
   cv.width = 1600; cv.height = Math.round(1600 * rh / rw); cv.style.aspectRatio = rw + '/' + rh;
   edDone = done || (url => { state.image = url; syncMedia(); });
   const im = new Image();
+  im.crossOrigin = 'anonymous'; // ảnh trên kho lưu trữ khác tên miền: không để canvas bị "nhiễm" làm nút Dùng ảnh này hỏng
   im.onload = () => { img = im; resetEd(); syncCtl(); draw(); $('#edErr').textContent = ''; $('#ed').hidden = false; };
-  im.onerror = () => alert('Không đọc được ảnh');
+  im.onerror = () => {
+    if (im.crossOrigin && !src.startsWith('blob:')) { // thử lại: tải về rồi mở từ bộ nhớ trình duyệt
+      fetch(src).then(r => r.blob()).then(b => openEditor(URL.createObjectURL(b), ratio, done)).catch(() => alert('Không đọc được ảnh'));
+      im.crossOrigin = null; return;
+    }
+    alert('Không đọc được ảnh');
+  };
   im.src = src;
 }
 function syncCtl() { $('#zoom').value = ed.zoom; $('#bri').value = ed.bri; $('#con').value = ed.con; $('#sat').value = ed.sat; }
@@ -206,14 +213,16 @@ cv.onpointermove = e => {
 cv.onpointerup = cv.onpointercancel = () => { drag = null; cv.style.cursor = 'grab'; };
 
 $('#edOk').onclick = () => {
-  $('#edOk').disabled = true;
-  cv.toBlob(async blob => {
+  $('#edOk').disabled = true; $('#edErr').textContent = '';
+  const fail = m => { $('#edErr').textContent = m; $('#edOk').disabled = false; };
+  try { cv.toBlob(async blob => {
+    if (!blob) return fail('Không xuất được ảnh, hãy thử chọn lại ảnh.');
     try {
       const url = await upload(new File([blob], 'photo.jpg', { type: 'image/jpeg' }));
       edDone(url); $('#ed').hidden = true;
     } catch (err) { $('#edErr').textContent = err.message; }
     $('#edOk').disabled = false;
-  }, 'image/jpeg', 0.88);
+  }, 'image/jpeg', 0.88); } catch (e) { fail('Ảnh này không cho chỉnh/lưu (lỗi bảo mật trình duyệt). Hãy tải ảnh lên lại từ máy.'); }
 };
 $('#imgPick').onclick = () => $('#imgFile').click();
 $('#imgFile').onchange = e => {
