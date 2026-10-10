@@ -519,9 +519,8 @@ input::-ms-reveal,input::-ms-clear{display:none}
 
 /* ===== Chữ banner hiện mượt, không giật ở cuối hiệu ứng ===== */
 .slide,.slide .bg{will-change:opacity,transform;backface-visibility:hidden}
-.slide .l1,.slide h1 .l2,.slide .pill{will-change:transform,opacity;backface-visibility:hidden;-webkit-font-smoothing:antialiased;animation-fill-mode:both}
+.slide .l1,.slide h1 .l2,.slide .pill{will-change:transform,opacity;backface-visibility:hidden;animation-fill-mode:both}
 .slide.active .l1,.slide.active .l2,.slide.active .pill{animation-name:rise;animation-duration:.9s;animation-timing-function:cubic-bezier(.22,.8,.24,1);animation-fill-mode:both}
-.slide h1{text-shadow:none}
-.slide h1 .l1,.slide h1 .l2{text-shadow:0 2px 14px #0006}
+.slide h1{text-shadow:0 3px 22px #0007}
 .slide.active .bg{animation:kb 12s linear forwards}
 @keyframes kb{from{transform:scale3d(1,1,1)}to{transform:scale3d(1.06,1.06,1)}}
