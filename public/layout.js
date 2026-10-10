@@ -15,10 +15,12 @@
     <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     </button>
-    <a class="icon-btn cart-btn" href="cart.html" aria-label="Giỏ hàng" title="Giỏ hàng">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.5l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg><b class="badge-n" id="cartN" hidden>0</b>
-    </a>
-    <a class="pill outline" href="shop.html">Cửa hàng</a>
+    <div class="cart-group">
+      <a class="icon-btn cart-btn" href="cart.html" aria-label="Giỏ hàng" title="Giỏ hàng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.5l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg><b class="badge-n" id="cartN" hidden>0</b>
+      </a>
+      <a class="shop-link" href="shop.html">Cửa hàng</a>
+    </div>
     <div class="acct" id="acct">
       <button class="pill solid" id="acctBtn" aria-haspopup="true" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.6-4.4 4-7 8.5-7s7.9 2.6 8.5 7z"/></svg><span id="acctLabel">Tài khoản</span>

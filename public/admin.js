@@ -52,6 +52,9 @@ document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
 async function loadList() { articles = await api('/api/admin/articles'); renderList(); }
 function renderList() {
   const f = $('#filter').value;
+  const isAbout = f === 've-chung-toi';
+  $('#aboutEd').hidden = !isAbout; document.querySelector('#listView table').hidden = isAbout;
+  if (isAbout && window.mountSiteEditor) window.mountSiteEditor($('#aboutEd'), 'about');
   const list = articles.filter(a => !f || a.section === f);
   $('#rows').innerHTML = list.map(a => `
     <tr><td>${a.image ? `<img src="${esc(a.image)}" alt="">` : '<img alt="">'}</td>

@@ -98,10 +98,14 @@
     render();
   }
 
-  function build() {
+  const isAbout = sec => sec.key === 'about' || sec.root === 'about';
+  const mounts = [];
+  function build() { mounts.forEach(([el, mode]) => buildInto(el, mode)); }
+  function buildInto(root, mode) {
     root.innerHTML = '';
-    root.append(h('p', { class: 'hint', style: 'margin-bottom:12px' }, 'Chỉnh nội dung từng khu vực của trang chủ, rồi bấm "Lưu thay đổi" ở cuối trang. Các bài viết ở mục Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".'));
-    SCHEMA.forEach(sec => {
+    if (mode === 'home') root.append(h('p', { class: 'hint', style: 'margin-bottom:12px' }, 'Chỉnh nội dung từng khu vực của trang chủ, rồi bấm "Lưu thay đổi" ở cuối trang. Các bài viết ở mục Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết". Nội dung trang "Về chúng tôi" chỉnh ở tab "Bài viết" → chọn chuyên mục "Về chúng tôi".'));
+    else root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, 'Nội dung trang "Về chúng tôi" (giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà): sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh, rồi bấm "Lưu thay đổi" ở cuối.'));
+    SCHEMA.filter(sec => isAbout(sec) === (mode === 'about')).forEach(sec => {
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
       const base = sec.root ? data[sec.root] : data;
@@ -110,22 +114,27 @@
         box.append(h('div', { class: 'ib', style: 'display:grid;grid-template-columns:1fr 1fr;gap:0 16px' }, sec.fields.map(f => field(base[sec.key], f))));
         if (sec.sub) { box.append(h('h4', { style: 'margin:18px 0 0' }, sec.sub.title)); const w = h('div'); box.append(w); listEditor(base[sec.key][sec.sub.key], sec.sub, w); }
       }
-      root.append(h('details', { class: 'sgroup' }, h('summary', {}, sec.title), box));
+      const det = h('details', { class: 'sgroup' }, h('summary', {}, sec.title), box);
+      if (mode === 'about') det.setAttribute('open', '');
+      root.append(det);
     });
     const save = h('button', { type: 'button', class: 'btn' }, 'Lưu thay đổi'), ok = h('span', { class: 'okmsg' }), er = h('span', { class: 'err' });
     save.onclick = async () => {
       save.disabled = true; ok.textContent = ''; er.textContent = '';
-      try { data = await api('/api/admin/site', 'PUT', data); ok.textContent = 'Đã lưu. Tải lại trang chủ để xem.'; build(); } catch (e) { er.textContent = e.message; }
-      save.disabled = false;
+      try { data = await api('/api/admin/site', 'PUT', data); normalize(); build(); const o = root.querySelector('.okmsg'); if (o) o.textContent = 'Đã lưu. Tải lại trang web để xem.'; } catch (e) { er.textContent = e.message; save.disabled = false; }
     };
     root.append(h('div', { class: 'savebar' }, save, ok, er));
   }
-
-  window.loadSiteEditor = async () => {
-    data = await fetch('/api/site').then(r => r.json());
+  function normalize() {
     const D = JSON.parse(JSON.stringify(window.ABOUT_DEFAULT || {}));
     data.about = { ...D, ...(data.about || {}) }; data.about.stadium = { ...D.stadium, ...(data.about.stadium || {}) };
-    build();
+  }
+
+  window.mountSiteEditor = async (el, mode) => {
+    if (!mounts.some(m => m[0] === el)) mounts.push([el, mode]);
+    if (!data) { data = await fetch('/api/site').then(r => r.json()); normalize(); }
+    buildInto(el, mode);
   };
-  document.querySelector('.tab[data-tab="site"]').addEventListener('click', () => { if (!data) loadSiteEditor(); });
+  window.loadSiteEditor = () => window.mountSiteEditor(root, 'home');
+  document.querySelector('.tab[data-tab="site"]').addEventListener('click', () => { if (!data || !mounts.some(m => m[0] === root)) loadSiteEditor(); });
 })();
