@@ -9,7 +9,7 @@
   <a class="brand" href="index.html" aria-label="Báo Công an Hà Nội - Trang chủ"><img src="assets/logo.png" alt=""></a>
   <nav class="nav" id="nav" aria-label="Chuyên mục">
     <a class="home-link" href="index.html" aria-label="Trang chủ" title="Trang chủ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg><span class="home-txt">Trang chủ</span></a>
-    ${SECS.map(([id, n]) => `<a href="section.html?s=${id}" data-sec="${id}" class="${onSection === id ? 'on' : ''}">${n}</a>`).join('')}
+    ${SECS.map(([id, n]) => `<a href="${id === 've-chung-toi' ? 'about.html' : 'section.html?s=' + id}" data-sec="${id}" class="${onSection === id || (id === 've-chung-toi' && /about\.html$/.test(location.pathname)) ? 'on' : ''}">${n}</a>`).join('')}
   </nav>
   <div class="actions">
     <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" aria-expanded="false">
