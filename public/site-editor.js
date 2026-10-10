@@ -4,7 +4,7 @@
   const LOGO = (k, label) => ({ k, label, t: 'logo' });
   const TXT = (k, label, full) => ({ k, label, t: 'text', full });
   const NUM = (k, label) => ({ k, label, t: 'number' });
-  const AREA = (k, label) => ({ k, label, t: 'area', full: true });
+  const AREA = (k, label, rows) => ({ k, label, t: 'area', full: true, rows });
   const SCHEMA = [
     { key: 'hero', title: '1. Banner đầu trang', type: 'list', itemName: 'Slide', titleOf: o => o.line2 || o.line1 || 'Slide', blank: { image: '', line1: '', line2: '', button: 'Đọc bài viết', link: '#dong-chay' },
       hint: 'Ảnh nền nên ngang, tỉ lệ 16:9. Có thể thêm nhiều slide, tự chuyển sau vài giây.',
@@ -27,6 +27,17 @@
     { key: 'sponsors', title: '8. Nhà tài trợ (bấm logo sẽ mở website của nhà tài trợ)', type: 'list', itemName: 'Nhà tài trợ', titleOf: o => o.name || 'Nhà tài trợ', blank: { name: '', image: '', url: '' },
       hint: 'Logo sẽ tự chuyển thành màu trắng. Dùng PNG/SVG nền trong suốt.',
       fields: [TXT('name', 'Tên'), LOGO('image', 'Logo'), TXT('url', 'Link website', true)] },
+    { key: 'about', title: '10. Trang "Về chúng tôi" – đầu trang & giới thiệu', type: 'object', fields: [AREA('heroSub', 'Câu giới thiệu dưới tiêu đề', 2), AREA('intro', 'Bài giới thiệu (mỗi đoạn một dòng; hiện 2 đoạn đầu, còn lại bấm "Đọc tiếp")', 12), AREA('trophiesIntro', 'Đoạn dẫn phần Danh hiệu', 3)],
+      sub: { key: 'facts', title: 'Các con số nổi bật (tối đa 6)', itemName: 'Con số', titleOf: o => (o.num || '') + ' ' + (o.label || ''), blank: { num: '', label: '' }, fields: [TXT('num', 'Con số (vd 1956)'), TXT('label', 'Nhãn (vd Thành lập 10/10)')] } },
+    { root: 'about', key: 'trophies', title: '11. Trang "Về chúng tôi" – Danh hiệu (lướt xem)', type: 'list', itemName: 'Danh hiệu', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
+      fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch (cúp vàng)'], ['runner', 'Á quân (cúp bạc)'], ['third', 'Hạng ba (cúp đồng)']] }] },
+    { root: 'about', key: 'history', title: '12. Trang "Về chúng tôi" – Lịch sử (các mốc)', type: 'list', itemName: 'Mốc lịch sử', titleOf: o => o.title || 'Mốc lịch sử', blank: { title: '', when: '', body: '' },
+      hint: 'Mỗi dòng trong nội dung là một đoạn văn. Đặt **chữ** trong hai dấu sao để in đậm.',
+      fields: [TXT('title', 'Tiêu đề mốc', true), TXT('when', 'Thời gian (vd 1956 – 2002)', true), AREA('body', 'Nội dung', 10)] },
+    { root: 'about', key: 'leaders', title: '13. Trang "Về chúng tôi" – Ban lãnh đạo', type: 'list', itemName: 'Lãnh đạo', titleOf: o => o.name || 'Lãnh đạo', blank: { role: '', name: '', note: '', image: '' },
+      hint: 'Ảnh chân dung không bắt buộc (nên vuông); nếu để trống sẽ hiện chữ cái đầu tên.',
+      fields: [TXT('role', 'Chức danh (vd Chủ tịch CLB)'), TXT('name', 'Họ tên kèm cấp bậc'), TXT('note', 'Đơn vị / chức vụ khác', true), IMG('image', 'Ảnh chân dung', '1:1')] },
+    { root: 'about', key: 'stadium', title: '14. Trang "Về chúng tôi" – Sân nhà', type: 'object', fields: [TXT('name', 'Tên sân'), TXT('capacity', 'Sức chứa (vd 19.500 người)'), TXT('address', 'Địa chỉ đầy đủ', true), TXT('tag', 'Dòng địa chỉ ngắn đè trên ảnh', true), TXT('mapQuery', 'Từ khoá tìm trên Google Maps', true), IMG('image', 'Ảnh sân (để trống sẽ hiện hình sân vẽ sẵn)', '2:1')] },
   ];
 
   const root = document.getElementById('site');
@@ -61,7 +72,7 @@
     const lab = h('label', { class: f.full ? 'full' : '' }, f.label);
     if (f.t === 'text') { const i = h('input', { type: 'text', value: obj[f.k] ?? '' }); i.oninput = () => { obj[f.k] = i.value; onChange && onChange(); }; lab.append(i); }
     else if (f.t === 'number') { const i = h('input', { type: 'number', min: '0', step: '1000', value: obj[f.k] ?? 0 }); i.oninput = () => { obj[f.k] = Number(i.value) || 0; onChange && onChange(); }; lab.append(i); }
-    else if (f.t === 'area') { const i = h('textarea', { rows: '3' }); i.value = obj[f.k] ?? ''; i.oninput = () => { obj[f.k] = i.value; }; lab.append(i); }
+    else if (f.t === 'area') { const i = h('textarea', { rows: String(f.rows || 3) }); i.value = obj[f.k] ?? ''; i.oninput = () => { obj[f.k] = i.value; }; lab.append(i); }
     else if (f.t === 'select') { const s = h('select'); f.opts.forEach(([v, t]) => s.append(h('option', { value: v }, t))); s.value = obj[f.k]; s.onchange = () => { obj[f.k] = s.value; }; lab.append(s); }
     else { lab.append(imageField(obj, f, onChange)); lab.classList.add('full'); }
     return lab;
@@ -93,10 +104,11 @@
     SCHEMA.forEach(sec => {
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
-      if (sec.type === 'list') { const w = h('div'); box.append(w); listEditor(data[sec.key], sec, w); }
+      const base = sec.root ? data[sec.root] : data;
+      if (sec.type === 'list') { const w = h('div'); box.append(w); listEditor(base[sec.key], sec, w); }
       else {
-        box.append(h('div', { class: 'ib', style: 'display:grid;grid-template-columns:1fr 1fr;gap:0 16px' }, sec.fields.map(f => field(data[sec.key], f))));
-        if (sec.sub) { box.append(h('h4', { style: 'margin:18px 0 0' }, sec.sub.title)); const w = h('div'); box.append(w); listEditor(data[sec.key][sec.sub.key], sec.sub, w); }
+        box.append(h('div', { class: 'ib', style: 'display:grid;grid-template-columns:1fr 1fr;gap:0 16px' }, sec.fields.map(f => field(base[sec.key], f))));
+        if (sec.sub) { box.append(h('h4', { style: 'margin:18px 0 0' }, sec.sub.title)); const w = h('div'); box.append(w); listEditor(base[sec.key][sec.sub.key], sec.sub, w); }
       }
       root.append(h('details', { class: 'sgroup' }, h('summary', {}, sec.title), box));
     });
@@ -109,6 +121,11 @@
     root.append(h('div', { class: 'savebar' }, save, ok, er));
   }
 
-  window.loadSiteEditor = async () => { data = await fetch('/api/site').then(r => r.json()); build(); };
+  window.loadSiteEditor = async () => {
+    data = await fetch('/api/site').then(r => r.json());
+    const D = JSON.parse(JSON.stringify(window.ABOUT_DEFAULT || {}));
+    data.about = { ...D, ...(data.about || {}) }; data.about.stadium = { ...D.stadium, ...(data.about.stadium || {}) };
+    build();
+  };
   document.querySelector('.tab[data-tab="site"]').addEventListener('click', () => { if (!data) loadSiteEditor(); });
 })();

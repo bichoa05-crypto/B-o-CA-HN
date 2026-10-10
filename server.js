@@ -74,6 +74,9 @@ const DEFAULT_SITE = {
   },
 };
 
+const ABOUT_DEFAULT = require('./public/about-default.js');
+DEFAULT_SITE.about = ABOUT_DEFAULT;
+
 // ---------- secret ----------
 let SECRET;
 if (process.env.AUTH_SECRET) SECRET = process.env.AUTH_SECRET;
@@ -132,6 +135,7 @@ function migrate(db) {
     changed = true;
   }
   if (db.site && !db.site.footer) { db.site.footer = DEFAULT_SITE.footer; changed = true; }
+  if (db.site && !db.site.about) { db.site.about = JSON.parse(JSON.stringify(ABOUT_DEFAULT)); changed = true; }
   // chân trang mới: nạp nội dung mặc định nếu còn là bản cũ (chưa có giấy phép)
   if (db.site && db.site.footer && db.site.footer.licenses === undefined) {
     const d = DEFAULT_SITE.footer, o = db.site.footer;
@@ -339,6 +343,17 @@ const T = (v, n = 200) => String(v ?? '').slice(0, n);
 const MEDIA = v => { v = String(v ?? ''); return v === '' || MEDIA_URL.test(v) ? v : ''; };
 const LINK = v => { v = String(v ?? '').trim().slice(0, 300); return /^(#|\/(?!\/)|https?:\/\/|tel:|mailto:|[\w-]+\.html)/i.test(v) ? v : ''; };
 const L = (arr, max, fn) => (Array.isArray(arr) ? arr : []).slice(0, max).map(fn);
+function cleanAbout(a = {}) {
+  const d = ABOUT_DEFAULT, st = a.stadium || {};
+  return {
+    heroSub: T(a.heroSub, 300), intro: T(a.intro, 20000), trophiesIntro: T(a.trophiesIntro, 600),
+    facts: L(a.facts, 6, x => ({ num: T(x.num, 12), label: T(x.label, 40) })),
+    trophies: L(a.trophies, 80, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })),
+    history: L(a.history, 20, x => ({ title: T(x.title, 100), when: T(x.when, 60), body: T(x.body, 20000) })),
+    leaders: L(a.leaders, 20, x => ({ role: T(x.role, 60), name: T(x.name, 80), note: T(x.note, 200), image: MEDIA(x.image) })),
+    stadium: { name: T(st.name, 80), capacity: T(st.capacity, 40), address: T(st.address, 200), tag: T(st.tag, 200), mapQuery: T(st.mapQuery, 200), image: MEDIA(st.image) },
+  };
+}
 function cleanSite(i = {}) {
   const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
   return {
@@ -350,6 +365,7 @@ function cleanSite(i = {}) {
     shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
     footer: { brand: T((i.footer || {}).brand, 80), licenses: T((i.footer || {}).licenses, 1500), copyright: T((i.footer || {}).copyright, 200), instagram: LINK((i.footer || {}).instagram), about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
+    about: cleanAbout(i.about || ABOUT_DEFAULT),
     sponsors: L(i.sponsors, 60, x => ({ name: T(x.name, 60), image: MEDIA(x.image), url: LINK(x.url) })),
   };
 }
