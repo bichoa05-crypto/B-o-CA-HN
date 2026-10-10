@@ -70,7 +70,7 @@ const DEFAULT_SITE = {
     brand: 'Công an Hà Nội FC', licenses: 'Logo kèm tên website Câu lạc bộ Bóng đá Công An Hà Nội\nCơ quan chủ quản: Công an Thành phố Hà Nội\nChủ sở hữu: Công ty TNHH Bóng đá Công an Thành phố Hà Nội\nChịu trách nhiệm nội dung: Đại tá Nguyễn Tiến Đạt\nGiấy phép thiết lập trang thông tin điện tử số 4593/GP-TTĐT do Sở TT&TT Hà Nội cấp ngày 09/01/2023',
     address: 'Số 79 Trần Hưng Đạo, phường Cửa Nam, thành phố Hà Nội', phone: '02438211052 - 0969848888', email: 'conganhanoifc@gmail.com',
     copyright: '© Bản quyền thuộc về website CLB Công An Hà Nội', facebook: '', youtube: '', instagram: '', tiktok: '', zalo: '',
-    bank: 'Chuyển khoản: (chưa cấu hình) — quản trị viên cập nhật số tài khoản trong mục Trang chủ → Chân trang',
+    bank: 'Chuyển khoản: (chưa cấu hình) — quản trị viên cập nhật số tài khoản trong tab Chân trang & tài trợ',
   },
 };
 

@@ -40,7 +40,7 @@
     { root: 'about', key: 'stadium', title: '14. Trang "Về chúng tôi" – Sân nhà', type: 'object', fields: [TXT('name', 'Tên sân'), TXT('capacity', 'Sức chứa (vd 19.500 người)'), TXT('address', 'Địa chỉ đầy đủ', true), TXT('tag', 'Dòng địa chỉ ngắn đè trên ảnh', true), TXT('mapQuery', 'Từ khoá tìm trên Google Maps', true), IMG('image', 'Ảnh sân (để trống sẽ hiện hình sân vẽ sẵn)', '2:1')] },
   ];
 
-  const root = document.getElementById('site');
+  
   let data = null;
   const h = (tag, attrs = {}, ...kids) => { const el = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) k === 'class' ? el.className = v : k.startsWith('on') ? el[k] = v : el.setAttribute(k, v); kids.flat().forEach(c => el.append(c.nodeType ? c : document.createTextNode(c))); return el; };
 
@@ -98,14 +98,23 @@
     render();
   }
 
-  const isAbout = sec => sec.key === 'about' || sec.root === 'about';
+  // mỗi tab của admin = một trang web; mỗi khu vực thuộc đúng một trang
+  const PAGE_OF = k => ({ about: 'about', trophies: 'about', history: 'about', leaders: 'about', stadium: 'about', shop: 'shop', footer: 'foot', sponsors: 'foot' }[k] || 'home');
+  const secPage = sec => PAGE_OF(sec.root === 'about' ? 'about' : sec.key);
+  const HINT = {
+    home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, đội hình, banner Multimedia, thành tích. Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
+    about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh.',
+    shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
+    foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và logo nhà tài trợ.',
+  };
   const mounts = [];
-  function build() { mounts.forEach(([el, mode]) => buildInto(el, mode)); }
-  function buildInto(root, mode) {
+  function build() { mounts.forEach(([el, page]) => buildInto(el, page)); }
+  function buildInto(root, page) {
     root.innerHTML = '';
-    if (mode === 'home') root.append(h('p', { class: 'hint', style: 'margin-bottom:12px' }, 'Chỉnh nội dung từng khu vực của trang chủ, rồi bấm "Lưu thay đổi" ở cuối trang. Các bài viết ở mục Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết". Nội dung trang "Về chúng tôi" chỉnh ở tab "Bài viết" → chọn chuyên mục "Về chúng tôi".'));
-    else root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, 'Nội dung trang "Về chúng tôi" (giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà): sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh, rồi bấm "Lưu thay đổi" ở cuối.'));
-    SCHEMA.filter(sec => isAbout(sec) === (mode === 'about')).forEach(sec => {
+    root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, HINT[page] + ' Sửa xong bấm "Lưu thay đổi" ở cuối trang.'));
+    let n = 0;
+    SCHEMA.filter(sec => secPage(sec) === page).forEach(sec => {
+      const title = ++n + '. ' + sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang "Về chúng tôi" – /, '');
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
       const base = sec.root ? data[sec.root] : data;
@@ -114,8 +123,8 @@
         box.append(h('div', { class: 'ib', style: 'display:grid;grid-template-columns:1fr 1fr;gap:0 16px' }, sec.fields.map(f => field(base[sec.key], f))));
         if (sec.sub) { box.append(h('h4', { style: 'margin:18px 0 0' }, sec.sub.title)); const w = h('div'); box.append(w); listEditor(base[sec.key][sec.sub.key], sec.sub, w); }
       }
-      const det = h('details', { class: 'sgroup' }, h('summary', {}, sec.title), box);
-      if (mode === 'about') det.setAttribute('open', '');
+      const det = h('details', { class: 'sgroup' }, h('summary', {}, title), box);
+      if (n === 1) det.setAttribute('open', '');
       root.append(det);
     });
     const save = h('button', { type: 'button', class: 'btn' }, 'Lưu thay đổi'), ok = h('span', { class: 'okmsg' }), er = h('span', { class: 'err' });
@@ -130,11 +139,13 @@
     data.about = { ...D, ...(data.about || {}) }; data.about.stadium = { ...D.stadium, ...(data.about.stadium || {}) };
   }
 
-  window.mountSiteEditor = async (el, mode) => {
-    if (!mounts.some(m => m[0] === el)) mounts.push([el, mode]);
+  async function mount(el, page) {
+    if (!mounts.some(m => m[0] === el)) mounts.push([el, page]);
     if (!data) { data = await fetch('/api/site').then(r => r.json()); normalize(); }
-    buildInto(el, mode);
-  };
-  window.loadSiteEditor = () => window.mountSiteEditor(root, 'home');
-  document.querySelector('.tab[data-tab="site"]').addEventListener('click', () => { if (!data || !mounts.some(m => m[0] === root)) loadSiteEditor(); });
+    buildInto(el, page);
+  }
+  [['site', 'home'], ['about', 'about'], ['shop', 'shop'], ['foot', 'foot']].forEach(([tab, page]) => {
+    const el = document.getElementById(tab);
+    document.querySelector('.tab[data-tab="' + tab + '"]').addEventListener('click', () => { if (!mounts.some(m => m[0] === el)) mount(el, page); });
+  });
 })();
