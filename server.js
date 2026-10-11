@@ -64,7 +64,7 @@ const DEFAULT_SITE = {
       { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'champion' },
     ],
   },
-  sponsors: Array.from({ length: 10 }, (_, i) => ({ name: 'Nhà tài trợ ' + (i + 1), image: '', url: '' })),
+  sponsors: [],
   footer: {
     about: 'Cơ quan ngôn luận của Công an thành phố Hà Nội. Thông tin nhanh, chính xác, vì một Thủ đô bình yên.',
     brand: 'Công an Hà Nội FC', licenses: 'Logo kèm tên website Câu lạc bộ Bóng đá Công An Hà Nội\nCơ quan chủ quản: Công an Thành phố Hà Nội\nChủ sở hữu: Công ty TNHH Bóng đá Công an Thành phố Hà Nội\nChịu trách nhiệm nội dung: Đại tá Nguyễn Tiến Đạt\nGiấy phép thiết lập trang thông tin điện tử số 4593/GP-TTĐT do Sở TT&TT Hà Nội cấp ngày 09/01/2023',
@@ -75,7 +75,9 @@ const DEFAULT_SITE = {
 };
 
 const ABOUT_DEFAULT = require('./public/about-default.js');
+const SPONSOR_MAP = require('./public/sponsors-map.js');
 DEFAULT_SITE.about = ABOUT_DEFAULT;
+DEFAULT_SITE.sponsors = SPONSOR_MAP.map(b => ({ name: b.name, image: '', url: '' }));
 
 // ---------- secret ----------
 let SECRET;
@@ -135,6 +137,7 @@ function migrate(db) {
     changed = true;
   }
   if (db.site && !db.site.footer) { db.site.footer = DEFAULT_SITE.footer; changed = true; }
+  if (db.site && (!Array.isArray(db.site.sponsors) || db.site.sponsors.length !== SPONSOR_MAP.length || db.site.sponsors.some((x, i) => x.name !== SPONSOR_MAP[i].name))) { db.site.sponsors = SPONSOR_MAP.map(b => ({ name: b.name, image: '', url: '' })); changed = true; }
   if (db.site && !db.site.about) { db.site.about = JSON.parse(JSON.stringify(ABOUT_DEFAULT)); changed = true; }
   // chân trang mới: nạp nội dung mặc định nếu còn là bản cũ (chưa có giấy phép)
   if (db.site && db.site.footer && db.site.footer.licenses === undefined) {
@@ -366,7 +369,7 @@ function cleanSite(i = {}) {
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
     footer: { brand: T((i.footer || {}).brand, 80), licenses: T((i.footer || {}).licenses, 1500), copyright: T((i.footer || {}).copyright, 200), instagram: LINK((i.footer || {}).instagram), about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
     about: cleanAbout(i.about || ABOUT_DEFAULT),
-    sponsors: L(i.sponsors, 60, x => ({ name: T(x.name, 60), image: MEDIA(x.image), url: LINK(x.url) })),
+    sponsors: SPONSOR_MAP.map((b, k) => ({ name: b.name, image: '', url: LINK(((i.sponsors || [])[k] || {}).url) })),
   };
 }
 app.get('/api/site', wrap(async (req, res) => { res.json((await loadDb()).site || DEFAULT_SITE); }));

@@ -263,7 +263,10 @@ img.m-logo{background:none;border:0;border-radius:0}
 /* ---------- chân trang (gồm nhà tài trợ) ---------- */
 .footer{background:#c82a20;color:#fff;font-size:clamp(14px,calc(1.18 * var(--vw)),17px)}
 .f-spons{background:#ad2821;line-height:0}
-.f-spons img{display:block;width:100%;max-width:1600px;height:auto;margin:0 auto}
+.sp-map{position:relative;max-width:1600px;margin:0 auto}
+.f-spons img{display:block;width:100%;height:auto}
+.sp-hot{position:absolute;display:block;border-radius:10px;transition:background .25s,box-shadow .25s,transform .25s var(--ease)}
+.sp-hot:hover{background:#ffffff1f;box-shadow:0 0 0 1px #ffffff55;transform:translateY(-2px)}
 .f-brand{background:#fff;color:#231f20;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:clamp(14px,calc(1.8 * var(--vw)),26px) var(--gutter);border-bottom:1px solid #f0e2df}
 .f-id{display:flex;align-items:center;gap:clamp(14px,calc(1.8 * var(--vw)),26px);min-width:0}
 .f-id img{width:clamp(56px,calc(6.4 * var(--vw)),92px);height:clamp(56px,calc(6.4 * var(--vw)),92px);border-radius:50%;flex:none}

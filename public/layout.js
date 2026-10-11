@@ -54,12 +54,13 @@
     copyright: '© Bản quyền thuộc về website CLB Công An Hà Nội', facebook: '', youtube: '', instagram: '', tiktok: '', zalo: '',
   };
   const spRows = list => { const rows = []; let i = 0; for (const n of [5, 7, 7, 7, 7, 7, 7]) { if (i >= list.length) break; rows.push(list.slice(i, i + n)); i += n; } return rows; };
+  const spHot = list => (window.SPONSOR_MAP || []).map((b, i) => { const u = list[i] && list[i].url ? safeLink(list[i].url) : ''; return u && u !== '#' ? `<a class="sp-hot" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${esc(b.name)}" title="${esc(b.name)}" style="left:${b.x}%;top:${b.y}%;width:${b.w}%;height:${b.h}%"></a>` : ''; }).join('');
   const footer = (f, sponsors = []) => {
     const v = (k) => f[k] || F0[k];
     const lic = String(v('licenses')).split('\n').map(x => x.trim()).filter(Boolean);
     return `
 <footer class="footer" id="lien-he">
-  <div class="f-spons" aria-label="Nhà tài trợ"><picture><source srcset="assets/sponsors.webp" type="image/webp"><img src="assets/sponsors.png" alt="Các nhà tài trợ của CLB Công An Hà Nội: LPBank, Masterise, Vingroup, VPBank, Shopee, MSB, ROX, PVcomBank, Sunshine, Eurowindow, TPBank, Sun Group, Vietnam Airlines, Tân Hoàng Minh, Petrolimex, Agribank, Gelex, Vietcombank, Mizuno, IRC, Nutifood, Wika, Động Lực, Jogarbola, eSIM du lịch, Oris" width="2940" height="630" loading="lazy"></picture></div>
+  <div class="f-spons" aria-label="Nhà tài trợ"><div class="sp-map"><picture><source srcset="assets/sponsors.webp" type="image/webp"><img src="assets/sponsors.png" alt="Các nhà tài trợ của CLB Công An Hà Nội: LPBank, Masterise, Vingroup, VPBank, Shopee, MSB, ROX, PVcomBank, Sunshine, Eurowindow, TPBank, Sun Group, Vietnam Airlines, Tân Hoàng Minh, Petrolimex, Agribank, Gelex, Vietcombank, Mizuno, IRC, Nutifood, Wika, Động Lực, Jogarbola, eSIM du lịch, Oris" width="2940" height="630" loading="lazy"></picture>${spHot(sponsors)}</div></div>
   <div class="f-brand">
     <div class="f-id"><img src="assets/logo.png" alt=""><strong>${esc(v('brand'))}</strong></div>
     <div class="f-comm"><h5>Cộng đồng</h5>

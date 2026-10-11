@@ -24,6 +24,9 @@
       sub: { key: 'items', title: 'Danh sách thành tích', itemName: 'Thành tích', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
         fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch'], ['runner', 'Á quân'], ['third', 'Hạng ba']] }] } },
     { key: 'footer', title: '9. Chân trang & liên kết mạng xã hội', type: 'object', fields: [TXT('brand', 'Tên hiển thị cạnh logo', true), AREA('licenses', 'Giấy phép (mỗi dòng một ý)'), TXT('address', 'Địa chỉ', true), TXT('phone', 'Hotline'), TXT('email', 'Email'), TXT('copyright', 'Dòng bản quyền', true), TXT('facebook', 'Link Facebook của CLB'), TXT('youtube', 'Link YouTube'), TXT('instagram', 'Link Instagram'), TXT('tiktok', 'Link TikTok'), TXT('zalo', 'Link Zalo'), AREA('bank', 'Thông tin chuyển khoản (hiện sau khi khách chọn thanh toán chuyển khoản)')] },
+    { key: 'sponsors', title: 'Gắn link cho từng logo nhà tài trợ trong hình ở chân trang', type: 'list', fixed: true, itemName: 'Nhà tài trợ', titleOf: o => (o.url ? '🔗 ' : '') + o.name, blank: { name: '', image: '', url: '' },
+      hint: 'Mỗi dòng là một logo trong hình nhà tài trợ. Dán link website của nhà tài trợ (vd https://www.lpbank.com.vn): bấm vào logo đó trên web sẽ mở link. Để trống nếu chưa muốn gắn link.',
+      fields: [TXT('url', 'Link website của nhà tài trợ này', true)] },
   ];
 
   
@@ -75,11 +78,11 @@
         dn.onclick = () => { if (i < arr.length - 1) { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; render(); } };
         rm.onclick = () => { if (confirm('Xoá mục này?')) { arr.splice(i, 1); render(); } };
         const body = h('div', { class: 'ib' }, spec.fields.map(f => field(o, f, () => { tt.textContent = spec.titleOf(o); })));
-        wrap.append(h('details', { class: 'item' }, h('summary', {}, h('span', {}, (i + 1) + '.'), tt, up, dn, rm), body));
+        wrap.append(h('details', { class: 'item' }, h('summary', {}, h('span', {}, (i + 1) + '.'), tt, ...(spec.fixed ? [] : [up, dn, rm])), body));
       });
       const add = h('button', { type: 'button', class: 'btn ghost sm' }, '+ Thêm ' + spec.itemName.toLowerCase());
       add.onclick = () => { arr.push({ ...spec.blank }); render(); wrap.lastElementChild.previousElementSibling?.setAttribute('open', ''); };
-      wrap.append(add);
+      if (!spec.fixed) wrap.append(add);
     };
     render();
   }
@@ -91,7 +94,7 @@
     home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, đội hình, banner Multimedia, thành tích. Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
     about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh.',
     shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
-    foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép và mạng xã hội. (Hình các nhà tài trợ đã gắn sẵn, không cần đăng.)',
+    foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và link cho từng logo nhà tài trợ.',
   };
   const mounts = [];
   function build() { mounts.forEach(([el, page]) => buildInto(el, page)); }
@@ -122,6 +125,8 @@
   }
   function normalize() {
     const D = JSON.parse(JSON.stringify(window.ABOUT_DEFAULT || {}));
+    const SM = window.SPONSOR_MAP || [];
+    if (SM.length && (!Array.isArray(data.sponsors) || data.sponsors.length !== SM.length || data.sponsors.some((x, i) => x.name !== SM[i].name))) data.sponsors = SM.map((b, i) => ({ name: b.name, image: '', url: ((data.sponsors || [])[i] || {}).url || '' }));
     data.about = { ...D, ...(data.about || {}) }; data.about.stadium = { ...D.stadium, ...(data.about.stadium || {}) };
   }
 
