@@ -121,7 +121,14 @@ function cartBadge() { const n = cart.count(), b = $('#cartN'); b.hidden = !n; b
 cartBadge(); document.addEventListener('cart', cartBadge); addEventListener('storage', cartBadge);
 // hiện dần khi cuộn tới (tự tính theo vị trí, chạy đúng cả khi trang bị thu phóng trên Windows)
 let revTick = false;
-const revCheck = () => { revTick = false; const vh = innerHeight * .92; document.querySelectorAll('.rv:not(.in)').forEach(el => { if (el.getBoundingClientRect().top < vh) el.classList.add('in'); }); };
+const revCheck = () => {
+  revTick = false; const vh = innerHeight;
+  document.querySelectorAll('.rv').forEach(el => {
+    const r = el.getBoundingClientRect(), seen = r.top < vh * .92 && r.bottom > 0;
+    if (seen) el.classList.add('in');
+    else if (r.bottom < -80 || r.top > vh + 80) el.classList.remove('in'); // ra khỏi màn hình thì làm lại, lần sau lướt tới sẽ chạy hiệu ứng nữa
+  });
+};
 const RV_SEL = '.block-head,.since,.honors,.ab-head,.ab-text,.tr-wrap,.tl-item,.ld,.st,.st-info,.st-map,.f-spons,.f-brand,.f-info,.shop>h2,.shop .sub';
 const reveal = () => { document.querySelectorAll(RV_SEL).forEach(el => { if (!el.classList.contains('in')) el.classList.add('rv'); }); revCheck(); };
 addEventListener('scroll', () => { if (!revTick) { revTick = true; requestAnimationFrame(revCheck); } }, { passive: true });
