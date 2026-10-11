@@ -129,10 +129,12 @@
   $('#stInfo').innerHTML = `<div class="st-box"><small>Sân vận động</small><b>${esc(S.name)}</b></div><div class="st-box"><small>Sức chứa</small><b>${esc(S.capacity)}</b></div><div class="st-box"><small>Địa chỉ</small><b>${esc(S.address)}</b><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Mở bản đồ →</a></div>`;
   $('#stMap').innerHTML = `<iframe title="Bản đồ ${esc(S.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&output=embed"></iframe>`;
 
+  if (typeof reveal === "function") reveal();
   // mục lục dính
-  const links = [...document.querySelectorAll('.ab-tabs a')];
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-40% 0px -55% 0px' });
-  links.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
+  const links = [...document.querySelectorAll('.ab-tabs a')], secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  let tk = false;
+  const mark = () => { tk = false; let cur = 0; secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top < innerHeight * .4) cur = i; }); links.forEach((a, i) => a.classList.toggle('on', i === cur)); };
+  addEventListener('scroll', () => { if (!tk) { tk = true; requestAnimationFrame(mark); } }, { passive: true }); mark();
 })();
 </script>
 </body>

@@ -98,7 +98,7 @@
   document.body.insertAdjacentHTML('afterbegin', header);
   document.body.insertAdjacentHTML('beforeend', footer(F0) + modal);
   // cập nhật chân trang + tên chuyên mục từ máy chủ
-  fetch('/api/site').then(r => r.ok ? r.json() : null).then(s => { if (s) { document.getElementById('lien-he').outerHTML = footer(s.footer || {}, Array.isArray(s.sponsors) ? s.sponsors : []); } }).catch(() => {});
+  fetch('/api/site').then(r => r.ok ? r.json() : null).then(s => { if (s) { document.getElementById('lien-he').outerHTML = footer(s.footer || {}, Array.isArray(s.sponsors) ? s.sponsors : []); if (typeof reveal === "function") reveal(); } }).catch(() => {});
   fetch('/api/sections').then(r => r.ok ? r.json() : null).then(list => { if (Array.isArray(list)) list.forEach(x => document.querySelectorAll('[data-sec="' + x.id + '"]').forEach(a => { a.textContent = x.name; })); }).catch(() => {});
 })();
 
@@ -119,8 +119,15 @@ function setSearch(open) { bar.classList.toggle('open', open); $('#searchBtn').s
 $('#searchBtn').onclick = () => setSearch(!bar.classList.contains('open'));
 function cartBadge() { const n = cart.count(), b = $('#cartN'); b.hidden = !n; b.textContent = n > 99 ? '99+' : n; }
 cartBadge(); document.addEventListener('cart', cartBadge); addEventListener('storage', cartBadge);
-const rvIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rvIO.unobserve(e.target); } }), { threshold: .1 });
-const reveal = () => document.querySelectorAll('.rv:not(.in)').forEach(el => rvIO.observe(el));
+// hiện dần khi cuộn tới (tự tính theo vị trí, chạy đúng cả khi trang bị thu phóng trên Windows)
+let revTick = false;
+const revCheck = () => { revTick = false; const vh = innerHeight * .92; document.querySelectorAll('.rv:not(.in)').forEach(el => { if (el.getBoundingClientRect().top < vh) el.classList.add('in'); }); };
+const RV_SEL = '.block-head,.since,.honors,.ab-head,.ab-text,.tr-wrap,.tl-item,.ld,.st,.st-info,.st-map,.f-spons,.f-brand,.f-info,.shop>h2,.shop .sub';
+const reveal = () => { document.querySelectorAll(RV_SEL).forEach(el => { if (!el.classList.contains('in')) el.classList.add('rv'); }); revCheck(); };
+addEventListener('scroll', () => { if (!revTick) { revTick = true; requestAnimationFrame(revCheck); } }, { passive: true });
+addEventListener('resize', revCheck); addEventListener('load', revCheck); reveal();
+// nút/liên kết "#" không được nhảy về đầu trang
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
 
 /* ---------- tài khoản ---------- */
 const modal = $('#authModal');
