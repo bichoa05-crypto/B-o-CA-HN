@@ -478,7 +478,7 @@ img{-ms-interpolation-mode:bicubic}
 .modal *,.nav,.cart-lines{scrollbar-width:thin}
 
 /* GPU: header kính mờ và hiệu ứng hover mượt trên Windows */
-.site-header,.search-bar,.modal{transform:translateZ(0);backface-visibility:hidden}
+.search-bar,.modal{transform:translateZ(0);backface-visibility:hidden}
 .hero .slide,.m-card,.card,.prod,.pd .pic{backface-visibility:hidden}
 .card,.prod,.m-card{transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
 @media(hover:hover) and (pointer:fine){
@@ -562,3 +562,9 @@ input::-ms-reveal,input::-ms-clear{display:none}
 .cart-group .shop-link{font-family:var(--nav);font-weight:700;font-size:clamp(13px,1.05vw,16px);letter-spacing:.03em;text-transform:uppercase;line-height:1;padding:12px 0 12px 2px;white-space:nowrap}
 .site-header.solid .cart-group{background:#ffffff14}
 @media(max-width:1200px){.cart-group{border:0;background:none;padding:0}.cart-group:hover{background:none;color:#fff}.cart-group .shop-link{display:none}}
+
+/* menu điện thoại: phủ kín màn hình, cuộn được khi màn hình thấp */
+@media(max-width:1200px){
+  .nav{justify-content:flex-start;overflow-y:auto;padding-top:calc(var(--header) + 24px);overscroll-behavior:contain}
+  .nav a{font-size:clamp(28px,7vw,44px)}
+}
