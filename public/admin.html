@@ -85,6 +85,8 @@ textarea{min-height:0}
 .okmsg{color:#1a7a3a;font-weight:600}
 @media(max-width:700px){.item .ib{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="rich.css">
+<link rel="stylesheet" href="rte.css">
 </head>
 <body>
 
@@ -128,7 +130,7 @@ textarea{min-height:0}
           <div><label>Link YouTube <span class="hint">(tuỳ chọn)</span></label><input type="url" id="f_videoUrl" placeholder="https://www.youtube.com/watch?v=..."></div>
         </div>
         <label>Mô tả ngắn</label><input type="text" id="f_summary">
-        <label>Nội dung <span class="hint">(xuống dòng 2 lần để tách đoạn)</span></label><textarea id="f_content"></textarea>
+        <label>Nội dung bài viết <span class="hint">(soạn như Word: căn lề, đậm nghiêng, chèn ảnh giữa bài, bảng, video…)</span></label><div id="f_content"></div>
 
         <label>Ảnh bìa</label>
         <div class="media">
@@ -207,6 +209,7 @@ textarea{min-height:0}
   </div>
 </div>
 
+<script src="rte.js"></script>
 <script src="admin.js"></script>
 <script src="about-default.js"></script>
 <script src="sponsors-map.js"></script>

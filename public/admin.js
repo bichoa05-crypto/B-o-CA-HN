@@ -78,7 +78,7 @@ function openForm(a) {
   $('#f_title').value = a.title || '';
   $('#f_section').value = a.section || ($('#filter').value || sections[0].id);
   $('#f_summary').value = a.summary || '';
-  $('#f_content').value = a.content || '';
+  rte.setHTML(a.content || '');
   $('#f_videoUrl').value = a.videoUrl || '';
   $('#f_featured').checked = !!a.featured;
   $('#f_published').checked = a.id ? !!a.published : true;
@@ -102,7 +102,7 @@ $('#formView').addEventListener('submit', async e => {
   e.preventDefault();
   const body = {
     title: $('#f_title').value.trim(), section: $('#f_section').value, summary: $('#f_summary').value,
-    content: $('#f_content').value, videoUrl: $('#f_videoUrl').value.trim(), image: state.image, video: state.video,
+    content: rte.getHTML(), videoUrl: $('#f_videoUrl').value.trim(), image: state.image, video: state.video,
     featured: $('#f_featured').checked, published: $('#f_published').checked,
   };
   try {
@@ -110,6 +110,9 @@ $('#formView').addEventListener('submit', async e => {
     closeForm(); loadList();
   } catch (err) { $('#ferr').textContent = err.message; }
 });
+
+// ---------- trình soạn thảo bài viết ----------
+const rte = new RTE('#f_content', { upload: file => upload(file) });
 
 // ---------- upload ----------
 function upload(file, onProgress) {

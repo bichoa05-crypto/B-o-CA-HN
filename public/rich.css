@@ -1,0 +1,35 @@
+/* Nội dung bài viết (dùng chung cho trang đọc bài và trình soạn thảo) */
+.rich{font-size:17.5px;line-height:1.85;color:#2b2321;overflow-wrap:break-word;word-break:normal}
+.rich::after{content:"";display:table;clear:both}
+.rich p{margin:0 0 1.1em;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.rich h2,.rich h3,.rich h4{font-family:'Barlow Semi Condensed','Be Vietnam Pro',sans-serif;font-weight:800;line-height:1.2;color:#8a1c14;margin:1.5em 0 .6em;clear:both;text-align:left}
+.rich h2{font-size:1.75em;text-transform:uppercase;letter-spacing:.01em}
+.rich h3{font-size:1.4em}
+.rich h4{font-size:1.15em;color:#2b2321}
+.rich a{color:#c8201a;text-decoration:underline;text-underline-offset:3px}
+.rich ul,.rich ol{margin:0 0 1.1em;padding-left:1.6em}
+.rich ul{list-style:disc}.rich ol{list-style:decimal}
+.rich li{margin-bottom:.4em;text-align:justify}
+.rich blockquote{margin:1.3em 0;padding:.4em 0 .4em 1.2em;border-left:4px solid #c8201a;color:#4b403c;font-style:italic;background:#faf3f1;border-radius:0 8px 8px 0}
+.rich blockquote p{margin:.4em 0}
+.rich hr{border:0;border-top:2px solid #e6dcd8;margin:1.8em 0}
+.rich img{max-width:100%;height:auto;display:block;border-radius:6px}
+.rich figure{margin:1.4em auto;max-width:100%}
+.rich figure img{width:100%}
+.rich figcaption{margin-top:.5em;font-size:.86em;line-height:1.5;color:#6f6762;text-align:center;font-style:italic}
+.rich .fig-s{width:40%}.rich .fig-m{width:65%}.rich .fig-l{width:100%}
+.rich .fig-center{margin-left:auto;margin-right:auto;float:none;clear:both}
+.rich .fig-left{float:left;margin:.3em 1.4em .8em 0}
+.rich .fig-right{float:right;margin:.3em 0 .8em 1.4em}
+.rich .yt{position:relative;aspect-ratio:16/9;margin:1.4em 0;clear:both;background:#000;border-radius:10px;overflow:hidden}
+.rich .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0;margin:0;border-radius:0;box-shadow:none}
+.rich iframe:not(.x){max-width:100%}
+.rich table{width:100%;border-collapse:collapse;margin:1.4em 0;font-size:.95em;clear:both}
+.rich th,.rich td{border:1px solid #d9cbc5;padding:8px 12px;vertical-align:top;text-align:left}
+.rich th{background:#f6ebe8;font-weight:700}
+.rich sub,.rich sup{font-size:.75em;line-height:0}
+.rich mark{padding:0 2px}
+@media(max-width:640px){
+  .rich{font-size:16.5px}
+  .rich .fig-left,.rich .fig-right{float:none;margin:1.2em auto}.rich .fig-s,.rich .fig-m{width:100%}
+}

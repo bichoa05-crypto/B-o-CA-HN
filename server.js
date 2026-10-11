@@ -74,6 +74,7 @@ const DEFAULT_SITE = {
   },
 };
 
+const { sanitizeHtml, stripHtml } = require('./lib/sanitize-html');
 const ABOUT_DEFAULT = require('./public/about-default.js');
 const SPONSOR_MAP = require('./public/sponsors-map.js');
 DEFAULT_SITE.about = ABOUT_DEFAULT;
@@ -306,6 +307,7 @@ function pick(body) {
   const o = {};
   for (const f of FIELDS) if (body[f] !== undefined) o[f] = body[f];
   for (const f of ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl']) if (o[f] !== undefined) o[f] = String(o[f]);
+  if (o.content !== undefined) o.content = sanitizeHtml(o.content);
   for (const f of ['featured', 'published']) if (o[f] !== undefined) o[f] = !!o[f];
   return o;
 }
@@ -387,7 +389,7 @@ app.get('/api/search', wrap(async (req, res) => {
   const out = [];
   for (const a of (await loadDb()).articles) {
     if (!a.published) continue;
-    const t = norm(a.title), hay = t + ' ' + norm(a.summary) + ' ' + norm(a.content);
+    const t = norm(a.title), hay = t + ' ' + norm(a.summary) + ' ' + norm(stripHtml(a.content));
     if (!words.every(w => hay.includes(w))) continue;
     out.push({ ...a, content: '', score: (t.includes(q) ? 10 : 0) + words.filter(w => t.includes(w)).length });
   }

@@ -1,0 +1,26 @@
+/* Giao diện trình soạn thảo (admin) */
+.rte{border:1px solid #d9cbc5;border-radius:10px;background:#fff;margin-top:6px}
+.rte-bar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 10px;background:#faf6f4;border-bottom:1px solid #e6dcd8;border-radius:10px 10px 0 0}
+.rte-g{display:flex;align-items:center;gap:2px;padding-right:10px;border-right:1px solid #e6dcd8}
+.rte-g:last-child{border-right:0}
+.rte-bar button,.rte-color{min-width:32px;height:32px;border:1px solid transparent;border-radius:6px;background:none;color:#2b2321;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 7px;font-size:14px;position:relative}
+.rte-bar button:hover,.rte-color:hover{background:#efe4e0}
+.rte-bar button.on{background:#c8201a;color:#fff}
+.rte-bar button span{font-size:13px;font-weight:600}
+.rte-bar select{height:32px;border:1px solid #d9cbc5;border-radius:6px;background:#fff;padding:0 8px;font-size:13.5px;width:auto;margin:0 3px 0 0}
+.rte-color input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;padding:0;border:0}
+.rte-wrap{position:relative}
+.rte-body{min-height:420px;max-height:none;padding:22px 26px;outline:none;font-size:17px}
+.rte-body:empty::before,.rte-body:has(> p:only-child > br:only-child)::before{content:attr(data-ph);color:#a79d98;pointer-events:none;position:absolute}
+.rte-body img{cursor:pointer}
+.rte-body img.rte-sel{outline:3px solid #f3c93c;outline-offset:2px}
+.rte-body figcaption:empty::before{content:'Chú thích…';color:#a79d98}
+.rte-img{position:absolute;z-index:15;display:flex;align-items:center;gap:2px;background:#231f20;border-radius:8px;padding:4px;box-shadow:0 10px 24px -8px #0008}
+.rte-img[hidden]{display:none}
+.rte-img button{height:30px;padding:0 10px;border:0;border-radius:5px;background:none;color:#fff;font-size:13px;cursor:pointer}
+.rte-img button:hover{background:#ffffff26}
+.rte-img button.on{background:#c8201a}
+.rte-img button.d{color:#ff9d93}
+.rte-img i{width:1px;height:18px;background:#ffffff40;margin:0 3px}
+.rte-foot{display:flex;justify-content:space-between;padding:6px 14px;border-top:1px solid #efe7e4;font-size:12.5px;color:#6f6762;min-height:28px}
+.rte-msg.err{color:#c8201a;font-weight:600}
