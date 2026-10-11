@@ -24,6 +24,17 @@
       sub: { key: 'items', title: 'Danh sách thành tích', itemName: 'Thành tích', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
         fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch'], ['runner', 'Á quân'], ['third', 'Hạng ba']] }] } },
     { key: 'footer', title: '9. Chân trang & liên kết mạng xã hội', type: 'object', fields: [TXT('brand', 'Tên hiển thị cạnh logo', true), AREA('licenses', 'Giấy phép (mỗi dòng một ý)'), TXT('address', 'Địa chỉ', true), TXT('phone', 'Hotline'), TXT('email', 'Email'), TXT('copyright', 'Dòng bản quyền', true), TXT('facebook', 'Link Facebook của CLB'), TXT('youtube', 'Link YouTube'), TXT('instagram', 'Link Instagram'), TXT('tiktok', 'Link TikTok'), TXT('zalo', 'Link Zalo'), AREA('bank', 'Thông tin chuyển khoản (hiện sau khi khách chọn thanh toán chuyển khoản)')] },
+    { key: 'about', title: '10. Trang "Về chúng tôi" – đầu trang & giới thiệu', type: 'object', fields: [AREA('heroSub', 'Câu giới thiệu dưới tiêu đề', 2), AREA('intro', 'Bài giới thiệu (mỗi đoạn một dòng; hiện 2 đoạn đầu, còn lại bấm "Đọc tiếp")', 12), AREA('trophiesIntro', 'Đoạn dẫn phần Danh hiệu', 3)],
+      sub: { key: 'facts', title: 'Các con số nổi bật (tối đa 6)', itemName: 'Con số', titleOf: o => (o.num || '') + ' ' + (o.label || ''), blank: { num: '', label: '' }, fields: [TXT('num', 'Con số (vd 1956)'), TXT('label', 'Nhãn (vd Thành lập 10/10)')] } },
+    { root: 'about', key: 'trophies', title: '11. Trang "Về chúng tôi" – Danh hiệu (lướt xem)', type: 'list', itemName: 'Danh hiệu', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
+      fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch (cúp vàng)'], ['runner', 'Á quân (cúp bạc)'], ['third', 'Hạng ba (cúp đồng)']] }] },
+    { root: 'about', key: 'history', title: '12. Trang "Về chúng tôi" – Lịch sử (các mốc)', type: 'list', itemName: 'Mốc lịch sử', titleOf: o => o.title || 'Mốc lịch sử', blank: { title: '', when: '', body: '' },
+      hint: 'Mỗi dòng trong nội dung là một đoạn văn. Đặt **chữ** trong hai dấu sao để in đậm.',
+      fields: [TXT('title', 'Tiêu đề mốc', true), TXT('when', 'Thời gian (vd 1956 – 2002)', true), AREA('body', 'Nội dung', 10)] },
+    { root: 'about', key: 'leaders', title: '13. Trang "Về chúng tôi" – Ban lãnh đạo', type: 'list', itemName: 'Lãnh đạo', titleOf: o => o.name || 'Lãnh đạo', blank: { role: '', name: '', note: '', image: '' },
+      hint: 'Ảnh chân dung không bắt buộc (nên vuông); nếu để trống sẽ hiện chữ cái đầu tên.',
+      fields: [TXT('role', 'Chức danh (vd Chủ tịch CLB)'), TXT('name', 'Họ tên kèm cấp bậc'), TXT('note', 'Đơn vị / chức vụ khác', true), IMG('image', 'Ảnh chân dung', '1:1')] },
+    { root: 'about', key: 'stadium', title: '14. Trang "Về chúng tôi" – Sân nhà', type: 'object', fields: [TXT('name', 'Tên sân'), TXT('capacity', 'Sức chứa (vd 19.500 người)'), TXT('address', 'Địa chỉ đầy đủ', true), TXT('tag', 'Dòng địa chỉ ngắn đè trên ảnh', true), TXT('mapQuery', 'Từ khoá tìm trên Google Maps', true), IMG('image', 'Ảnh sân (để trống sẽ hiện hình sân vẽ sẵn)', '2:1')] },
     { key: 'sponsors', title: 'Gắn link cho từng logo nhà tài trợ trong hình ở chân trang', type: 'list', fixed: true, itemName: 'Nhà tài trợ', titleOf: o => (o.url ? '🔗 ' : '') + o.name, blank: { name: '', image: '', url: '' },
       hint: 'Mỗi dòng là một logo trong hình nhà tài trợ. Dán link website của nhà tài trợ (vd https://www.lpbank.com.vn): bấm vào logo đó trên web sẽ mở link. Để trống nếu chưa muốn gắn link.',
       fields: [TXT('url', 'Link website của nhà tài trợ này', true)] },
@@ -103,7 +114,7 @@
     root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, HINT[page] + ' Sửa xong bấm "Lưu thay đổi" ở cuối trang.'));
     let n = 0;
     SCHEMA.filter(sec => secPage(sec) === page).forEach(sec => {
-      const title = ++n + '. ' + sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang "Về chúng tôi" – /, '');
+      const t0 = sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang "Về chúng tôi" – /, ''), title = ++n + '. ' + t0.charAt(0).toUpperCase() + t0.slice(1);
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
       const base = sec.root ? data[sec.root] : data;
