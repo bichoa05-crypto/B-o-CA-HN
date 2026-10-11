@@ -262,13 +262,8 @@ img.m-logo{background:none;border:0;border-radius:0}
 
 /* ---------- chân trang (gồm nhà tài trợ) ---------- */
 .footer{background:#c82a20;color:#fff;font-size:clamp(14px,calc(1.18 * var(--vw)),17px)}
-.f-spons{padding:clamp(34px,4.6vw,64px) var(--gutter) clamp(30px,4vw,56px);display:flex;flex-direction:column;align-items:center;gap:clamp(18px,2.8vw,40px);background:#b02720}
-.sp-row{width:100%;max-width:1100px;display:flex;justify-content:center;align-items:center}
-.sp{flex:0 0 calc(100% / var(--n,7));display:flex;align-items:center;justify-content:center;height:clamp(30px,3.2vw,46px);padding:0 clamp(6px,1vw,16px);color:#fff;font-weight:700;font-size:clamp(11px,1vw,14px);opacity:.96;transition:opacity .25s,transform .25s var(--ease)}
-.sp-row.first .sp{height:clamp(38px,4.2vw,60px)}
-.sp:hover{opacity:1;transform:translateY(-3px) scale(1.04)}
-.sp img{display:block;width:auto;height:auto;max-width:84%;max-height:100%;object-fit:contain;filter:brightness(0) invert(1)}
-.sp.txt{opacity:.55;border:1.5px dashed #ffffff80;border-radius:6px;padding:0 10px;margin:0 6px;flex-basis:calc(100% / var(--n,7) - 12px);text-align:center;line-height:1.2}
+.f-spons{background:#ad2821;line-height:0}
+.f-spons img{display:block;width:100%;max-width:1600px;height:auto;margin:0 auto}
 .f-brand{background:#fff;color:#231f20;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:clamp(14px,calc(1.8 * var(--vw)),26px) var(--gutter);border-bottom:1px solid #f0e2df}
 .f-id{display:flex;align-items:center;gap:clamp(14px,calc(1.8 * var(--vw)),26px);min-width:0}
 .f-id img{width:clamp(56px,calc(6.4 * var(--vw)),92px);height:clamp(56px,calc(6.4 * var(--vw)),92px);border-radius:50%;flex:none}

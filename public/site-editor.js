@@ -24,20 +24,6 @@
       sub: { key: 'items', title: 'Danh sách thành tích', itemName: 'Thành tích', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
         fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch'], ['runner', 'Á quân'], ['third', 'Hạng ba']] }] } },
     { key: 'footer', title: '9. Chân trang & liên kết mạng xã hội', type: 'object', fields: [TXT('brand', 'Tên hiển thị cạnh logo', true), AREA('licenses', 'Giấy phép (mỗi dòng một ý)'), TXT('address', 'Địa chỉ', true), TXT('phone', 'Hotline'), TXT('email', 'Email'), TXT('copyright', 'Dòng bản quyền', true), TXT('facebook', 'Link Facebook của CLB'), TXT('youtube', 'Link YouTube'), TXT('instagram', 'Link Instagram'), TXT('tiktok', 'Link TikTok'), TXT('zalo', 'Link Zalo'), AREA('bank', 'Thông tin chuyển khoản (hiện sau khi khách chọn thanh toán chuyển khoản)')] },
-    { key: 'sponsors', title: '8. Nhà tài trợ (bấm logo sẽ mở website của nhà tài trợ)', type: 'list', itemName: 'Nhà tài trợ', titleOf: o => o.name || 'Nhà tài trợ', blank: { name: '', image: '', url: '' },
-      hint: 'Logo sẽ tự chuyển thành màu trắng. Dùng PNG/SVG nền trong suốt.',
-      fields: [TXT('name', 'Tên'), LOGO('image', 'Logo'), TXT('url', 'Link website', true)] },
-    { key: 'about', title: '10. Trang "Về chúng tôi" – đầu trang & giới thiệu', type: 'object', fields: [AREA('heroSub', 'Câu giới thiệu dưới tiêu đề', 2), AREA('intro', 'Bài giới thiệu (mỗi đoạn một dòng; hiện 2 đoạn đầu, còn lại bấm "Đọc tiếp")', 12), AREA('trophiesIntro', 'Đoạn dẫn phần Danh hiệu', 3)],
-      sub: { key: 'facts', title: 'Các con số nổi bật (tối đa 6)', itemName: 'Con số', titleOf: o => (o.num || '') + ' ' + (o.label || ''), blank: { num: '', label: '' }, fields: [TXT('num', 'Con số (vd 1956)'), TXT('label', 'Nhãn (vd Thành lập 10/10)')] } },
-    { root: 'about', key: 'trophies', title: '11. Trang "Về chúng tôi" – Danh hiệu (lướt xem)', type: 'list', itemName: 'Danh hiệu', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
-      fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch (cúp vàng)'], ['runner', 'Á quân (cúp bạc)'], ['third', 'Hạng ba (cúp đồng)']] }] },
-    { root: 'about', key: 'history', title: '12. Trang "Về chúng tôi" – Lịch sử (các mốc)', type: 'list', itemName: 'Mốc lịch sử', titleOf: o => o.title || 'Mốc lịch sử', blank: { title: '', when: '', body: '' },
-      hint: 'Mỗi dòng trong nội dung là một đoạn văn. Đặt **chữ** trong hai dấu sao để in đậm.',
-      fields: [TXT('title', 'Tiêu đề mốc', true), TXT('when', 'Thời gian (vd 1956 – 2002)', true), AREA('body', 'Nội dung', 10)] },
-    { root: 'about', key: 'leaders', title: '13. Trang "Về chúng tôi" – Ban lãnh đạo', type: 'list', itemName: 'Lãnh đạo', titleOf: o => o.name || 'Lãnh đạo', blank: { role: '', name: '', note: '', image: '' },
-      hint: 'Ảnh chân dung không bắt buộc (nên vuông); nếu để trống sẽ hiện chữ cái đầu tên.',
-      fields: [TXT('role', 'Chức danh (vd Chủ tịch CLB)'), TXT('name', 'Họ tên kèm cấp bậc'), TXT('note', 'Đơn vị / chức vụ khác', true), IMG('image', 'Ảnh chân dung', '1:1')] },
-    { root: 'about', key: 'stadium', title: '14. Trang "Về chúng tôi" – Sân nhà', type: 'object', fields: [TXT('name', 'Tên sân'), TXT('capacity', 'Sức chứa (vd 19.500 người)'), TXT('address', 'Địa chỉ đầy đủ', true), TXT('tag', 'Dòng địa chỉ ngắn đè trên ảnh', true), TXT('mapQuery', 'Từ khoá tìm trên Google Maps', true), IMG('image', 'Ảnh sân (để trống sẽ hiện hình sân vẽ sẵn)', '2:1')] },
   ];
 
   
@@ -105,7 +91,7 @@
     home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, đội hình, banner Multimedia, thành tích. Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
     about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh.',
     shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
-    foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và logo nhà tài trợ.',
+    foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép và mạng xã hội. (Hình các nhà tài trợ đã gắn sẵn, không cần đăng.)',
   };
   const mounts = [];
   function build() { mounts.forEach(([el, page]) => buildInto(el, page)); }
