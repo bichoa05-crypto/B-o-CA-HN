@@ -449,21 +449,21 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
 
 /* ===== Windows polish: thanh cuộn mảnh kiểu macOS, chữ mịn, cảm giác mượt ===== */
 :root{color-scheme:light;accent-color:#c8201a}
-html{scrollbar-gutter:stable;-webkit-tap-highlight-color:transparent;text-size-adjust:100%}
+html{-webkit-tap-highlight-color:transparent;text-size-adjust:100%}
 body{font-kerning:normal;font-optical-sizing:auto;font-variant-ligatures:common-ligatures;text-wrap:pretty;-webkit-text-stroke:.01px transparent}
 ::selection{background:#c8201a;color:#fff}
 img,video,svg{image-rendering:auto}
 img{-ms-interpolation-mode:bicubic}
 
-/* thanh cuộn: Chrome/Edge */
-::-webkit-scrollbar{width:14px;height:14px;background:transparent}
-::-webkit-scrollbar-track{background:#faf5f3;border-left:1px solid #efe4e0}
-::-webkit-scrollbar-thumb{background:linear-gradient(#d8352c,#a81b15);border-radius:10px;border:3px solid #faf5f3;min-height:48px;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:linear-gradient(#e8453b,#8a1c14);background-clip:padding-box}
-::-webkit-scrollbar-thumb:active{background:#6e130d;background-clip:padding-box}
-::-webkit-scrollbar-corner{background:#faf5f3}
+/* thanh cuộn mảnh, mềm như macOS: nền trong suốt, nút cuộn bo tròn xám mờ, đậm dần khi rê chuột */
+::-webkit-scrollbar{width:11px;height:11px;background:transparent}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#5a5a6a59;border-radius:10px;border:3px solid transparent;background-clip:content-box;min-height:48px}
+::-webkit-scrollbar-thumb:hover{background:#5a5a6a99;background-clip:content-box}
+::-webkit-scrollbar-thumb:active{background:#5a5a6acc;background-clip:content-box}
+::-webkit-scrollbar-corner{background:transparent}
 /* Firefox */
-@supports not selector(::-webkit-scrollbar){html{scrollbar-width:thin;scrollbar-color:#c8201a #faf5f3}}
+@supports not selector(::-webkit-scrollbar){html{scrollbar-width:thin;scrollbar-color:#5a5a6a80 transparent}}
 
 /* khung cuộn con (menu mobile, giỏ hàng, modal…) */
 .modal *,.nav,.cart-lines{scrollbar-width:thin}
