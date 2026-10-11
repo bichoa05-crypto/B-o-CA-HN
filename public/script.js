@@ -9,7 +9,7 @@ function go(i) {
 }
 function restart() { clearTimeout(timer); if (slides.length > 1) timer = setTimeout(() => { go(cur + 1); restart(); }, 6500); }
 function renderHero(list) {
-  if (!list.length) list = [{ line1: 'BÁO CÔNG AN HÀ NỘI', line2: '', image: '' }];
+  if (!list.length) list = [{ line1: 'CLB BÓNG ĐÁ CÔNG AN HÀ NỘI', line2: '', image: '' }];
   $('#slides').innerHTML = list.map((s, i) => `
     <article class="slide"><div class="bg ${s.image ? '' : 'art'}" ${s.image ? `style="background-image:url('${esc(s.image)}')"` : ''}></div>
       <div class="slide-inner"><h1>${s.line1 ? `<span class="l1">${esc(s.line1)}</span>` : ''}${s.line2 ? `<span class="l2">${esc(s.line2)}</span>` : ''}</h1>

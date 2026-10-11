@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Báo Công an Hà Nội</title>
+<title>CLB Bóng đá Công An Hà Nội</title>
 <meta name="theme-color" content="#4a0d09">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,7 +41,7 @@
   if (!a) a = pool.find(x => x.id === id) || null;
   if (!a) { $('#ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
   const sec = secs.find(s => s.id === a.section);
-  document.title = a.title + ' - Báo Công an Hà Nội';
+  document.title = a.title + ' - CLB Bóng đá Công An Hà Nội';
   $('#ahead').innerHTML = `<a class="tag" href="section.html?s=${esc(a.section)}">${esc(sec ? sec.name : '')}</a><h1>${esc(a.title)}</h1><time>${fmtDate(a.createdAt)}</time>`;
   let yt = '';
   const m = a.videoUrl && a.videoUrl.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
@@ -52,7 +52,7 @@
     ${a.video ? `<video src="${esc(a.video)}" controls controlsList="nodownload noplaybackrate" disablepictureinpicture poster="${esc(a.image)}"></video>` : yt}
     ${!a.video && !yt && a.image ? `<img class="cover" src="${esc(a.image)}" alt="" draggable="false">` : ''}
     <div class="body rich">${/^\s*</.test(a.content) ? a.content : a.content.split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}</div>
-    <p class="copyright">© Báo Công an Hà Nội. Nội dung được bảo hộ bản quyền, nghiêm cấm sao chép dưới mọi hình thức khi chưa có sự đồng ý.</p>`;
+    <p class="copyright">© CLB Bóng đá Công An Hà Nội. Nội dung được bảo hộ bản quyền, nghiêm cấm sao chép dưới mọi hình thức khi chưa có sự đồng ý.</p>`;
   el.classList.add('nocopy');
   antiCopy(el, $('#ahead'));
 
@@ -95,7 +95,7 @@
 function antiCopy(...zones) {
   const inZone = t => zones.some(z => z && z.contains(t));
   const editable = t => t && t.closest && t.closest('input,textarea,[contenteditable]');
-  const NOTE = 'Nội dung thuộc bản quyền Báo Công an Hà Nội. Vui lòng không sao chép.';
+  const NOTE = 'Nội dung thuộc bản quyền CLB Bóng đá Công An Hà Nội. Vui lòng không sao chép.';
   for (const ev of ['copy', 'cut']) document.addEventListener(ev, e => { if (inZone(e.target) || inZone((getSelection().anchorNode || {}).parentNode)) { e.preventDefault(); e.clipboardData && e.clipboardData.setData('text/plain', NOTE); } });
   for (const ev of ['contextmenu', 'dragstart', 'selectstart']) document.addEventListener(ev, e => { if (inZone(e.target) && !editable(e.target)) e.preventDefault(); });
   document.addEventListener('keydown', e => {

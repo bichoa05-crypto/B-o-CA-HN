@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chuyên mục - Báo Công an Hà Nội</title>
+<title>Chuyên mục - CLB Bóng đá Công An Hà Nội</title>
 <meta name="theme-color" content="#4a0d09">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
   const site = siteData && siteData.hero ? siteData : window.DEMO_SITE;
   const sec = secs.find(s => s.id === id);
   const name = sec ? sec.name : 'Chuyên mục';
-  $('#t').textContent = name; document.title = name + ' - Báo Công an Hà Nội';
+  $('#t').textContent = name; document.title = name + ' - CLB Bóng đá Công An Hà Nội';
   // phần đặc biệt của từng chuyên mục
   if (id === 'doi-hinh') {
     $('#special').innerHTML = `<h2 class="sec-h" style="margin-bottom:22px">Cầu thủ</h2><div class="sq-all"><div class="sq-viewport"><div class="sq-track">${site.squad.map(p => `<article class="sq-card"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></article>`).join('')}</div></div></div><h2 class="sec-h" style="margin:44px 0 22px">Bài viết</h2>`;

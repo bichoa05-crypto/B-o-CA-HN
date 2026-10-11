@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tìm kiếm - Báo Công an Hà Nội</title>
+<title>Tìm kiếm - CLB Bóng đá Công An Hà Nội</title>
 <meta name="theme-color" content="#4a0d09">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
 <script>
 (async () => {
   const q = (new URLSearchParams(location.search).get('q') || '').trim();
-  $('#sq').value = q; document.title = (q ? q + ' - ' : '') + 'Tìm kiếm - Báo Công an Hà Nội';
+  $('#sq').value = q; document.title = (q ? q + ' - ' : '') + 'Tìm kiếm - CLB Bóng đá Công An Hà Nội';
   if (q.length < 2) { $('#res').textContent = 'Nhập ít nhất 2 ký tự để tìm kiếm.'; return; }
   const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase();
   let list = await getJSON('/api/search?q=' + encodeURIComponent(q), null);
