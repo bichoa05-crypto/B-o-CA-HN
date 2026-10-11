@@ -59,7 +59,7 @@
     const lic = String(v('licenses')).split('\n').map(x => x.trim()).filter(Boolean);
     return `
 <footer class="footer" id="lien-he">
-  ${sponsors.length ? `<div class="f-spons" aria-label="Nhà tài trợ">${spRows(sponsors).map(r => `<div class="sp-row">${r.map(x => x.image
+  ${sponsors.length ? `<div class="f-spons" aria-label="Nhà tài trợ">${spRows(sponsors).map((r, ri) => `<div class="sp-row${ri === 0 ? ' first' : ''}" style="--n:${ri === 0 ? 5 : 7}">${r.map(x => x.image
     ? `<a class="sp" ${x.url ? `href="${esc(safeLink(x.url))}" target="_blank" rel="noopener"` : ''} title="${esc(x.name)}"><img src="${esc(x.image)}" alt="${esc(x.name)}" loading="lazy"></a>`
     : `<span class="sp txt">${esc(x.name)}</span>`).join('')}</div>`).join('')}</div>` : ''}
   <div class="f-brand">
