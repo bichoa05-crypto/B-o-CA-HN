@@ -12,8 +12,8 @@ function renderHero(list) {
   if (!list.length) list = [{ line1: 'CLB BÓNG ĐÁ CÔNG AN HÀ NỘI', line2: '', image: '' }];
   $('#slides').innerHTML = list.map((s, i) => `
     <article class="slide"><div class="bg ${s.image ? '' : 'art'}" ${s.image ? `style="background-image:url('${esc(s.image)}')"` : ''}></div>
-      <div class="slide-inner"><h1>${s.line1 ? `<span class="l1">${esc(s.line1)}</span>` : ''}${s.line2 ? `<span class="l2">${esc(s.line2)}</span>` : ''}</h1>
-      ${s.button ? `<a class="pill" href="${esc(safeLink(s.link))}">${esc(s.button)}</a>` : ''}</div></article>`).join('');
+      <div class="slide-inner"><h1>${s.link ? `<a class="h-link" href="${esc(safeLink(s.link))}">` : ''}${s.line1 ? `<span class="l1">${esc(s.line1)}</span>` : ''}${s.line2 ? `<span class="l2">${esc(s.line2)}</span>` : ''}${s.link ? '</a>' : ''}</h1>
+      ${s.button && s.link ? `<a class="pill" href="${esc(safeLink(s.link))}">${esc(s.button)}</a>` : ''}</div></article>`).join('');
   slides = [...$('#slides').children];
   $('#dots').innerHTML = slides.map((_, i) => `<button aria-label="Slide ${i + 1}"></button>`).join('');
   dots = [...$('#dots').children];
@@ -42,7 +42,7 @@ function renderMatches(list) {
           <div class="m-team">${m.awayLogo ? `<img class="m-logo" src="${esc(m.awayLogo)}" alt="">` : `<span class="m-logo">${esc(initials(m.awayName))}</span>`}<div class="m-name">${esc(m.awayName)}</div></div>
         </div>
         <div class="m-when">${esc(m.date)}<i></i>${esc(m.time)}</div>
-        <a class="m-buy" href="${esc(safeLink(m.ticketUrl))}">Mua vé</a>
+        ${m.ticketUrl && safeLink(m.ticketUrl) !== '#' ? `<a class="m-buy" href="${esc(safeLink(m.ticketUrl))}" ${/^https?:/i.test(m.ticketUrl) ? 'target="_blank" rel="noopener"' : ''}>Mua vé</a>` : '<span class="m-buy off">Sắp mở bán</span>'}
       </div></div>`).join('');
   document.querySelectorAll('.m-col').forEach(c => c.addEventListener('mouseenter', () => { document.querySelectorAll('.m-col').forEach(x => x.classList.toggle('on', x === c)); }));
 }
@@ -69,7 +69,7 @@ const renderMM = l => l.length ? `<div class="n-grid">${l.slice(0, 3).map((a, i)
 let sqI = 0;
 const perView = () => innerWidth <= 480 ? 1 : innerWidth <= 820 ? 2 : 3;
 function renderSquad(list) {
-  $('#sqTrack').innerHTML = list.map(p => `<article class="sq-card"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></article>`).join('');
+  $('#sqTrack').innerHTML = list.map(p => `<a class="sq-card" href="section.html?s=doi-hinh" aria-label="${esc(p.name)}"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></a>`).join('');
   sqI = 0; sqUpdate();
 }
 function sqUpdate() {
@@ -113,17 +113,27 @@ async function load() {
   document.querySelectorAll('[data-title]').forEach(el => { if (names[el.dataset.title]) el.textContent = names[el.dataset.title]; });
   document.querySelectorAll('[data-sec]').forEach(el => { if (names[el.dataset.sec]) el.textContent = names[el.dataset.sec]; });
   const by = id => all.filter(a => a.section === id);
+  const byId = Object.fromEntries(all.map(a => [a.id, a]));
+  const newest = all.find(a => !a.demo) || all[0];
+  const heroList = (site.hero || []).map(s => {
+    let link = s.articleId && byId[s.articleId] ? href(byId[s.articleId]) : (s.link && !/^#/.test(s.link) ? s.link : '');
+    if (!link && newest) link = href(newest); // chưa chọn bài: dẫn tới bài mới nhất
+    if (!link) link = 'section.html?s=dong-chay';
+    return { ...s, link, button: s.button || 'Đọc bài viết' };
+  });
   const featured = all.filter(a => a.featured && !a.demo).slice(0, 5).map(a => ({ image: a.image, line1: (names[a.section] || 'Tin nổi bật'), line2: a.title, button: 'Đọc bài viết', link: href(a) }));
-  renderHero([...(site.hero || []), ...featured]);
+  renderHero([...heroList, ...featured]);
   renderMatches(site.tournaments);
   $('#list-dong-chay').innerHTML = renderFlow(by('dong-chay'));
-  const g = $('#glitch'); g.innerHTML = [site.intro.line1, site.intro.line2].map(t => `<span data-t="${esc(t)}">${esc(t)}</span>`).join('');
+  const g = $('#glitch'); g.innerHTML = '<a href="about.html" class="g-link" aria-label="Về chúng tôi">' + [site.intro.line1, site.intro.line2].map(t => `<span data-t="${esc(t)}">${esc(t)}</span>`).join('') + '</a>';
   renderSquad(site.squad);
   $('#list-lan-bong').innerHTML = renderBento(by('lan-bong'));
   $('#list-ben-le-san-co').innerHTML = renderList(by('ben-le-san-co'));
   $('#list-nguoi-ham-mo').innerHTML = renderList(by('nguoi-ham-mo'));
   const mm = $('#mm'), m = site.multimedia || {};
   mm.insertAdjacentHTML('afterbegin', m.image ? `<img src="${esc(m.image)}" alt="">` : '<div class="bgart"></div>');
+  mm.dataset.href = safeLink(m.link) !== '#' ? safeLink(m.link) : 'section.html?s=multimedia';
+  mm.onclick = e => { if (!e.target.closest('a')) location.href = mm.dataset.href; };
   if (m.button) mm.insertAdjacentHTML('beforeend', `<a class="more" href="${esc(safeLink(m.link))}">${esc(m.button)}</a>`);
   $('#mmList').innerHTML = renderMM(by('multimedia'));
   renderShop(site.shop);

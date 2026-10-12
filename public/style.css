@@ -558,3 +558,12 @@ input::-ms-reveal,input::-ms-clear{display:none}
 .card.rv.in,.prod.rv.in,.m-card.rv.in{transition:transform .35s var(--ease),box-shadow .35s var(--ease),opacity 1s var(--ease);transition-delay:0s}
 
 .modal-brand{text-align:center;font-family:var(--nav);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--red);margin:6px 0 2px}
+
+/* các khối bấm được trên trang chủ */
+.h-link{display:block;color:inherit}
+.h-link:hover .l2{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
+.m-buy.off{background:#8a7e7a;cursor:default;pointer-events:none;opacity:.85}
+a.sq-card{display:block;color:inherit}
+.g-link{display:block;color:inherit}
+.mm{cursor:pointer}
+a.h-row{display:grid;color:inherit}

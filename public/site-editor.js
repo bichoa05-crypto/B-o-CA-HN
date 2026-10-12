@@ -4,11 +4,12 @@
   const LOGO = (k, label) => ({ k, label, t: 'logo' });
   const TXT = (k, label, full) => ({ k, label, t: 'text', full });
   const NUM = (k, label) => ({ k, label, t: 'number' });
+  const ART = (k, label) => ({ k, label, t: 'article', full: true });
   const AREA = (k, label, rows) => ({ k, label, t: 'area', full: true, rows });
   const SCHEMA = [
-    { key: 'hero', title: '1. Banner đầu trang', type: 'list', itemName: 'Slide', titleOf: o => o.line2 || o.line1 || 'Slide', blank: { image: '', line1: '', line2: '', button: 'Đọc bài viết', link: '#dong-chay' },
+    { key: 'hero', title: '1. Banner đầu trang', type: 'list', itemName: 'Slide', titleOf: o => o.line2 || o.line1 || 'Slide', blank: { image: '', line1: '', line2: '', button: 'Đọc bài viết', articleId: '', link: '' },
       hint: 'Ảnh nền nên ngang, tỉ lệ 16:9. Có thể thêm nhiều slide, tự chuyển sau vài giây.',
-      fields: [IMG('image', 'Ảnh nền', '16:9'), TXT('line1', 'Dòng tiêu đề 1 (chữ mảnh)'), TXT('line2', 'Dòng tiêu đề 2 (chữ đậm)'), TXT('button', 'Chữ trên nút'), TXT('link', 'Link của nút (vd #dong-chay hoặc https://...)')] },
+      fields: [IMG('image', 'Ảnh nền', '16:9'), TXT('line1', 'Dòng tiêu đề 1 (chữ mảnh)'), TXT('line2', 'Dòng tiêu đề 2 (chữ đậm)'), TXT('button', 'Chữ trên nút'), ART('articleId', 'Bài viết sẽ mở khi bấm nút hoặc tiêu đề (chọn từ các bài đã đăng)'), TXT('link', 'Hoặc link khác (chỉ dùng khi không chọn bài ở trên)', true)] },
     { key: 'tournaments', title: '2. Giải đấu (4 cột trận sắp tới)', type: 'list', itemName: 'Giải đấu', titleOf: o => o.name || 'Giải đấu', blank: { name: '', homeName: 'Công an Hà Nội', homeLogo: '', awayName: '', awayLogo: '', date: '', time: '', ticketUrl: '#' },
       hint: 'Logo đội nên là ảnh PNG nền trong suốt, hình vuông.',
       fields: [TXT('name', 'Tên giải đấu', true), TXT('homeName', 'Đội nhà'), LOGO('homeLogo', 'Logo đội nhà'), TXT('awayName', 'Đội khách'), LOGO('awayLogo', 'Logo đội khách'), TXT('date', 'Ngày (vd 18/10)'), TXT('time', 'Giờ (vd 19:15)'), TXT('ticketUrl', 'Link mua vé', true)] },
@@ -68,11 +69,18 @@
     return wrap;
   }
 
+  let artsP = null;
+  const getArticles = () => artsP || (artsP = api('/api/admin/articles').catch(() => []));
   function field(obj, f, onChange) {
     const lab = h('label', { class: f.full ? 'full' : '' }, f.label);
     if (f.t === 'text') { const i = h('input', { type: 'text', value: obj[f.k] ?? '' }); i.oninput = () => { obj[f.k] = i.value; onChange && onChange(); }; lab.append(i); }
     else if (f.t === 'number') { const i = h('input', { type: 'number', min: '0', step: '1000', value: obj[f.k] ?? 0 }); i.oninput = () => { obj[f.k] = Number(i.value) || 0; onChange && onChange(); }; lab.append(i); }
     else if (f.t === 'area') { const i = h('textarea', { rows: String(f.rows || 3) }); i.value = obj[f.k] ?? ''; i.oninput = () => { obj[f.k] = i.value; }; lab.append(i); }
+    else if (f.t === 'article') {
+      const s = h('select'); s.append(h('option', { value: '' }, '— Tự động: bài mới nhất —'));
+      getArticles().then(list => { list.forEach(a => s.append(h('option', { value: a.id }, a.title + (a.published ? '' : ' (nháp)')))); s.value = obj[f.k] || ''; });
+      s.onchange = () => { obj[f.k] = s.value; }; lab.append(s);
+    }
     else if (f.t === 'select') { const s = h('select'); f.opts.forEach(([v, t]) => s.append(h('option', { value: v }, t))); s.value = obj[f.k]; s.onchange = () => { obj[f.k] = s.value; }; lab.append(s); }
     else { lab.append(imageField(obj, f, onChange)); lab.classList.add('full'); }
     return lab;

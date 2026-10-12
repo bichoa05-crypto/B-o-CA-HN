@@ -38,7 +38,7 @@ let honors = [], hPeriod = 0;
 function drawHonors() {
   const sel = $('#hSel').value;
   const rows = honors.filter(h => period(h.year) === hPeriod && (!sel || h.name === sel));
-  $('#hRows').innerHTML = rows.length ? rows.map(h => `<div class="h-row">${medal(h.result)}<span class="y">${esc(h.year)}</span><span class="n">${esc(h.name)}</span><span class="badge ${h.result}">${LABEL[h.result] || ''}</span>${ICON_CHEV}</div>`).join('') : '<p class="h-empty">Chưa có dữ liệu trong giai đoạn này.</p>';
+  $('#hRows').innerHTML = rows.length ? rows.map(h => `<a class="h-row" href="about.html#danh-hieu">${medal(h.result)}<span class="y">${esc(h.year)}</span><span class="n">${esc(h.name)}</span><span class="badge ${h.result}">${LABEL[h.result] || ''}</span>${ICON_CHEV}</a>`).join('') : '<p class="h-empty">Chưa có dữ liệu trong giai đoạn này.</p>';
 }
 function renderHonors(h) {
   honors = h.items; $('#hTitle').textContent = h.title;
