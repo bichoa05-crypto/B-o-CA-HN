@@ -60,7 +60,7 @@
     const lic = String(v('licenses')).split('\n').map(x => x.trim()).filter(Boolean);
     return `
 <footer class="footer" id="lien-he">
-  <div class="f-spons" aria-label="Nhà tài trợ"><div class="sp-map"><picture><source srcset="assets/sponsors.webp" type="image/webp"><img src="assets/sponsors.png" alt="Các nhà tài trợ của CLB Công An Hà Nội: LPBank, Masterise, Vingroup, VPBank, Shopee, MSB, ROX, PVcomBank, Sunshine, Eurowindow, TPBank, Sun Group, Vietnam Airlines, Tân Hoàng Minh, Petrolimex, Agribank, Gelex, Vietcombank, Mizuno, IRC, Nutifood, Wika, Động Lực, Jogarbola, eSIM du lịch, Oris" width="2940" height="630" loading="lazy"></picture>${spHot(sponsors)}</div></div>
+  <div class="f-spons" aria-label="Nhà tài trợ"><div class="sp-map"><div class="sp-img"><picture><source srcset="assets/sponsors.webp" type="image/webp"><img src="assets/sponsors.png" alt="Các nhà tài trợ của CLB Công An Hà Nội: LPBank, Masterise, Vingroup, VPBank, Shopee, MSB, ROX, PVcomBank, Sunshine, Eurowindow, TPBank, Sun Group, Vietnam Airlines, Tân Hoàng Minh, Petrolimex, Agribank, Gelex, Vietcombank, Mizuno, IRC, Nutifood, Wika, Động Lực, Jogarbola, eSIM du lịch, Oris" width="2940" height="630" loading="lazy"></picture>${spHot(sponsors)}</div></div></div>
   <div class="f-brand">
     <div class="f-id"><img src="assets/logo.png" alt=""><strong>${esc(v('brand'))}</strong></div>
     <div class="f-comm"><h5>Cộng đồng</h5>
