@@ -40,6 +40,13 @@
   const pool = demoOr(all);
   if (!a) a = pool.find(x => x.id === id) || null;
   if (!a) { $('#ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
+  if (!(a.tags || []).length && /^\s*</.test(a.content)) { // bài cũ: tách dòng "Hashtag: #A; #B" khỏi nội dung
+    const m = a.content.match(/<p\b[^>]*>\s*(?:<[^>]+>\s*)*(?:hashtag|hash tag)\s*:?\s*([\s\S]*?)<\/p>/i);
+    if (m) { const txt = m[1].replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').trim(); a.tags = txt.split(/\s*[;,]\s*|\s+(?=#)/).map(x => x.replace(/^#+/, '').trim()).filter(Boolean); a.content = a.content.replace(m[0], ''); }
+  } else if (!(a.tags || []).length) {
+    const m = a.content.match(/(?:^|\n)\s*(?:hashtag|hash tag)\s*:?\s*([^\n]+)/i);
+    if (m) { a.tags = m[1].split(/\s*[;,]\s*|\s+(?=#)/).map(x => x.replace(/^#+/, '').trim()).filter(Boolean); a.content = a.content.replace(m[0], ''); }
+  }
   const sec = secs.find(s => s.id === a.section);
   document.title = a.title + ' - CLB Bóng đá Công An Hà Nội';
   if (a.image) { const hero = document.querySelector('.article-hero'); hero.classList.add('has-img'); hero.style.backgroundImage = `linear-gradient(180deg,#0000 0%,#1a050466 38%,#1a0504e6 100%),linear-gradient(90deg,#1a0504cc 0%,#1a050433 70%),url("${encodeURI(a.image)}")`; }

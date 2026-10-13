@@ -305,6 +305,12 @@ app.post('/api/password', requireAdmin, wrap(async (req, res) => {
 // articles
 const FIELDS = ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'featured', 'published', 'tags'];
 const normTag = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/\s+/g, ' ').trim();
+const HASHTAG_P = /<p\b[^>]*>\s*(?:<[^>]+>\s*)*(?:hashtag|hash tag|thẻ)\s*:?\s*([\s\S]*?)<\/p>/i;
+function pullHashtags(html) { // dòng "Hashtag: #A; #B" ở cuối bài -> chuyển thành thẻ hashtag riêng
+  const m = String(html || '').match(HASHTAG_P); if (!m) return null;
+  const text = stripHtml(m[1]); if (!/#/.test(text) && !/[;,]/.test(text) && text.split(' ').length > 6) return null;
+  return { html: html.replace(m[0], '').trim(), tags: cleanTags(text.split(/\s*[;,]\s*|\s+(?=#)/)) };
+}
 const cleanTags = v => { const out = [], seen = new Set(); (Array.isArray(v) ? v : String(v || '').split(/[#,;\n]+/)).forEach(t => { t = String(t).replace(/^#+/, '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40); const k = normTag(t); if (t && !seen.has(k) && out.length < 12) { seen.add(k); out.push(t); } }); return out; };
 function pick(body) {
   const o = {};
@@ -312,6 +318,7 @@ function pick(body) {
   for (const f of ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl']) if (o[f] !== undefined) o[f] = String(o[f]);
   if (o.content !== undefined) o.content = sanitizeHtml(o.content);
   if (o.tags !== undefined) o.tags = cleanTags(o.tags);
+  if (o.content) { const h = pullHashtags(o.content); if (h && h.tags.length) { o.content = h.html; o.tags = cleanTags([...(o.tags || []), ...h.tags]); } }
   for (const f of ['featured', 'published']) if (o[f] !== undefined) o[f] = !!o[f];
   return o;
 }
