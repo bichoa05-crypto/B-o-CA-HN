@@ -42,6 +42,7 @@
   if (!a) { $('#ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
   const sec = secs.find(s => s.id === a.section);
   document.title = a.title + ' - CLB Bóng đá Công An Hà Nội';
+  if (a.image) { const hero = document.querySelector('.article-hero'); hero.classList.add('has-img'); hero.style.backgroundImage = `linear-gradient(180deg,#0000 0%,#1a050466 38%,#1a0504e6 100%),linear-gradient(90deg,#1a0504cc 0%,#1a050433 70%),url("${encodeURI(a.image)}")`; }
   $('#ahead').innerHTML = `<a class="tag" href="section.html?s=${esc(a.section)}">${esc(sec ? sec.name : '')}</a><h1>${esc(a.title)}</h1><time>${fmtDate(a.createdAt)}</time>`;
   let yt = '';
   const m = a.videoUrl && a.videoUrl.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
@@ -50,8 +51,8 @@
     ${a.demo ? '<span class="demo-note">Bài viết mẫu</span>' : ''}
     ${a.summary ? `<p class="lead">${esc(a.summary)}</p>` : ''}
     ${a.video ? `<video src="${esc(a.video)}" controls controlsList="nodownload noplaybackrate" disablepictureinpicture poster="${esc(a.image)}"></video>` : yt}
-    ${!a.video && !yt && a.image ? `<img class="cover" src="${esc(a.image)}" alt="" draggable="false">` : ''}
     <div class="body rich">${/^\s*</.test(a.content) ? a.content : a.content.split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}</div>
+    ${(a.tags || []).length ? `<div class="tags"><span>Hashtag</span>${a.tags.map(g => `<a href="search.html?tag=${encodeURIComponent(g)}">#${esc(g)}</a>`).join('')}</div>` : ''}
     <p class="copyright">© CLB Bóng đá Công An Hà Nội. Nội dung được bảo hộ bản quyền, nghiêm cấm sao chép dưới mọi hình thức khi chưa có sự đồng ý.</p>`;
   el.classList.add('nocopy');
   antiCopy(el, $('#ahead'));

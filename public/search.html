@@ -23,6 +23,15 @@
 <script>
 (async () => {
   const q = (new URLSearchParams(location.search).get('q') || '').trim();
+  const tag = (new URLSearchParams(location.search).get('tag') || '').replace(/^#+/, '').trim();
+  const card = (a, i) => `<a class="n-card" href="${href(a)}"><div class="th">${a.image ? `<img src="${esc(a.image)}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`}${hasVideo(a) ? ICON_PLAY : ''}</div><h3>${esc(a.title)}</h3><time>${fmtDate(a.createdAt)}</time></a>`;
+  if (tag) {
+    document.querySelector('.article-hero h1').textContent = '#' + tag; document.title = '#' + tag + ' - CLB Bóng đá Công An Hà Nội';
+    const list = await getJSON('/api/articles?tag=' + encodeURIComponent(tag), []);
+    $('#res').innerHTML = list.length ? `<b>${list.length}</b> bài viết có hashtag <b>#${esc(tag)}</b>` : `Chưa có bài viết nào có hashtag <b>#${esc(tag)}</b>.`;
+    $('#grid').innerHTML = list.map(card).join('');
+    return;
+  }
   $('#sq').value = q; document.title = (q ? q + ' - ' : '') + 'Tìm kiếm - CLB Bóng đá Công An Hà Nội';
   if (q.length < 2) { $('#res').textContent = 'Nhập ít nhất 2 ký tự để tìm kiếm.'; return; }
   const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase();

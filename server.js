@@ -240,6 +240,7 @@ app.get('/api/articles', wrap(async (req, res) => {
   let list = db.articles.filter(a => a.published);
   if (q.section) list = list.filter(a => a.section === q.section);
   if (q.featured) list = list.filter(a => a.featured);
+  if (q.tag) { const k = normTag(q.tag); list = list.filter(a => (a.tags || []).some(t => normTag(t) === k)); }
   list.sort((a, b) => b.createdAt - a.createdAt);
   if (q.limit) list = list.slice(0, Number(q.limit));
   res.json(list);
@@ -302,12 +303,15 @@ app.post('/api/password', requireAdmin, wrap(async (req, res) => {
 }));
 
 // articles
-const FIELDS = ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'featured', 'published'];
+const FIELDS = ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'featured', 'published', 'tags'];
+const normTag = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/\s+/g, ' ').trim();
+const cleanTags = v => { const out = [], seen = new Set(); (Array.isArray(v) ? v : String(v || '').split(/[#,;\n]+/)).forEach(t => { t = String(t).replace(/^#+/, '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40); const k = normTag(t); if (t && !seen.has(k) && out.length < 12) { seen.add(k); out.push(t); } }); return out; };
 function pick(body) {
   const o = {};
   for (const f of FIELDS) if (body[f] !== undefined) o[f] = body[f];
   for (const f of ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl']) if (o[f] !== undefined) o[f] = String(o[f]);
   if (o.content !== undefined) o.content = sanitizeHtml(o.content);
+  if (o.tags !== undefined) o.tags = cleanTags(o.tags);
   for (const f of ['featured', 'published']) if (o[f] !== undefined) o[f] = !!o[f];
   return o;
 }

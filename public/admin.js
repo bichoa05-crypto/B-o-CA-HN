@@ -79,6 +79,7 @@ function openForm(a) {
   $('#f_section').value = a.section || ($('#filter').value || sections[0].id);
   $('#f_summary').value = a.summary || '';
   rte.setHTML(a.content || '');
+  $('#f_tags').value = (a.tags || []).join(', ');
   $('#f_videoUrl').value = a.videoUrl || '';
   $('#f_featured').checked = !!a.featured;
   $('#f_published').checked = a.id ? !!a.published : true;
@@ -102,7 +103,7 @@ $('#formView').addEventListener('submit', async e => {
   e.preventDefault();
   const body = {
     title: $('#f_title').value.trim(), section: $('#f_section').value, summary: $('#f_summary').value,
-    content: rte.getHTML(), videoUrl: $('#f_videoUrl').value.trim(), image: state.image, video: state.video,
+    content: rte.getHTML(), tags: $('#f_tags').value, videoUrl: $('#f_videoUrl').value.trim(), image: state.image, video: state.video,
     featured: $('#f_featured').checked, published: $('#f_published').checked,
   };
   try {

@@ -289,7 +289,7 @@ img.m-logo{background:none;border:0;border-radius:0}
 .article-hero{position:relative;padding:calc(var(--header) + 48px) var(--gutter) 40px;background:radial-gradient(70% 100% at 85% 0,#a81b15,transparent 70%),#2a0604;color:#fff}
 .article-hero .wrap{max-width:900px}
 .article-hero .tag{display:inline-block;font-family:var(--nav);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;background:var(--red);border-radius:3px}
-.article-hero h1{font-family:var(--anton);font-weight:400;text-transform:uppercase;font-size:clamp(34px,calc(5.6 * var(--vw)),68px);line-height:1.05;margin:16px 0 14px;text-wrap:balance}
+.article-hero h1{font-family:var(--anton);font-weight:400;text-transform:uppercase;font-size:clamp(32px,calc(5 * var(--vw)),62px);line-height:1.24;letter-spacing:.012em;word-spacing:.04em;margin:18px 0 16px;text-wrap:balance}
 .article-hero time{font-size:13px;opacity:.7}
 .article-page{max-width:900px;margin:0 auto;padding:36px var(--gutter) 80px}
 .article-page .lead{font-size:clamp(18px,calc(2 * var(--vw)),21px);font-weight:600;color:var(--ink);line-height:1.55;margin-bottom:26px;padding-left:18px;border-left:4px solid var(--red)}
@@ -571,3 +571,13 @@ a.sq-card{display:block;color:inherit}
 a.h-row{display:grid;color:inherit}
 
 .sp-img{position:relative}
+
+/* tiêu đề bài có ảnh bìa làm nền */
+.article-hero.has-img{background-size:cover;background-position:center 35%;min-height:clamp(380px,calc(56 * var(--vh)),640px);display:flex;align-items:flex-end;padding-bottom:clamp(34px,calc(4 * var(--vw)),56px)}
+.article-hero.has-img .wrap{width:100%}
+.article-hero.has-img h1{text-shadow:0 4px 24px #000a}
+/* hashtag cuối bài */
+.article-page .tags{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:34px 0 0;padding-top:22px;border-top:1px solid var(--line)}
+.article-page .tags span{font-family:var(--nav);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:var(--muted);margin-right:4px}
+.article-page .tags a{display:inline-flex;align-items:center;padding:7px 14px;border-radius:999px;background:#fbe9e6;color:var(--red-600);font-weight:700;font-size:14px;transition:background .2s,color .2s,transform .2s}
+.article-page .tags a:hover{background:var(--red);color:#fff;transform:translateY(-2px)}
