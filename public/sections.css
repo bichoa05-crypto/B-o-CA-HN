@@ -351,3 +351,13 @@ body.pg-media{background:#12090a}
 .co .tx{left:48%;right:5%;top:50%;transform:translateY(-50%)}
 .co .role{white-space:normal}
 @media(max-width:560px){.co{aspect-ratio:auto;min-height:220px}.co .tx{left:46%}}
+
+/* ===== Hàng cuối thiếu thẻ thì tự căn ra giữa (cầu thủ & ban huấn luyện) ===== */
+.pl-grid,.co-grid{display:flex;flex-wrap:wrap;justify-content:center}
+.pl-grid{--n:4;--g:clamp(16px,calc(2.3 * var(--vw)),32px);column-gap:var(--g)}
+.pl-grid>.pl{flex:0 0 calc((100% - (var(--n) - 1) * var(--g)) / var(--n))}
+.co-grid{--n:2;--g:clamp(24px,calc(4.3 * var(--vw)),60px);column-gap:var(--g)}
+.co-grid>.co{flex:0 0 calc((100% - (var(--n) - 1) * var(--g)) / var(--n))}
+.pl-empty{flex-basis:100%}
+@media(max-width:1000px){.pl-grid{--n:3}}
+@media(max-width:760px){.pl-grid{--n:2;--g:14px}.co-grid{--n:1}}
