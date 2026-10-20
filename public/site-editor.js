@@ -28,8 +28,8 @@
     { root: 'pages', key: 'nguoi-ham-mo', page: 'nguoi-ham-mo', title: 'Trang Người hâm mộ – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '4:3'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
     { root: 'pages', key: 'multimedia', page: 'multimedia', title: 'Trang Multimedia – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '3:1'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
     { key: 'shop', title: '6. Cửa hàng chính thức', type: 'object', fields: [TXT('title', 'Tiêu đề'), TXT('subtitle', 'Dòng phụ')],
-      sub: { key: 'products', title: 'Sản phẩm (thứ tự: số 1 là bán chạy nhất)', itemName: 'Sản phẩm', titleOf: o => o.name || 'Sản phẩm', blank: { name: '', price: 0, description: '', image: '' },
-        fields: [TXT('name', 'Tên sản phẩm', true), NUM('price', 'Giá bán (VNĐ)'), AREA('description', 'Mô tả ngắn'), LOGO('image', 'Ảnh sản phẩm (PNG tách nền)')] } },
+      sub: { key: 'products', title: 'Sản phẩm (thứ tự: số 1 là bán chạy nhất)', itemName: 'Sản phẩm', titleOf: o => o.name || 'Sản phẩm', blank: { name: '', price: 0, description: '', sizes: 'S, M, L, XL, XXL', image: '' },
+        fields: [TXT('name', 'Tên sản phẩm', true), NUM('price', 'Giá (VNĐ, để 0 = liên hệ báo giá)'), TXT('sizes', 'Size có sẵn (cách nhau dấu phẩy; để trống = S, M, L, XL, XXL)', true), AREA('description', 'Mô tả ngắn'), LOGO('image', 'Ảnh sản phẩm (PNG tách nền)')] } },
     { key: 'honors', title: '7. Thành tích (Công an Hà Nội FC)', type: 'object', fields: [TXT('title', 'Tiêu đề lớn'), IMG('banner', 'Ảnh banner (cúp, cờ...)', '3:1')],
       sub: { key: 'items', title: 'Danh sách thành tích', itemName: 'Thành tích', titleOf: o => o.year + ' · ' + o.name, blank: { year: '', name: '', result: 'champion' },
         fields: [TXT('year', 'Năm (vd 1962 hoặc 1981-1982)'), TXT('name', 'Tên giải'), { k: 'result', label: 'Thành tích', t: 'select', opts: [['champion', 'Vô địch'], ['runner', 'Á quân'], ['third', 'Hạng ba']] }] } },
@@ -127,7 +127,7 @@
     'lan-bong': 'Trang Lăn bóng: ảnh nền + dòng giới thiệu đầu trang. Dải lịch thi đấu lấy từ mục "Giải đấu" ở tab Trang chủ. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
     'nguoi-ham-mo': 'Trang Người hâm mộ: ảnh khung polaroid (nên ngang 4:3) + dòng giới thiệu. 7 bài mới nhất hiện thành lưới ảnh lớn. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
     'multimedia': 'Trang Multimedia: ảnh nền + dòng giới thiệu. Bài có video (tải lên hoặc link YouTube) được xếp vào mục Video, còn lại vào mục Hình ảnh. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
-    shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
+    shop: 'Cửa hàng không bán trực tiếp: khách bấm "Liên hệ mua", chọn size và gửi yêu cầu; yêu cầu hiện ở tab Đơn hàng, đổi trạng thái "Đã xác nhận" sẽ tự gửi email xác nhận cho khách. Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
     foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và link cho từng logo nhà tài trợ.',
   };
   const mounts = [];

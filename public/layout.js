@@ -16,7 +16,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     </button>
     <div class="cart-group">
-      <a class="icon-btn cart-btn" href="cart.html" aria-label="Giỏ hàng" title="Giỏ hàng">
+      <a class="icon-btn cart-btn" href="shop.html" aria-label="Cửa hàng" title="Cửa hàng">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.5l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg><b class="badge-n" id="cartN" hidden>0</b>
       </a>
       <a class="shop-link" href="shop.html">Cửa hàng</a>
@@ -117,7 +117,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); set
 const bar = $('#searchBar');
 function setSearch(open) { bar.classList.toggle('open', open); $('#searchBtn').setAttribute('aria-expanded', open); if (open) setTimeout(() => $('#q').focus(), 200); }
 $('#searchBtn').onclick = () => setSearch(!bar.classList.contains('open'));
-function cartBadge() { const n = cart.count(), b = $('#cartN'); b.hidden = !n; b.textContent = n > 99 ? '99+' : n; }
+function cartBadge() { const b = $('#cartN'); if (b) b.hidden = true; } // cửa hàng không còn giỏ hàng: mua qua yêu cầu + email
 cartBadge(); document.addEventListener('cart', cartBadge); addEventListener('storage', cartBadge);
 // hiện dần khi cuộn tới (tự tính theo vị trí, chạy đúng cả khi trang bị thu phóng trên Windows)
 let revTick = false;
