@@ -133,18 +133,36 @@ async function renderSidePage(site, all, id, name) {
   const most = (await byViews(list)).slice(0, 5);
   const shown = new Set([feat, ...latest]);
   const more = list.filter(a => !shown.has(a));
-  const tags = hotTags(all, 6);
+  const tags = hotTags(all, 12);
   $('#special').innerHTML = head + `
     <div class="dc-feat rev"><a href="${href(feat)}"><div class="tx">${t2(feat.title, 'h2')}${feat.summary ? `<p>${esc(feat.summary)}</p>` : ''}<time>${dmy(feat.createdAt)}</time></div><div class="ph-wrap">${thumb(feat, 0)}</div></a></div>
     <div class="sd-row">
       <div><div class="dc-head"><h2>Tin mới nhất</h2><div class="ln"><a href="#pgMore" data-all>Xem tất cả</a></div></div>
         <div class="sd-grid">${latest.map((a, i) => acCard(a, i + 1, ' box-c sm')).join('') || '<p class="none">Chưa có bài khác.</p>'}</div></div>
       <aside class="sd-side"><div class="sd-rank"><h2><span>Đọc nhiều nhất</span></h2><ol>${most.map((a, i) => `<li><a href="${href(a)}"><b>${p2(i + 1)}</b><div>${t2(a.title)}<time>${dmy(a.createdAt)}</time></div></a></li>`).join('')}</ol></div>
-        ${tags.length ? `<div class="dc-tags"><h2><span>Tags hot trend</span></h2>${tags.map((t, i) => `<a href="search.html?tag=${encodeURIComponent(t)}" style="--x:${TAG_X[i % TAG_X.length]}px">#${esc(t)}</a>`).join('')}</div>` : ''}</aside>
+        ${tags.length ? '<div class="dc-tags sd-tg"><h2><span>Tags hot trend</span></h2><div id="sdTags"></div></div>' : ''}</aside>
     </div>
   </div>
   <div class="dc-more" id="pgMore"><div class="dc-wrap">${more.length ? '<div class="dc-head"><h2>Bài viết khác</h2><div class="ln"></div></div><div style="height:clamp(16px,calc(2 * var(--vw)),28px)"></div>' : ''}${moreHtml(more)}</div></div>`;
   wireMore(more);
+  if (tags.length) fitSideTags(tags);
+}
+// tags xếp xen kẽ dòng 2 tag / dòng 1 tag; bớt dần tag cuối cho cột phải không dài hơn cột bài viết bên trái
+function fitSideTags(tags) {
+  const box = $('#sdTags'), side = $('.sd-side'), left = $('.sd-row > div');
+  const draw = n => {
+    const rows = []; let i = 0;
+    while (i < n) { const k = rows.length % 2 ? 1 : 2; rows.push(tags.slice(i, Math.min(n, i + k))); i += k; }
+    box.innerHTML = rows.map((r, j) => `<div class="tg-row${j % 2 ? ' one' : ''}">${r.map(t => `<a href="search.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div>`).join('');
+  };
+  const fit = () => {
+    let n = tags.length; draw(n);
+    if (getComputedStyle($('.sd-row')).gridTemplateColumns.split(' ').length < 2) return; // màn hình hẹp: một cột, hiện hết
+    while (n > 1 && side.offsetHeight > left.offsetHeight) draw(--n);
+  };
+  fit();
+  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(fit, 150); });
+  addEventListener('load', fit);
 }
 
 /* ---------- LĂN BÓNG: sân cỏ, lịch thi đấu, bố cục tạp chí thể thao ---------- */
