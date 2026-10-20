@@ -45,7 +45,10 @@
       { name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
     ],
     intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
-    squad: [{ name: 'Filip Nguyen', number: '1', image: '' }, { name: 'Nguyen Quang Hai', number: '19', image: '' }, { name: 'Doan Van Hau', number: '5', image: '' }, { name: 'Cầu thủ 4', number: '10', image: '' }],
+    squad: [{ name: 'Filip Nguyen', number: '1', image: '', pos: 'gk' }, { name: 'Nguyen Quang Hai', number: '19', image: '', pos: 'mf' }, { name: 'Doan Van Hau', number: '5', image: '', pos: 'df' }, { name: 'Cầu thủ 4', number: '10', image: '', pos: 'fw' }],
+    squadPage: { title: 'Đội hình', banner: '' },
+    staff: [{ role: 'Huấn luyện viên trưởng', name: 'Alexandre Polking', image: '' }, { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' }],
+    newsPage: { banner: '' },
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
       { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },

@@ -8,11 +8,13 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,600;1,300;1,800&display=swap" rel="stylesheet">
 <script src="fit.js"></script>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sections.css">
 </head>
 <body data-header="solid">
+<script>{ const s = new URLSearchParams(location.search).get('s'); if (s === 'doi-hinh' || s === 'dong-chay') document.body.classList.add('pg-red', s === 'dong-chay' ? 'pg-news' : 'pg-squad'); }</script>
 <section class="article-hero"><div class="wrap list-wrap"><h1 id="t">Chuyên mục</h1></div></section>
 <main class="list-page" id="main">
   <div id="special"></div>
@@ -22,6 +24,7 @@
 <script src="common.js"></script>
 <script src="sponsors-map.js"></script>
 <script src="layout.js"></script>
+<script src="sections.js"></script>
 <script>
 (async () => {
   const id = new URLSearchParams(location.search).get('s') || '';
@@ -31,9 +34,8 @@
   const name = sec ? sec.name : 'Chuyên mục';
   $('#t').textContent = name; document.title = name + ' - CLB Bóng đá Công An Hà Nội';
   // phần đặc biệt của từng chuyên mục
-  if (id === 'doi-hinh') {
-    $('#special').innerHTML = `<h2 class="sec-h" style="margin-bottom:22px">Cầu thủ</h2><div class="sq-all"><div class="sq-viewport"><div class="sq-track">${site.squad.map(p => `<article class="sq-card"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></article>`).join('')}</div></div></div><h2 class="sec-h" style="margin:44px 0 22px">Bài viết</h2>`;
-  }
+  if (id === 'doi-hinh') return renderSquadPage(site, all);
+  if (id === 'dong-chay') return renderNewsPage(site, all, id, name);
   if (id === 've-chung-toi') {
     const h = site.honors;
     $('#special').innerHTML = `<div class="about-intro"><div class="glitch" style="font-size:clamp(34px,calc(7 * var(--vw)),96px)"><span>${esc(site.intro.line1)}</span><span>${esc(site.intro.line2)}</span></div></div>

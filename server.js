@@ -40,10 +40,16 @@ const DEFAULT_SITE = {
   ],
   intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
   squad: [
-    { name: 'Filip Nguyen', number: '1', image: '' },
-    { name: 'Nguyen Quang Hai', number: '19', image: '' },
-    { name: 'Doan Van Hau', number: '5', image: '' },
+    { name: 'Filip Nguyen', number: '1', image: '', pos: 'gk' },
+    { name: 'Nguyen Quang Hai', number: '19', image: '', pos: 'mf' },
+    { name: 'Doan Van Hau', number: '5', image: '', pos: 'df' },
   ],
+  squadPage: { title: 'Đội hình', banner: '' },
+  staff: [
+    { role: 'Huấn luyện viên trưởng', name: 'Alexandre Polking', image: '' },
+    { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' },
+  ],
+  newsPage: { banner: '' },
   multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
@@ -150,6 +156,9 @@ function migrate(db) {
     if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
     if (p.price === undefined) { p.price = 0; p.description = p.description || ''; changed = true; }
   }
+  if (db.site && !db.site.squadPage) { db.site.squadPage = { ...DEFAULT_SITE.squadPage }; changed = true; }
+  if (db.site && !Array.isArray(db.site.staff)) { db.site.staff = DEFAULT_SITE.staff.map(x => ({ ...x })); changed = true; }
+  if (db.site && !db.site.newsPage) { db.site.newsPage = { ...DEFAULT_SITE.newsPage }; changed = true; }
   if (!db.site) { db.site = DEFAULT_SITE; changed = true; }
   return changed;
 }
@@ -250,6 +259,19 @@ app.get('/api/articles/:id', wrap(async (req, res) => {
   const a = (await loadDb(adm)).articles.find(x => x.id === req.params.id && (x.published || adm));
   a ? res.json(a) : res.status(404).json({ error: 'Không tìm thấy' });
 }));
+
+// lượt xem (kho riêng, mỗi IP chỉ tính 1 lần / bài / 6 giờ)
+const viewSeen = new Map();
+app.post('/api/articles/:id/view', wrap(async (req, res) => {
+  const id = String(req.params.id).slice(0, 40), k = req.ip + '|' + id, now = Date.now();
+  if (!/^[\w-]{2,40}$/.test(id) || now - (viewSeen.get(k) || 0) < 6 * 3600e3) return res.json({ ok: true });
+  if (viewSeen.size > 50000) viewSeen.clear();
+  viewSeen.set(k, now);
+  if (!(await loadDb()).articles.some(a => a.id === id && a.published)) return res.json({ ok: true });
+  await mutate('views', {}, v => { v[id] = (v[id] || 0) + 1; });
+  res.json({ ok: true });
+}));
+app.get('/api/views', wrap(async (req, res) => res.json(await readStore('views', {}))));
 
 // auth
 const setSession = (req, res, role, id) => res.cookie('token', makeToken(role, id), { httpOnly: true, sameSite: 'strict', secure: req.secure, maxAge: 12 * 3600 * 1000 });
@@ -370,13 +392,17 @@ function cleanAbout(a = {}) {
     stadium: { name: T(st.name, 80), capacity: T(st.capacity, 40), address: T(st.address, 200), tag: T(st.tag, 200), mapQuery: T(st.mapQuery, 200), image: MEDIA(st.image) },
   };
 }
+const POS = ['gk', 'df', 'mf', 'fw'];
 function cleanSite(i = {}) {
   const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
   return {
     hero: L(i.hero, 10, x => ({ articleId: /^[\w-]{2,24}$/.test(x.articleId || '') ? x.articleId : '', image: MEDIA(x.image), line1: T(x.line1, 120), line2: T(x.line2, 120), button: T(x.button, 40), link: LINK(x.link) })),
     tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl) })),
     intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
-    squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image) })),
+    squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image), pos: POS.includes(x.pos) ? x.pos : '' })),
+    squadPage: { title: T((i.squadPage || {}).title, 40), banner: MEDIA((i.squadPage || {}).banner) },
+    staff: L(i.staff, 30, x => ({ role: T(x.role, 60), name: T(x.name, 60), image: MEDIA(x.image) })),
+    newsPage: { banner: MEDIA((i.newsPage || {}).banner) },
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
     shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },

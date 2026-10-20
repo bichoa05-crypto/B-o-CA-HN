@@ -37,6 +37,7 @@
   let a = null;
   const r = await fetch('/api/articles/' + encodeURIComponent(id)).catch(() => null);
   if (r && r.ok) a = await r.json();
+  if (a) fetch('/api/articles/' + encodeURIComponent(a.id) + '/view', { method: 'POST' }).catch(() => {});
   const pool = demoOr(all);
   if (!a) a = pool.find(x => x.id === id) || null;
   if (!a) { $('#ahead').innerHTML = '<h1>Không tìm thấy bài viết</h1>'; el.innerHTML = '<a class="back" href="index.html">← Về trang chủ</a>'; return; }
