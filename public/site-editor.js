@@ -14,7 +14,7 @@
       hint: 'Logo đội nên là ảnh PNG nền trong suốt, hình vuông.',
       fields: [TXT('name', 'Tên giải đấu', true), TXT('homeName', 'Đội nhà'), LOGO('homeLogo', 'Logo đội nhà'), TXT('awayName', 'Đội khách'), LOGO('awayLogo', 'Logo đội khách'), TXT('date', 'Ngày (vd 18/10)'), TXT('time', 'Giờ (vd 19:15)'), TXT('ticketUrl', 'Link mua vé', true)] },
     { key: 'intro', title: '3. Dòng chữ lớn "Since 1956"', type: 'object', fields: [TXT('line1', 'Dòng 1'), TXT('line2', 'Dòng 2')] },
-    { key: 'squad', title: '4. Đội hình', type: 'list', itemName: 'Cầu thủ', titleOf: o => (o.number ? '#' + o.number + ' ' : '') + (o.name || 'Cầu thủ'), blank: { name: '', number: '', image: '', pos: '' },
+    { key: 'squad', title: 'Trang Đội hình – Danh sách cầu thủ (hiện cả ở trang chủ)', type: 'list', itemName: 'Cầu thủ', titleOf: o => (o.number ? '#' + o.number + ' ' : '') + (o.name || 'Cầu thủ'), blank: { name: '', number: '', image: '', pos: '' },
       hint: 'Ảnh cầu thủ nên là ảnh PNG đã tách nền (nửa người), dọc.',
       fields: [TXT('name', 'Tên cầu thủ'), TXT('number', 'Số áo'), { k: 'pos', label: 'Vị trí (để lọc ở trang Đội hình)', t: 'select', opts: [['', '— Chưa chọn —'], ['gk', 'Thủ môn'], ['df', 'Hậu vệ'], ['mf', 'Tiền vệ'], ['fw', 'Tiền đạo']] }, LOGO('image', 'Ảnh cầu thủ (PNG tách nền)')] },
     { key: 'squadPage', title: 'Trang Đội hình – ảnh tập thể đầu trang', type: 'object', fields: [TXT('title', 'Chữ lớn trên ảnh (vd Đội hình)'), IMG('banner', 'Ảnh tập thể đội (ngang)', '2.6:1')] },
@@ -112,11 +112,13 @@
   }
 
   // mỗi tab của admin = một trang web; mỗi khu vực thuộc đúng một trang
-  const PAGE_OF = k => ({ about: 'about', trophies: 'about', history: 'about', leaders: 'about', stadium: 'about', shop: 'shop', footer: 'foot', sponsors: 'foot' }[k] || 'home');
+  const PAGE_OF = k => ({ about: 'about', trophies: 'about', history: 'about', leaders: 'about', stadium: 'about', shop: 'shop', footer: 'foot', sponsors: 'foot', squad: 'squad', squadPage: 'squad', staff: 'squad', newsPage: 'news' }[k] || 'home');
   const secPage = sec => PAGE_OF(sec.root === 'about' ? 'about' : sec.key);
   const HINT = {
-    home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, đội hình, banner Multimedia, thành tích; kèm ảnh đầu trang + ban huấn luyện của trang Đội hình và ảnh nền trang Dòng chảy. Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
-    about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh.',
+    home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, banner Multimedia, thành tích (danh sách cầu thủ sửa ở tab Đội hình). Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
+    about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    squad: 'Trang Đội hình: danh sách cầu thủ (hiện cả ở trang chủ), ảnh tập thể đầu trang, ban huấn luyện. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    news: 'Trang Dòng chảy: ảnh nền đầu trang. Bài nổi bật là bài đánh dấu "Tin nổi bật" mới nhất (không có thì lấy bài mới nhất); bài viết của chuyên mục nằm ở danh sách bên dưới.',
     shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
     foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và link cho từng logo nhà tài trợ.',
   };
@@ -127,7 +129,7 @@
     root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, HINT[page] + ' Sửa xong bấm "Lưu thay đổi" ở cuối trang.'));
     let n = 0;
     SCHEMA.filter(sec => secPage(sec) === page).forEach(sec => {
-      const t0 = sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang "Về chúng tôi" – /, ''), title = ++n + '. ' + t0.charAt(0).toUpperCase() + t0.slice(1);
+      const t0 = sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang (?:"Về chúng tôi"|Đội hình|Dòng chảy) – /, ''), title = ++n + '. ' + t0.charAt(0).toUpperCase() + t0.slice(1);
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
       const base = sec.root ? data[sec.root] : data;
@@ -163,7 +165,8 @@
     if (!data) { data = await fetch('/api/site').then(r => r.json()); normalize(); }
     buildInto(el, page);
   }
-  [['site', 'home'], ['about', 'about'], ['shop', 'shop'], ['foot', 'foot']].forEach(([tab, page]) => {
+  window.mountSiteEditor = mount;
+  [['site', 'home'], ['shop', 'shop'], ['foot', 'foot']].forEach(([tab, page]) => {
     const el = document.getElementById(tab);
     document.querySelector('.tab[data-tab="' + tab + '"]').addEventListener('click', () => { if (!mounts.some(m => m[0] === el)) mount(el, page); });
   });
