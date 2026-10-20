@@ -340,3 +340,14 @@ body.pg-media{background:#12090a}
 
 .pl{aspect-ratio:3/4}
 .pl .box.pcard{position:absolute;inset:0;border:0;clip-path:none}
+
+/* ===== Ban huấn luyện: ảnh lấp đầy nửa trái thẻ, chữ căn giữa theo chiều dọc ===== */
+.co .box{clip-path:none;overflow:hidden;isolation:isolate;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.co:hover .box{transform:translateY(-5px);box-shadow:0 24px 40px -20px #8b0706}
+.co .box>img{left:0;top:0;bottom:0;width:46%;height:100%;object-fit:cover;object-position:50% 15%;transition:transform .7s var(--ease);-webkit-mask-image:linear-gradient(90deg,#000 68%,#0000 100%);mask-image:linear-gradient(90deg,#000 68%,#0000 100%)}
+.co:hover .box>img{transform:scale(1.04)}
+.co .sil{left:6%;width:32%;height:88%}
+.co .wm{left:auto;right:-6%;top:50%;width:52%;transform:translateY(-50%)}
+.co .tx{left:48%;right:5%;top:50%;transform:translateY(-50%)}
+.co .role{white-space:normal}
+@media(max-width:560px){.co{aspect-ratio:auto;min-height:220px}.co .tx{left:46%}}
