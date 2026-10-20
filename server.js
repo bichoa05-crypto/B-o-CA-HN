@@ -50,6 +50,12 @@ const DEFAULT_SITE = {
     { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' },
   ],
   newsPage: { banner: '' },
+  pages: {
+    'ben-le-san-co': { banner: '', intro: 'Những câu chuyện phía sau trận đấu: đời thường cầu thủ, hậu trường và văn hoá CLB.' },
+    'lan-bong': { banner: '', intro: 'Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.' },
+    'nguoi-ham-mo': { banner: '', intro: 'Tiếp lửa cho đội bóng – nơi những trái tim đỏ cùng chung nhịp đập.' },
+    'multimedia': { banner: '', intro: 'Video, hình ảnh và những khoảnh khắc đáng nhớ của CLB Công An Hà Nội.' },
+  },
   multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
@@ -80,6 +86,7 @@ const DEFAULT_SITE = {
   },
 };
 
+const PAGE_KEYS = Object.keys(DEFAULT_SITE.pages); // trang chuyên mục có ảnh nền + dòng giới thiệu riêng
 const { sanitizeHtml, stripHtml } = require('./lib/sanitize-html');
 const ABOUT_DEFAULT = require('./public/about-default.js');
 const SPONSOR_MAP = require('./public/sponsors-map.js');
@@ -159,6 +166,7 @@ function migrate(db) {
   if (db.site && !db.site.squadPage) { db.site.squadPage = { ...DEFAULT_SITE.squadPage }; changed = true; }
   if (db.site && !Array.isArray(db.site.staff)) { db.site.staff = DEFAULT_SITE.staff.map(x => ({ ...x })); changed = true; }
   if (db.site && !db.site.newsPage) { db.site.newsPage = { ...DEFAULT_SITE.newsPage }; changed = true; }
+  if (db.site) for (const k of PAGE_KEYS) { db.site.pages = db.site.pages || {}; if (!db.site.pages[k]) { db.site.pages[k] = { ...DEFAULT_SITE.pages[k] }; changed = true; } }
   if (!db.site) { db.site = DEFAULT_SITE; changed = true; }
   return changed;
 }
@@ -403,6 +411,7 @@ function cleanSite(i = {}) {
     squadPage: { title: T((i.squadPage || {}).title, 40), banner: MEDIA((i.squadPage || {}).banner) },
     staff: L(i.staff, 30, x => ({ role: T(x.role, 60), name: T(x.name, 60), image: MEDIA(x.image) })),
     newsPage: { banner: MEDIA((i.newsPage || {}).banner) },
+    pages: Object.fromEntries(PAGE_KEYS.map(k => { const p = (i.pages || {})[k] || {}; return [k, { banner: MEDIA(p.banner), intro: T(p.intro, 240) }]; })),
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
     shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },

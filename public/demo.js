@@ -49,6 +49,12 @@
     squadPage: { title: 'Đội hình', banner: '' },
     staff: [{ role: 'Huấn luyện viên trưởng', name: 'Alexandre Polking', image: '' }, { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' }],
     newsPage: { banner: '' },
+    pages: {
+      'ben-le-san-co': { banner: '', intro: 'Những câu chuyện phía sau trận đấu: đời thường cầu thủ, hậu trường và văn hoá CLB.' },
+      'lan-bong': { banner: '', intro: 'Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.' },
+      'nguoi-ham-mo': { banner: '', intro: 'Tiếp lửa cho đội bóng – nơi những trái tim đỏ cùng chung nhịp đập.' },
+      'multimedia': { banner: '', intro: 'Video, hình ảnh và những khoảnh khắc đáng nhớ của CLB Công An Hà Nội.' },
+    },
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
       { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },

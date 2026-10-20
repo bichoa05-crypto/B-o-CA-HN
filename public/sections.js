@@ -95,3 +95,111 @@ async function renderNewsPage(site, all, id, name) {
   if ($('#readMore')) $('#readMore').onclick = () => step(6);
   document.querySelectorAll('[data-all]').forEach(a => a.onclick = e => { e.preventDefault(); step(more.length); $('#dcMore').scrollIntoView({ behavior: 'smooth' }); });
 }
+
+/* ---------- dùng chung cho 4 trang Bên lề sân cỏ, Lăn bóng, Người hâm mộ, Multimedia ---------- */
+const secList = (all, id) => demoOr(all).filter(a => a.section === id).sort((a, b) => b.createdAt - a.createdAt);
+const hotTags = (all, n = 9) => {
+  const cnt = new Map();
+  demoOr(all).forEach(a => (a.tags || []).forEach(t => { const k = String(t).trim(); if (k) cnt.set(k, (cnt.get(k) || 0) + 1); }));
+  return [...cnt].sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]);
+};
+const byViews = async list => { const v = await getJSON('/api/views', {}); return [...list].sort((a, b) => (v[b.id] || 0) - (v[a.id] || 0) || b.createdAt - a.createdAt); };
+const pageCfg = (site, id) => ((site.pages || {})[id]) || {};
+const bgStyle = img => img ? ` style="background-image:url('${encodeURI(img)}')"` : '';
+// thẻ ảnh phủ chữ (tiêu đề nằm trên ảnh)
+const ovCard = (a, i, cls = '') => `<a class="ov${cls}" href="${href(a)}">${thumb(a, i)}<div class="ov-tx">${t2(a.title)}<time>${dmy(a.createdAt)}</time></div></a>`;
+// lưới "còn lại" + nút Đọc thêm
+const moreHtml = (more, cls = '') => `<div class="ac-grid${cls}" id="moreGrid"></div>${more.length ? '<button type="button" class="btn-read" id="readMore">Đọc thêm</button>' : ''}`;
+function wireMore(more, card = acCard, k0 = 6) {
+  let n = 0;
+  const step = k => {
+    const add = more.slice(n, n + k);
+    $('#moreGrid').insertAdjacentHTML('beforeend', add.map((a, i) => card(a, n + i)).join('')); n += add.length;
+    if (n >= more.length && $('#readMore')) $('#readMore').remove();
+  };
+  if ($('#readMore')) $('#readMore').onclick = () => step(k0);
+  document.querySelectorAll('[data-all]').forEach(a => a.onclick = e => { e.preventDefault(); step(more.length); $('#pgMore').scrollIntoView({ behavior: 'smooth' }); });
+  step(k0);
+}
+const emptyMsg = '<p class="dc-empty">Chưa có bài viết trong chuyên mục này.</p>';
+
+/* ---------- BÊN LỀ SÂN CỎ: gần giống Dòng chảy, bài nổi bật đảo chiều + bảng xếp hạng đọc nhiều ---------- */
+async function renderSidePage(site, all, id, name) {
+  const cfg = pageCfg(site, id), list = secList(all, id);
+  const head = `<section class="dc-hero side"><div class="bg${cfg.banner ? '' : ' none'}"${bgStyle(cfg.banner)}></div><h1 class="dc-title">${esc(name)}</h1>${cfg.intro ? `<p class="dc-intro">${esc(cfg.intro)}</p>` : ''}</section><div class="dc-wrap">`;
+  if (!list.length) { $('#special').innerHTML = head + emptyMsg + '</div>'; return; }
+  const feat = list.find(a => a.featured) || list[0];
+  const latest = list.filter(a => a !== feat).slice(0, 4);
+  const most = (await byViews(list)).slice(0, 5);
+  const shown = new Set([feat, ...latest]);
+  const more = list.filter(a => !shown.has(a));
+  const tags = hotTags(all, 12);
+  $('#special').innerHTML = head + `
+    <div class="dc-feat rev"><a href="${href(feat)}"><div class="tx">${t2(feat.title, 'h2')}${feat.summary ? `<p>${esc(feat.summary)}</p>` : ''}<time>${dmy(feat.createdAt)}</time></div><div class="ph-wrap">${thumb(feat, 0)}</div></a></div>
+    <div class="sd-row">
+      <div><div class="dc-head"><h2>Tin mới nhất</h2><div class="ln"><a href="#pgMore" data-all>Xem tất cả</a></div></div>
+        <div class="sd-grid">${latest.map((a, i) => acCard(a, i + 1, ' box-c sm')).join('') || '<p class="none">Chưa có bài khác.</p>'}</div></div>
+      <aside class="sd-rank"><h2><span>Đọc nhiều nhất</span></h2><ol>${most.map((a, i) => `<li><a href="${href(a)}"><b>${p2(i + 1)}</b><div>${t2(a.title)}<time>${dmy(a.createdAt)}</time></div></a></li>`).join('')}</ol></aside>
+    </div>
+  </div>
+  ${tags.length ? `<section class="sd-tags"><div class="dc-wrap"><h2>Tags hot trend</h2><div>${tags.map(t => `<a href="search.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div></div></section>` : ''}
+  <div class="dc-more" id="pgMore"><div class="dc-wrap">${more.length ? '<div class="dc-head"><h2>Bài viết khác</h2><div class="ln"></div></div><div style="height:clamp(16px,calc(2 * var(--vw)),28px)"></div>' : ''}${moreHtml(more)}</div></div>`;
+  wireMore(more);
+}
+
+/* ---------- LĂN BÓNG: sân cỏ, lịch thi đấu, bố cục tạp chí thể thao ---------- */
+const teamLogo = (src, n) => src ? `<img src="${esc(src)}" alt="${esc(n)}" loading="lazy">` : `<span class="tl">${esc(String(n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase())}</span>`;
+async function renderMatchPage(site, all, id, name) {
+  const cfg = pageCfg(site, id), list = secList(all, id), games = (site.tournaments || []).slice(0, 4);
+  const hero = `<section class="lb-hero">${cfg.banner ? `<div class="bg"${bgStyle(cfg.banner)}></div>` : ''}<div class="pitch" aria-hidden="true"></div>
+    <div class="dc-wrap"><span class="lb-kick">Mùa giải ${new Date().getFullYear()}</span><h1 class="lb-title">${esc(name)}</h1>${cfg.intro ? `<p class="lb-intro">${esc(cfg.intro)}</p>` : ''}</div></section>`;
+  const fixtures = games.length ? `<section class="lb-fix"><div class="dc-wrap"><div class="lb-fix-grid">${games.map(g => `<article class="fx">
+    <h3>${esc(g.name)}</h3>
+    <div class="fx-m"><div class="tm">${teamLogo(g.homeLogo, g.homeName)}<span>${esc(g.homeName)}</span></div><div class="fx-t"><b>${esc(g.time || 'VS')}</b><span>${esc(g.date)}</span></div><div class="tm">${teamLogo(g.awayLogo, g.awayName)}<span>${esc(g.awayName)}</span></div></div>
+    ${safeLink(g.ticketUrl) !== '#' ? `<a class="fx-b" href="${esc(safeLink(g.ticketUrl))}" target="_blank" rel="noopener">Mua vé</a>` : '<span class="fx-b off">Sắp mở bán vé</span>'}</article>`).join('')}</div></div></section>` : '';
+  if (!list.length) { $('#special').innerHTML = hero + fixtures + `<div class="dc-wrap">${emptyMsg}</div>`; return; }
+  const lead = list.find(a => a.featured) || list[0];
+  const side = list.filter(a => a !== lead).slice(0, 2);
+  const more = list.filter(a => a !== lead && !side.includes(a));
+  $('#special').innerHTML = hero + fixtures + `<div class="dc-wrap lb-body">
+    <h2 class="dh-h"><b>Tin trận đấu</b></h2>
+    <div class="lb-mag">${ovCard(lead, 0, ' big')}${side.length ? `<div class="col">${side.map((a, i) => ovCard(a, i + 1)).join('')}</div>` : ''}</div>
+    <div id="pgMore" class="lb-more">${more.length ? '<h2 class="dh-h"><b>Tin khác</b></h2>' : ''}${moreHtml(more)}</div></div>`;
+  wireMore(more);
+}
+
+/* ---------- NGƯỜI HÂM MỘ: ấm áp, lưới bento ---------- */
+async function renderFansPage(site, all, id, name) {
+  const cfg = pageCfg(site, id), list = secList(all, id);
+  const hero = `<section class="fm-hero"><div class="dc-wrap fm-in">
+    <div class="fm-tx"><span class="fm-kick">Cầu thủ thứ 12</span><h1 class="fm-title">${esc(name)}</h1>${cfg.intro ? `<p>${esc(cfg.intro)}</p>` : ''}</div>
+    <div class="fm-pic"><span class="fm-12" aria-hidden="true">12</span><div class="fm-frame">${cfg.banner ? `<img src="${esc(cfg.banner)}" alt="">` : '<div class="ph p1"></div>'}</div></div>
+  </div></section>`;
+  if (!list.length) { $('#special').innerHTML = hero + `<div class="dc-wrap">${emptyMsg}</div>`; return; }
+  const bento = list.slice(0, 7), more = list.slice(7);
+  $('#special').innerHTML = hero + `<div class="dc-wrap fm-body">
+    <div class="dc-head"><h2>Câu chuyện người hâm mộ</h2><div class="ln"><a href="#pgMore" data-all>Xem tất cả</a></div></div>
+    <div class="fm-bento">${bento.map((a, i) => ovCard(a, i, ' b' + i)).join('')}</div>
+    <div id="pgMore" class="fm-more">${moreHtml(more)}</div></div>`;
+  wireMore(more);
+}
+
+/* ---------- MULTIMEDIA: nền tối, video lớn + danh sách phát, lọc Video/Ảnh ---------- */
+async function renderMediaPage(site, all, id, name) {
+  const cfg = pageCfg(site, id), full = secList(all, id);
+  $('#special').innerHTML = `<section class="mm-hero">${cfg.banner ? `<div class="bg"${bgStyle(cfg.banner)}></div>` : ''}<div class="dc-wrap"><h1 class="mm-title">${esc(name)}</h1>${cfg.intro ? `<p class="mm-intro">${esc(cfg.intro)}</p>` : ''}
+    <div class="mm-tabs"><button type="button" class="on" data-f="">Tất cả</button><button type="button" data-f="v">Video</button><button type="button" data-f="p">Hình ảnh</button></div></div></section>
+    <div class="dc-wrap mm-body" id="mmBody"></div>`;
+  const mmCard = (a, i) => `<a class="mc" href="${href(a)}"><div class="th">${thumb(a, i)}<span class="tag">${hasVideo(a) ? 'Video' : 'Ảnh'}</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`;
+  const draw = f => {
+    const list = full.filter(a => !f || (f === 'v') === hasVideo(a));
+    if (!list.length) { $('#mmBody').innerHTML = '<p class="dc-empty">Chưa có nội dung.</p>'; return; }
+    const top = list[0], pl = list.slice(1, 5), more = list.slice(5);
+    $('#mmBody').innerHTML = `<div class="mm-top"><a class="mm-main" href="${href(top)}">${thumb(top, 0)}<div class="ov-tx">${t2(top.title)}<time>${dmy(top.createdAt)}</time></div></a>
+      ${pl.length ? `<div class="mm-pl"><h2>Tiếp theo</h2>${pl.map((a, i) => `<a href="${href(a)}"><div class="th">${thumb(a, i + 1)}</div><div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></div></a>`).join('')}</div>` : ''}</div>
+      <div id="pgMore">${more.length ? '<h2 class="mm-h">Thư viện</h2>' : ''}${moreHtml(more, ' mm-grid')}</div>`;
+    wireMore(more, mmCard, 9);
+  };
+  document.querySelectorAll('.mm-tabs button').forEach(b => b.onclick = () => { document.querySelectorAll('.mm-tabs button').forEach(x => x.classList.toggle('on', x === b)); draw(b.dataset.f); });
+  draw('');
+}

@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="sections.css">
 </head>
 <body data-header="solid">
-<script>{ const s = new URLSearchParams(location.search).get('s'); if (s === 'doi-hinh' || s === 'dong-chay') document.body.classList.add('pg-red', s === 'dong-chay' ? 'pg-news' : 'pg-squad'); }</script>
+<script>{ const c = { 'doi-hinh': 'pg-squad', 'dong-chay': 'pg-news', 'ben-le-san-co': 'pg-news', 'lan-bong': 'pg-match', 'nguoi-ham-mo': 'pg-fans', multimedia: 'pg-media' }[new URLSearchParams(location.search).get('s')]; if (c) document.body.classList.add('pg-red', c); }</script>
 <section class="article-hero"><div class="wrap list-wrap"><h1 id="t">Chuyên mục</h1></div></section>
 <main class="list-page" id="main">
   <div id="special"></div>
@@ -36,6 +36,10 @@
   // phần đặc biệt của từng chuyên mục
   if (id === 'doi-hinh') return renderSquadPage(site, all);
   if (id === 'dong-chay') return renderNewsPage(site, all, id, name);
+  if (id === 'ben-le-san-co') return renderSidePage(site, all, id, name);
+  if (id === 'lan-bong') return renderMatchPage(site, all, id, name);
+  if (id === 'nguoi-ham-mo') return renderFansPage(site, all, id, name);
+  if (id === 'multimedia') return renderMediaPage(site, all, id, name);
   if (id === 've-chung-toi') {
     const h = site.honors;
     $('#special').innerHTML = `<div class="about-intro"><div class="glitch" style="font-size:clamp(34px,calc(7 * var(--vw)),96px)"><span>${esc(site.intro.line1)}</span><span>${esc(site.intro.line2)}</span></div></div>

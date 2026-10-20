@@ -23,6 +23,10 @@
       fields: [TXT('role', 'Chức danh (vd Huấn luyện viên trưởng)'), TXT('name', 'Họ tên'), LOGO('image', 'Ảnh (PNG tách nền)')] },
     { key: 'newsPage', title: 'Trang Dòng chảy – ảnh nền đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền (cờ, cổ động viên...; tự chuyển sang đen trắng)', '3:1')] },
     { key: 'multimedia', title: '5. Banner Multimedia', type: 'object', fields: [IMG('image', 'Ảnh nền', '1.45:1'), TXT('button', 'Chữ nút vàng'), TXT('link', 'Link nút')] },
+    { root: 'pages', key: 'ben-le-san-co', page: 'ben-le-san-co', title: 'Trang Bên lề sân cỏ – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '3:1'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
+    { root: 'pages', key: 'lan-bong', page: 'lan-bong', title: 'Trang Lăn bóng – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '3:1'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
+    { root: 'pages', key: 'nguoi-ham-mo', page: 'nguoi-ham-mo', title: 'Trang Người hâm mộ – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '4:3'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
+    { root: 'pages', key: 'multimedia', page: 'multimedia', title: 'Trang Multimedia – đầu trang', type: 'object', fields: [IMG('banner', 'Ảnh nền đầu trang', '3:1'), AREA('intro', 'Dòng giới thiệu dưới tiêu đề', 2)] },
     { key: 'shop', title: '6. Cửa hàng chính thức', type: 'object', fields: [TXT('title', 'Tiêu đề'), TXT('subtitle', 'Dòng phụ')],
       sub: { key: 'products', title: 'Sản phẩm (thứ tự: số 1 là bán chạy nhất)', itemName: 'Sản phẩm', titleOf: o => o.name || 'Sản phẩm', blank: { name: '', price: 0, description: '', image: '' },
         fields: [TXT('name', 'Tên sản phẩm', true), NUM('price', 'Giá bán (VNĐ)'), AREA('description', 'Mô tả ngắn'), LOGO('image', 'Ảnh sản phẩm (PNG tách nền)')] } },
@@ -113,12 +117,16 @@
 
   // mỗi tab của admin = một trang web; mỗi khu vực thuộc đúng một trang
   const PAGE_OF = k => ({ about: 'about', trophies: 'about', history: 'about', leaders: 'about', stadium: 'about', shop: 'shop', footer: 'foot', sponsors: 'foot', squad: 'squad', squadPage: 'squad', staff: 'squad', newsPage: 'news' }[k] || 'home');
-  const secPage = sec => PAGE_OF(sec.root === 'about' ? 'about' : sec.key);
+  const secPage = sec => sec.page || PAGE_OF(sec.root === 'about' ? 'about' : sec.key);
   const HINT = {
     home: 'Trang chủ: banner, giải đấu, dòng chữ lớn, banner Multimedia, thành tích (danh sách cầu thủ sửa ở tab Đội hình). Các bài ở Dòng chảy, Lăn bóng, Bên lề sân cỏ, Người hâm mộ, Multimedia được đăng ở tab "Bài viết".',
     about: 'Trang "Về chúng tôi": giới thiệu, danh hiệu, lịch sử, ban lãnh đạo, sân nhà. Sửa chữ, thêm/xoá/đổi thứ tự mục, thay ảnh. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
     squad: 'Trang Đội hình: danh sách cầu thủ (hiện cả ở trang chủ), ảnh tập thể đầu trang, ban huấn luyện. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
     news: 'Trang Dòng chảy: ảnh nền đầu trang. Bài nổi bật là bài đánh dấu "Tin nổi bật" mới nhất (không có thì lấy bài mới nhất); bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    'ben-le-san-co': 'Trang Bên lề sân cỏ: ảnh nền + dòng giới thiệu đầu trang. Bài nổi bật là bài đánh dấu "Tin nổi bật" mới nhất (không có thì lấy bài mới nhất). Bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    'lan-bong': 'Trang Lăn bóng: ảnh nền + dòng giới thiệu đầu trang. Dải lịch thi đấu lấy từ mục "Giải đấu" ở tab Trang chủ. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    'nguoi-ham-mo': 'Trang Người hâm mộ: ảnh khung polaroid (nên ngang 4:3) + dòng giới thiệu. 7 bài mới nhất hiện thành lưới ảnh lớn. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
+    'multimedia': 'Trang Multimedia: ảnh nền + dòng giới thiệu. Bài có video (tải lên hoặc link YouTube) được xếp vào mục Video, còn lại vào mục Hình ảnh. Bài viết của chuyên mục nằm ở danh sách bên dưới.',
     shop: 'Trang Cửa hàng: tiêu đề và sản phẩm (hiện ở trang chủ và trang Cửa hàng).',
     foot: 'Chân trang (hiện ở mọi trang): thông tin liên hệ, giấy phép, mạng xã hội và link cho từng logo nhà tài trợ.',
   };
@@ -129,7 +137,7 @@
     root.append(h('p', { class: 'hint', style: 'margin:14px 0 12px' }, HINT[page] + ' Sửa xong bấm "Lưu thay đổi" ở cuối trang.'));
     let n = 0;
     SCHEMA.filter(sec => secPage(sec) === page).forEach(sec => {
-      const t0 = sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang (?:"Về chúng tôi"|Đội hình|Dòng chảy) – /, ''), title = ++n + '. ' + t0.charAt(0).toUpperCase() + t0.slice(1);
+      const t0 = sec.title.replace(/^\d+\.\s*/, '').replace(/^Trang [^–]+ – /, ''), title = ++n + '. ' + t0.charAt(0).toUpperCase() + t0.slice(1);
       const box = h('div', { class: 'sbody' });
       if (sec.hint) box.append(h('p', { class: 'hint', style: 'margin-top:12px' }, sec.hint));
       const base = sec.root ? data[sec.root] : data;
@@ -156,6 +164,8 @@
     data.squadPage = { title: 'Đội hình', banner: '', ...(data.squadPage || {}) };
     if (!Array.isArray(data.staff)) data.staff = [];
     data.newsPage = { banner: '', ...(data.newsPage || {}) };
+    data.pages = data.pages || {};
+    data.pages['ben-le-san-co'] = { banner: '', intro: '', ...(data.pages['ben-le-san-co'] || {}) }; data.pages['lan-bong'] = { banner: '', intro: '', ...(data.pages['lan-bong'] || {}) }; data.pages['nguoi-ham-mo'] = { banner: '', intro: '', ...(data.pages['nguoi-ham-mo'] || {}) }; data.pages['multimedia'] = { banner: '', intro: '', ...(data.pages['multimedia'] || {}) };
     (data.squad || []).forEach(p => { if (p.pos === undefined) p.pos = ''; });
     data.about = { ...D, ...(data.about || {}) }; data.about.stadium = { ...D.stadium, ...(data.about.stadium || {}) };
   }

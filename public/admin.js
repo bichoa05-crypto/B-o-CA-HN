@@ -45,7 +45,7 @@ $('#pwBtn').onclick = async () => {
 
 // ---------- tabs ----------
 // mỗi chuyên mục một tab: danh sách bài của chuyên mục + phần cài đặt riêng của trang đó (nếu có)
-const SEC_SETTINGS = { 've-chung-toi': 'about', 'doi-hinh': 'squad', 'dong-chay': 'news' };
+const SEC_SETTINGS = { 've-chung-toi': 'about', 'doi-hinh': 'squad', 'dong-chay': 'news', 'ben-le-san-co': 'ben-le-san-co', 'lan-bong': 'lan-bong', 'nguoi-ham-mo': 'nguoi-ham-mo', multimedia: 'multimedia' };
 let curSec = '';
 function buildSectionTabs() {
   const bar = $('.tabs');
