@@ -48,8 +48,8 @@
     squad: [{ name: 'Filip Nguyen', number: '1', image: '' }, { name: 'Nguyen Quang Hai', number: '19', image: '' }, { name: 'Doan Van Hau', number: '5', image: '' }, { name: 'Cầu thủ 4', number: '10', image: '' }],
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
-      { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },
-      { id: 'p3homei', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'p4third', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }] },
+      { id: 'pve', category: 've', name: 'VÉ XEM TRẬN – CLB CÔNG AN HÀ NỘI', price: 0, description: 'Vé xem trực tiếp các trận sân nhà tại SVĐ Hàng Đẫy mùa giải 2026/27.', image: '' }, { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },
+      { id: 'p3homei', category: 'ao', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'p4third', category: 'ao', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'pbong', category: 'bong', name: 'BÓNG CHÍNH THỨC CLB CÔNG AN HÀ NỘI', price: 0, description: 'Bóng lưu niệm chính thức của CLB.', image: '' }] },
     honors: { title: 'CÔNG AN HÀ NỘI FC', banner: '', items: [
       { year: '1962', name: 'Giải hạng A miền Bắc', result: 'champion' }, { year: '1962', name: 'Giải vô địch thống nhất miền Bắc', result: 'champion' },
       { year: '1980', name: 'Giải bóng đá A1 toàn quốc', result: 'runner' }, { year: '1981-1982', name: 'Giải bóng đá A1 toàn quốc', result: 'third' },

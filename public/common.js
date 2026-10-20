@@ -17,6 +17,9 @@ const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const ICON_LONG = '<svg class="feat-arrow" viewBox="0 0 70 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9h64M58 2l8 7-8 7"/></svg>';
 const ICON_CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';
 const ICON_PLAY = '<span style="position:absolute;inset:0;margin:auto;width:56px;height:56px;border-radius:50%;background:#fff;color:#c8201a;display:grid;place-items:center;box-shadow:0 0 0 7px #ffffff3d;z-index:2"><svg viewBox="0 0 24 24" width="22" fill="currentColor" style="margin-left:3px"><path d="M7 4.5v15l13-7.5z"/></svg></span>';
+const TICKET = '<svg viewBox="0 0 64 64" fill="currentColor"><path d="M6 14h52a2 2 0 0 1 2 2v9a7 7 0 0 0 0 14v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a7 7 0 0 0 0-14v-9a2 2 0 0 1 2-2zm38 6v6h4v-6h-4zm0 12v4h4v-4h-4zm0 10v6h4v-6h-4z"/></svg>';
+const BALL = '<svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4a28 28 0 1 0 0 56 28 28 0 0 0 0-56zm0 7 9 6.5-3.4 10.5H26.4L23 17.5 32 11zM14 24l7 2.6 1.2 11.2-6.5 5A21 21 0 0 1 14 24zm36 0a21 21 0 0 1-1.7 19.8l-6.5-5L43 26.6 50 24zM27 44h10l3.2 8.3a21 21 0 0 1-16.4 0L27 44z"/></svg>';
+const catIcon = c => c === 've' ? TICKET : c === 'bong' ? BALL : SHIRT;
 const SHIRT = '<svg viewBox="0 0 64 64" fill="currentColor"><path d="M22 6 8 12 2 26l9 4 3-5v33h36V25l3 5 9-4-6-14-14-6c-1 4-5 7-10 7s-9-3-10-7z"/></svg>';
 const money = n => new Intl.NumberFormat('vi-VN').format(n || 0) + ' ₫';
 const CART_KEY = 'cahn_cart';
@@ -48,3 +51,7 @@ function renderHonors(h) {
   document.querySelectorAll('.h-per button').forEach(b => b.onclick = () => { hPeriod = +b.dataset.p; document.querySelectorAll('.h-per button').forEach(x => x.classList.toggle('on', x === b)); drawHonors(); });
   drawHonors();
 }
+
+const buyHref = m => m.ticketUrl && safeLink(m.ticketUrl) !== '#' ? safeLink(m.ticketUrl) : 'shop.html?cat=ve';
+const buyBtn = (m, cls = 'm-buy') => m.saleStatus === 'soon' ? `<span class="${cls} off">Sắp mở bán</span>` : `<a class="${cls}" href="${esc(buyHref(m))}" ${/^https?:/i.test(buyHref(m)) ? 'target="_blank" rel="noopener"' : ''}>Đã mở bán</a>`;
+const initialsOf = s => String(s || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();

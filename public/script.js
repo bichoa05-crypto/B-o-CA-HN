@@ -42,7 +42,7 @@ function renderMatches(list) {
           <div class="m-team">${m.awayLogo ? `<img class="m-logo" src="${esc(m.awayLogo)}" alt="">` : `<span class="m-logo">${esc(initials(m.awayName))}</span>`}<div class="m-name">${esc(m.awayName)}</div></div>
         </div>
         <div class="m-when">${esc(m.date)}<i></i>${esc(m.time)}</div>
-        ${m.ticketUrl && safeLink(m.ticketUrl) !== '#' ? `<a class="m-buy" href="${esc(safeLink(m.ticketUrl))}" ${/^https?:/i.test(m.ticketUrl) ? 'target="_blank" rel="noopener"' : ''}>Mua vé</a>` : '<span class="m-buy off">Sắp mở bán</span>'}
+        ${buyBtn(m)}
       </div></div>`).join('');
   document.querySelectorAll('.m-col').forEach(c => c.addEventListener('mouseenter', () => { document.querySelectorAll('.m-col').forEach(x => x.classList.toggle('on', x === c)); }));
 }
@@ -93,7 +93,7 @@ function renderShop(s) {
   const prods = s.products.slice(0, 4);
   $('#podium').innerHTML = prods.map((p, i) => ({ p, rank: i + 1 })).reverse().map(({ p, rank }) => `
     <a class="pd r${rank} rv" style="--d:${(4 - rank) * .1}s" href="shop.html#${esc(p.id || '')}">
-      <div class="pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : SHIRT}</div>
+      <div class="pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : catIcon(p.category)}</div>
       <div class="col"><b>${rank}</b></div><div class="nm">${esc(p.name)}</div></a>`).join('')
     + `<a class="pod-next" href="shop.html" aria-label="Xem cửa hàng">${ICON_ARROW}</a>`;
 }

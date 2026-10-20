@@ -14,6 +14,7 @@
 </head>
 <body data-header="solid">
 <section class="article-hero"><div class="wrap list-wrap"><h1 id="t">Cửa hàng chính thức</h1><p class="sub" id="sub" style="opacity:.8;margin-top:6px"></p></div></section>
+<nav class="shop-cats" id="cats" aria-label="Loại sản phẩm"></nav>
 <main class="list-page"><div class="shop-grid" id="grid"></div></main>
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="demo.js"></script>
@@ -26,16 +27,29 @@
   const site = siteData && siteData.hero ? siteData : window.DEMO_SITE;
   const s = site.shop;
   $('#t').textContent = s.title; $('#sub').textContent = s.subtitle;
-  const prods = s.products.map((p, i) => ({ ...p, id: p.id || 'demo' + i }));
-  $('#grid').innerHTML = prods.length ? prods.map(p => `
+  const CAT = { ve: 'Vé', ao: 'Áo', bong: 'Bóng', khac: 'Khác' }, ORDER = ['ve', 'ao', 'bong', 'khac'];
+  const prods = s.products.map((p, i) => ({ ...p, id: p.id || 'demo' + i, category: p.category || (/kit|áo/i.test(p.name) ? 'ao' : 'khac') }))
+    .sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category));
+  const present = ORDER.filter(c => prods.some(p => p.category === c));
+  let cat = new URLSearchParams(location.search).get('cat') || (/^#(ve|ao|bong|khac)$/.test(location.hash) ? location.hash.slice(1) : 'all');
+  if (cat !== 'all' && !present.includes(cat)) cat = 'all';
+  const card = p => `
     <article class="prod rv" id="${esc(p.id)}">
-      <div class="prod-pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : SHIRT}</div>
+      <span class="prod-tag">${CAT[p.category]}</span>
+      <div class="prod-pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : catIcon(p.category)}</div>
       <h3>${esc(p.name)}</h3>
       ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
       <div class="price">${p.price ? money(p.price) : 'Liên hệ'}</div>
-      <div class="prod-act">${p.price ? `<button class="pill ghost" data-add="${esc(p.id)}">Thêm vào giỏ</button><button class="pill solid" data-buy="${esc(p.id)}">Mua ngay</button>` : '<a class="pill ghost" href="#lien-he">Liên hệ để mua</a>'}</div>
-    </article>`).join('') : '<p class="empty">Cửa hàng đang cập nhật sản phẩm.</p>';
-  reveal();
+      <div class="prod-act">${p.price ? `<button class="pill ghost" data-add="${esc(p.id)}">Thêm vào giỏ</button><button class="pill solid" data-buy="${esc(p.id)}">Mua ngay</button>` : `<a class="pill solid" href="#lien-he">${p.category === 've' ? 'Liên hệ mua vé' : 'Liên hệ để mua'}</a>`}</div>
+    </article>`;
+  const draw = () => {
+    $('#cats').innerHTML = present.length > 1 ? ['all', ...present].map(c => `<button type="button" class="${c === cat ? 'on' : ''}" data-c="${c}">${c === 'all' ? 'Tất cả' : CAT[c]} <i>${c === 'all' ? prods.length : prods.filter(p => p.category === c).length}</i></button>`).join('') : '';
+    const list = cat === 'all' ? prods : prods.filter(p => p.category === cat);
+    $('#grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">Cửa hàng đang cập nhật sản phẩm.</p>';
+    reveal();
+  };
+  $('#cats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; cat = b.dataset.c; history.replaceState(null, '', cat === 'all' ? 'shop.html' : 'shop.html?cat=' + cat); draw(); });
+  draw();
   const t = $('#toast');
   $('#grid').addEventListener('click', e => {
     const a = e.target.closest('[data-add]'), b = e.target.closest('[data-buy]');

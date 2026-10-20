@@ -581,3 +581,41 @@ a.h-row{display:grid;color:inherit}
 .article-page .tags span{font-family:var(--nav);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:var(--muted);margin-right:4px}
 .article-page .tags a{display:inline-flex;align-items:center;padding:7px 14px;border-radius:999px;background:#fbe9e6;color:var(--red-600);font-weight:700;font-size:14px;transition:background .2s,color .2s,transform .2s}
 .article-page .tags a:hover{background:var(--red);color:#fff;transform:translateY(-2px)}
+
+/* cửa hàng: lọc theo loại (Vé / Áo / Bóng) */
+.shop-cats{display:flex;flex-wrap:wrap;gap:10px;max-width:var(--max);margin:26px auto 0;padding:0 var(--gutter)}
+.shop-cats button{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;border:2px solid var(--line);background:#fff;font-family:var(--nav);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--maroon);cursor:pointer;transition:.2s}
+.shop-cats button i{font-style:normal;font-size:12px;background:#f3e6e3;border-radius:99px;padding:2px 8px;color:var(--muted)}
+.shop-cats button:hover{border-color:var(--red)}
+.shop-cats button.on{background:var(--red);border-color:var(--red);color:#fff}
+.shop-cats button.on i{background:#ffffff33;color:#fff}
+.prod{position:relative}
+.prod-tag{position:absolute;z-index:2;top:26px;left:26px;background:#231f20;color:#fff;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px}
+
+/* trang Lăn bóng: lịch thi đấu + nút vé */
+.article-hero.lb-hero{position:relative;min-height:clamp(380px,calc(34 * var(--vw)),520px);padding-bottom:clamp(120px,calc(11 * var(--vw)),170px);background:repeating-linear-gradient(90deg,#00000014 0 6.2%,#0000 6.2% 12.4%),radial-gradient(60% 90% at 85% 0,#c8201a 0,#7a120d 55%,transparent 85%),linear-gradient(160deg,#4a0b08,#1d0504);overflow:hidden}
+.lb-hero::before{content:"";position:absolute;right:12%;top:12%;width:clamp(180px,calc(24 * var(--vw)),360px);aspect-ratio:1;border:2px solid #ffffff33;border-radius:50%}
+.lb-hero::after{content:"";position:absolute;right:calc(12% + clamp(180px,calc(24 * var(--vw)),360px) / 2);top:0;bottom:0;width:2px;background:#ffffff26}
+.lb-hero .wrap{max-width:var(--max);position:relative;z-index:1}
+.lb-kicker{font-family:var(--nav);font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-size:clamp(12px,calc(1.05 * var(--vw)),15px)}
+.lb-hero h1{font-family:var(--anton);font-style:italic;font-size:clamp(54px,calc(9.4 * var(--vw)),140px);line-height:1.1;margin:10px 0 14px;text-shadow:0 6px 30px #0006}
+.lb-line{display:block;width:clamp(120px,calc(18 * var(--vw)),260px);height:4px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:16px}
+.lb-sub{max-width:640px;color:#ffffffd9;font-size:clamp(15px,calc(1.35 * var(--vw)),20px)}
+.lb-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,calc(1.8 * var(--vw)),26px);margin-top:calc(-1 * clamp(80px,calc(8 * var(--vw)),120px));position:relative;z-index:2}
+.lb-card{background:#fff;border-radius:16px;border-top:5px solid var(--red);padding:clamp(16px,calc(1.8 * var(--vw)),26px);box-shadow:0 22px 44px -26px #3d0506;display:flex;flex-direction:column;gap:16px;min-width:0}
+.lb-card h3{font-family:var(--nav);font-weight:800;text-transform:uppercase;letter-spacing:.04em;text-align:center;font-size:clamp(12px,calc(1.05 * var(--vw)),15px);color:var(--maroon);min-height:2.6em;display:flex;align-items:center;justify-content:center}
+.lb-teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:start}
+.lb-team{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;min-width:0}
+.lb-team img,.lb-ph{width:clamp(40px,calc(4.1 * var(--vw)),64px);aspect-ratio:1;object-fit:contain;border-radius:50%}
+.lb-ph{display:grid;place-items:center;background:#f3e6e3;color:var(--red);font-family:var(--anton)}
+.lb-team b{font-size:clamp(12px,calc(1.05 * var(--vw)),15px);font-weight:600;line-height:1.25}
+.lb-when{display:flex;flex-direction:column;align-items:center;padding-top:clamp(8px,calc(1.2 * var(--vw)),18px)}
+.lb-when strong{font-family:var(--anton);font-weight:400;font-size:clamp(20px,calc(2.1 * var(--vw)),32px);color:var(--red);line-height:1}
+.lb-when span{color:var(--muted);font-size:clamp(12px,calc(1.05 * var(--vw)),15px);margin-top:6px}
+.lb-buy{margin-top:auto;display:block;text-align:center;border-radius:999px;padding:12px;font-family:var(--nav);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:clamp(12px,calc(1.05 * var(--vw)),15px);background:var(--red);color:#fff;transition:background .2s,transform .2s}
+a.lb-buy:hover{background:#d5352c;transform:translateY(-2px)}
+.lb-buy.off{background:#efe4e0;color:#8a7e7a;pointer-events:none}
+@media(max-width:1000px){.lb-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.lb-cards{grid-template-columns:1fr}}
+.m-buy:not(.off){background:#1f9d57;border-color:#bfe8d1}
+.m-buy:not(.off):hover{background:#17804a}

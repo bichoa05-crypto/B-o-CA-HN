@@ -31,6 +31,17 @@
   const name = sec ? sec.name : 'Chuyên mục';
   $('#t').textContent = name; document.title = name + ' - CLB Bóng đá Công An Hà Nội';
   // phần đặc biệt của từng chuyên mục
+  if (id === 'lan-bong') {
+    document.querySelector('.article-hero').classList.add('lb-hero');
+    document.querySelector('.article-hero .wrap').innerHTML = `<div class="lb-kicker">Mùa giải 2026</div><h1 id="t">${esc(name)}</h1><i class="lb-line"></i><p class="lb-sub">Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.</p>`;
+    $('#special').innerHTML = `<div class="lb-cards">${(site.tournaments || []).map(m => `
+      <article class="lb-card rv"><h3>${esc(m.name)}</h3>
+        <div class="lb-teams"><div class="lb-team">${m.homeLogo ? `<img src="${esc(m.homeLogo)}" alt="">` : `<span class="lb-ph">${esc(initialsOf(m.homeName))}</span>`}<b>${esc(m.homeName)}</b></div>
+          <div class="lb-when"><strong>${esc(m.time)}</strong><span>${esc(m.date)}</span></div>
+          <div class="lb-team">${m.awayLogo ? `<img src="${esc(m.awayLogo)}" alt="">` : `<span class="lb-ph">${esc(initialsOf(m.awayName))}</span>`}<b>${esc(m.awayName)}</b></div></div>
+        ${buyBtn(m, 'lb-buy')}</article>`).join('')}</div>
+      <h2 class="sec-h" style="margin:46px 0 22px">Tin tức Lăn bóng</h2>`;
+  }
   if (id === 'doi-hinh') {
     $('#special').innerHTML = `<h2 class="sec-h" style="margin-bottom:22px">Cầu thủ</h2><div class="sq-all"><div class="sq-viewport"><div class="sq-track">${site.squad.map(p => `<article class="sq-card"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></article>`).join('')}</div></div></div><h2 class="sec-h" style="margin:44px 0 22px">Bài viết</h2>`;
   }

@@ -48,10 +48,12 @@ const DEFAULT_SITE = {
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
     products: [
-      { id: 'p1home', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '', link: '' },
-      { id: 'p2away', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
-      { id: 'p3homei', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
-      { id: 'p4third', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'pve', category: 've', name: 'VÉ XEM TRẬN – CLB CÔNG AN HÀ NỘI', price: 0, description: 'Vé xem trực tiếp các trận sân nhà tại SVĐ Hàng Đẫy mùa giải 2026/27.', image: '', link: '' },
+      { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p3homei', category: 'ao', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'p4third', category: 'ao', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
+      { id: 'pbong', category: 'bong', name: 'BÓNG CHÍNH THỨC CLB CÔNG AN HÀ NỘI', price: 0, description: 'Bóng lưu niệm chính thức của CLB.', image: '', link: '' },
     ],
   },
   honors: {
@@ -145,6 +147,12 @@ function migrate(db) {
     const d = DEFAULT_SITE.footer, o = db.site.footer;
     db.site.footer = { ...d, facebook: o.facebook || '', youtube: o.youtube || '', tiktok: o.tiktok || '', zalo: o.zalo || '', bank: o.bank || d.bank };
     changed = true;
+  }
+  if (db.site && db.site.shop && Array.isArray(db.site.shop.products)) { // cửa hàng bán 3 loại: Vé, Áo, Bóng
+    const ps = db.site.shop.products;
+    ps.forEach(p => { if (!p.category) { p.category = /kit|áo|ao /i.test(p.name || '') ? 'ao' : 'khac'; changed = true; } });
+    const defs = DEFAULT_SITE.shop.products;
+    for (const c of ['ve', 'bong']) if (!ps.some(p => p.category === c)) { ps.push({ ...defs.find(d => d.category === c) }); changed = true; }
   }
   if (db.site && db.site.shop) for (const [i, p] of db.site.shop.products.entries()) {
     if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
@@ -374,11 +382,11 @@ function cleanSite(i = {}) {
   const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
   return {
     hero: L(i.hero, 10, x => ({ articleId: /^[\w-]{2,24}$/.test(x.articleId || '') ? x.articleId : '', image: MEDIA(x.image), line1: T(x.line1, 120), line2: T(x.line2, 120), button: T(x.button, 40), link: LINK(x.link) })),
-    tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl) })),
+    tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl), saleStatus: x.saleStatus === 'soon' ? 'soon' : 'open' })),
     intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
     squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image) })),
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
-    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
+    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), category: ['ve', 'ao', 'bong', 'khac'].includes(x.category) ? x.category : 'khac', name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
     footer: { brand: T((i.footer || {}).brand, 80), licenses: T((i.footer || {}).licenses, 1500), copyright: T((i.footer || {}).copyright, 200), instagram: LINK((i.footer || {}).instagram), about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
     about: cleanAbout(i.about || ABOUT_DEFAULT),
