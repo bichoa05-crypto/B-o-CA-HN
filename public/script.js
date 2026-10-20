@@ -84,7 +84,6 @@ function sqUpdate() {
 }
 $('#sqPrev').onclick = () => { sqI--; sqUpdate(); };
 $('#sqNext').onclick = () => { sqI++; sqUpdate(); };
-$('#sqAll').onclick = e => { const s = $('#doi-hinh'); const all = s.classList.toggle('sq-all'); e.target.textContent = all ? 'Thu gọn' : 'Xem tất cả'; };
 addEventListener('resize', () => sqUpdate());
 
 /* ---------- cửa hàng ---------- */
