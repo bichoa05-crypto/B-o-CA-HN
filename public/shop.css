@@ -177,3 +177,15 @@
 .tk-t span{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#c8201a,#7a120d);color:#fff;font-family:var(--anton,Impact);font-size:clamp(18px,2vw,28px)}
 .tk-pic b{font-family:var(--anton,Impact);font-style:italic;font-size:clamp(20px,2.2vw,32px);color:#c8201a}
 .tk-pic em{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.06em;background:#231f20;color:#fff;border-radius:99px;padding:4px 12px;white-space:nowrap}
+
+/* popup đặt vé: dùng đúng thẻ Giải đấu */
+.bm-pic.is-match{aspect-ratio:auto;display:block;background:none;border-radius:0;overflow:visible}
+.bm-pic.is-match .m-col{opacity:1;transform:none}
+.bm-pic.is-match .m-tab{color:var(--maroon);border-bottom-color:var(--maroon);margin-bottom:16px}
+.bm-pic.is-match .m-card{margin-top:0;transform:none}
+.bm-pic.is-match .m-logo{width:clamp(64px,7vw,96px)}
+.bm-pic.is-match .m-name{font-size:clamp(15px,1.5vw,21px)}
+.bm-pic.is-match .m-when{font-size:clamp(17px,1.6vw,22px)}
+.bm-pic.is-match .m-buy{pointer-events:none}
+.bm-pic.is-match .m-card::before{font-size:clamp(70px,8vw,120px)}
+.bm-pic.is-match .m-col{width:100%;max-width:none}

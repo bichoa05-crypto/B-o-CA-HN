@@ -61,7 +61,7 @@
     cur = prods.find(p => p.id === id); if (!cur) return;
     lastFocus = document.activeElement;
     const isShirt = cur.category === 'ao'; $('#sizeBox').hidden = !isShirt; document.querySelector('.tg').hidden = !isShirt;
-    size = ''; $('#bmPic').innerHTML = pic(cur); $('#bmName').textContent = cur.name; $('#bmPrice').textContent = price(cur);
+    size = ''; $('#bmPic').classList.toggle('is-match', !!cur.match); $('#bmPic').innerHTML = cur.match ? matchCard(cur.match, 0, '<span class="m-buy">Vé trận đấu</span>').replace(' rv ', ' ') : pic(cur); $('#bmName').textContent = cur.name; $('#bmPrice').textContent = price(cur);
     $('#bmSizes').innerHTML = !isShirt ? '' : SIZES(cur).map(z => `<button type="button" data-z="${esc(z)}">${esc(z)}</button>`).join('');
     $('#bmQty').value = 1; $('#bmPrint').checked = false; $('#printBox').hidden = true; $('#bmPN').value = $('#bmPNo').value = '';
     $('#bmErr').textContent = ''; $('#sgBox').hidden = true; form.hidden = false; $('#bmDone').hidden = true;
