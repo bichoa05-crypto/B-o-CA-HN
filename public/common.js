@@ -55,3 +55,4 @@ function renderHonors(h) {
 const buyHref = m => m.ticketUrl && safeLink(m.ticketUrl) !== '#' ? safeLink(m.ticketUrl) : 'shop.html?cat=ve' + (m.id ? '#' + encodeURIComponent(m.id) : '');
 const buyBtn = (m, cls = 'm-buy') => m.saleStatus === 'soon' ? `<span class="${cls} off">Sắp mở bán</span>` : `<a class="${cls}" href="${esc(buyHref(m))}" ${/^https?:/i.test(buyHref(m)) ? 'target="_blank" rel="noopener"' : ''}>Đã mở bán</a>`;
 const initialsOf = s => String(s || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+const POS_NAME = { gk: 'Thủ môn', df: 'Hậu vệ', mf: 'Tiền vệ', fw: 'Tiền đạo' };

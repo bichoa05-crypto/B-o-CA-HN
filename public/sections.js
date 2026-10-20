@@ -44,7 +44,7 @@ function renderSquadPage(site, all) {
   </div>`;
   const drawPlayers = pos => {
     const list = squad.filter(p => !pos || p.pos === pos);
-    $('#plGrid').innerHTML = list.length ? list.map(p => `<article class="pl"><div class="box"><span class="no">${esc(p.number)}</span>${silOr(p.image, p.name)}<h3>${esc(p.name)}</h3></div></article>`).join('') : '<p class="pl-empty">Chưa có cầu thủ ở vị trí này.</p>';
+    $('#plGrid').innerHTML = list.length ? list.map(p => `<article class="pl"><div class="box pcard">${silOr(p.image, p.name)}<span class="no">${esc(p.number)}</span><div class="pc-tx">${POS_NAME[p.pos] ? `<small>${POS_NAME[p.pos]}</small>` : ''}<h3>${esc(p.name)}</h3></div></div></article>`).join('') : '<p class="pl-empty">Chưa có cầu thủ ở vị trí này.</p>';
   };
   document.querySelectorAll('.dh-tabs button').forEach(b => b.onclick = () => { document.querySelectorAll('.dh-tabs button').forEach(x => x.classList.toggle('on', x === b)); drawPlayers(b.dataset.p); });
   drawPlayers('');

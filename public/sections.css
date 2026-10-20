@@ -321,3 +321,22 @@ body.pg-media{background:#12090a}
   .fm-bento{grid-template-columns:1fr;grid-auto-rows:62vw}
   .fm-bento .b0,.fm-bento .b3,.fm-bento .b6{grid-column:auto}
 }
+
+/* ===== Thẻ cầu thủ (trang chủ + trang Đội hình): ảnh lấp đầy khung, số áo & tên nằm trên ảnh ===== */
+.pl .box.pcard{position:relative;display:block;overflow:hidden;isolation:isolate;border:0;border-radius:18px;clip-path:none;
+  background:radial-gradient(120% 80% at 50% 0%,#e0453b 0%,#a81b15 45%,#5a0b08 100%);box-shadow:0 18px 36px -22px #5a0b08;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.pl .box.pcard>img{position:absolute;inset:0;width:100%;height:100%;margin:0;object-fit:cover;object-position:50% 12%;z-index:0;transition:transform .7s var(--ease)}
+.pl .box.pcard .sil{z-index:0}
+.pl .box.pcard::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,#0000 0%,#0000 48%,#4a0806b3 74%,#3a0605f2 100%),linear-gradient(200deg,#0006 0%,#0000 32%)}
+.pl .box.pcard::before{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;box-shadow:inset 0 0 0 1px #ffffff26;pointer-events:none}
+.pl .box.pcard .no{position:absolute;z-index:2;top:12px;right:16px;left:auto;margin:0;font-family:var(--anton);font-weight:400;font-size:clamp(40px,calc(4.6 * var(--vw)),68px);line-height:1;color:#fff;opacity:1;text-shadow:0 4px 16px #0008;letter-spacing:-.01em}
+.pl .box.pcard .pc-tx{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:0 14px clamp(14px,calc(1.8 * var(--vw)),24px);text-align:center}
+.pl .box.pcard .pc-tx small{display:inline-block;margin-bottom:6px;font-family:var(--nav);font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:clamp(10px,calc(.85 * var(--vw)),12.5px);color:#2a0504;background:var(--gold);border-radius:99px;padding:3px 10px}
+.pl .box.pcard h3{position:static;margin:0;color:#fff;font-family:var(--anton);font-style:italic;font-weight:400;text-transform:uppercase;line-height:1.08;letter-spacing:.005em;
+  font-size:clamp(18px,calc(2.1 * var(--vw)),32px);text-shadow:0 3px 14px #000a;transform:none;text-wrap:balance}
+.pl:hover .box.pcard{transform:translateY(-6px);box-shadow:0 26px 44px -22px #5a0b08}
+.pl:hover .box.pcard>img{transform:scale(1.05)}
+
+.pl{aspect-ratio:3/4}
+.pl .box.pcard{position:absolute;inset:0;border:0;clip-path:none}

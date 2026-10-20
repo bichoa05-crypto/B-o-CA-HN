@@ -69,7 +69,7 @@ const renderMM = l => l.length ? `<div class="n-grid">${l.slice(0, 3).map((a, i)
 let sqI = 0;
 const perView = () => innerWidth <= 480 ? 1 : innerWidth <= 820 ? 2 : 3;
 function renderSquad(list) {
-  $('#sqTrack').innerHTML = list.map(p => `<a class="sq-card" href="section.html?s=doi-hinh" aria-label="${esc(p.name)}"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></a>`).join('');
+  $('#sqTrack').innerHTML = list.map(p => `<a class="sq-card pcard" href="section.html?s=doi-hinh" aria-label="${esc(p.name)}">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<span class="no">${esc(p.number)}</span><div class="pc-tx">${POS_NAME[p.pos] ? `<small>${POS_NAME[p.pos]}</small>` : ''}<h3>${esc(p.name)}</h3></div></a>`).join('');
   sqI = 0; sqUpdate();
 }
 function sqUpdate() {
