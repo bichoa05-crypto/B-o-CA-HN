@@ -33,9 +33,11 @@ label{display:block;font-weight:600;font-size:14px;margin:14px 0 5px}
 .wrap{max-width:1100px;margin:0 auto;padding:24px 16px}
 .bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
 .bar select{width:auto}
-.tabs{display:flex;gap:6px;margin-bottom:16px}
-.tab{padding:8px 16px;border-radius:6px;background:#fff;border:1px solid var(--line);cursor:pointer}
+.tabs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:16px}
+.tab{white-space:nowrap;padding:8px 16px;border-radius:6px;background:#fff;border:1px solid var(--line);cursor:pointer}
 .tab.on{background:var(--red);color:#fff;border-color:var(--red)}
+.tab.sec{border-color:#e7b9b4}
+.tabs .sep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
 table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
 th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;font-size:14px}
 th{background:#faf7f5;font-size:12px;text-transform:uppercase;color:var(--muted)}
@@ -109,11 +111,13 @@ textarea{min-height:0}
     <button class="btn ghost sm" id="outBtn">Đăng xuất</button>
   </div>
   <div class="wrap">
-    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="site">Trang chủ</div><div class="tab" data-tab="about">Về chúng tôi</div><div class="tab" data-tab="shop">Cửa hàng</div><div class="tab" data-tab="foot">Chân trang &amp; nhà tài trợ</div><div class="tab" data-tab="orders">Đơn hàng</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
+    <div class="tabs"><div class="tab on" data-tab="posts">Bài viết</div><div class="tab" data-tab="site">Trang chủ</div><div class="tab" data-tab="shop">Cửa hàng</div><div class="tab" data-tab="foot">Chân trang &amp; nhà tài trợ</div><div class="tab" data-tab="orders">Đơn hàng</div><div class="tab" data-tab="secs">Chuyên mục</div></div>
 
     <!-- list -->
     <div id="posts">
+      <div id="secSets"></div>
       <div id="listView">
+        <h3 id="listHead" style="margin:6px 0 10px" hidden></h3>
         <div class="bar">
           <button class="btn" id="newBtn">+ Bài viết mới</button>
           <select id="filter"></select>
@@ -172,7 +176,6 @@ textarea{min-height:0}
 
     <!-- trang chủ -->
     <div id="site" hidden></div>
-    <div id="about" hidden></div>
     <div id="shop" hidden></div>
     <div id="foot" hidden></div>
 

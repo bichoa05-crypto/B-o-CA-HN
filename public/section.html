@@ -8,11 +8,13 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,600;1,300;1,800&display=swap" rel="stylesheet">
 <script src="fit.js"></script>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sections.css">
 </head>
 <body data-header="solid">
+<script>{ const c = { 'doi-hinh': 'pg-squad', 'dong-chay': 'pg-news', 'ben-le-san-co': 'pg-news', 'lan-bong': 'pg-match', 'nguoi-ham-mo': 'pg-fans', multimedia: 'pg-media' }[new URLSearchParams(location.search).get('s')]; if (c) document.body.classList.add('pg-red', c); }</script>
 <section class="article-hero"><div class="wrap list-wrap"><h1 id="t">Chuyên mục</h1></div></section>
 <main class="list-page" id="main">
   <div id="special"></div>
@@ -22,6 +24,7 @@
 <script src="common.js"></script>
 <script src="sponsors-map.js"></script>
 <script src="layout.js"></script>
+<script src="sections.js"></script>
 <script>
 (async () => {
   const id = new URLSearchParams(location.search).get('s') || '';
@@ -31,20 +34,12 @@
   const name = sec ? sec.name : 'Chuyên mục';
   $('#t').textContent = name; document.title = name + ' - CLB Bóng đá Công An Hà Nội';
   // phần đặc biệt của từng chuyên mục
-  if (id === 'lan-bong') {
-    document.querySelector('.article-hero').classList.add('lb-hero');
-    document.querySelector('.article-hero .wrap').innerHTML = `<div class="lb-kicker">Mùa giải 2026</div><h1 id="t">${esc(name)}</h1><i class="lb-line"></i><p class="lb-sub">Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.</p>`;
-    $('#special').innerHTML = `<div class="lb-cards">${(site.tournaments || []).map(m => `
-      <article class="lb-card rv"><h3>${esc(m.name)}</h3>
-        <div class="lb-teams"><div class="lb-team">${m.homeLogo ? `<img src="${esc(m.homeLogo)}" alt="">` : `<span class="lb-ph">${esc(initialsOf(m.homeName))}</span>`}<b>${esc(m.homeName)}</b></div>
-          <div class="lb-when"><strong>${esc(m.time)}</strong><span>${esc(m.date)}</span></div>
-          <div class="lb-team">${m.awayLogo ? `<img src="${esc(m.awayLogo)}" alt="">` : `<span class="lb-ph">${esc(initialsOf(m.awayName))}</span>`}<b>${esc(m.awayName)}</b></div></div>
-        ${buyBtn(m, 'lb-buy')}</article>`).join('')}</div>
-      <h2 class="sec-h" style="margin:46px 0 22px">Tin tức Lăn bóng</h2>`;
-  }
-  if (id === 'doi-hinh') {
-    $('#special').innerHTML = `<h2 class="sec-h" style="margin-bottom:22px">Cầu thủ</h2><div class="sq-all"><div class="sq-viewport"><div class="sq-track">${site.squad.map(p => `<article class="sq-card"><span class="no">${esc(p.number)}</span>${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : '<span class="sil"></span>'}<h3>${esc(p.name)}</h3></article>`).join('')}</div></div></div><h2 class="sec-h" style="margin:44px 0 22px">Bài viết</h2>`;
-  }
+  if (id === 'doi-hinh') return renderSquadPage(site, all);
+  if (id === 'dong-chay') return renderNewsPage(site, all, id, name);
+  if (id === 'ben-le-san-co') return renderSidePage(site, all, id, name);
+  if (id === 'lan-bong') return renderMatchPage(site, all, id, name);
+  if (id === 'nguoi-ham-mo') return renderFansPage(site, all, id, name);
+  if (id === 'multimedia') return renderMediaPage(site, all, id, name);
   if (id === 've-chung-toi') {
     const h = site.honors;
     $('#special').innerHTML = `<div class="about-intro"><div class="glitch" style="font-size:clamp(34px,calc(7 * var(--vw)),96px)"><span>${esc(site.intro.line1)}</span><span>${esc(site.intro.line2)}</span></div></div>

@@ -40,10 +40,22 @@ const DEFAULT_SITE = {
   ],
   intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
   squad: [
-    { name: 'Filip Nguyen', number: '1', image: '' },
-    { name: 'Nguyen Quang Hai', number: '19', image: '' },
-    { name: 'Doan Van Hau', number: '5', image: '' },
+    { name: 'Filip Nguyen', number: '1', image: '', pos: 'gk' },
+    { name: 'Nguyen Quang Hai', number: '19', image: '', pos: 'mf' },
+    { name: 'Doan Van Hau', number: '5', image: '', pos: 'df' },
   ],
+  squadPage: { title: 'Đội hình', banner: '' },
+  staff: [
+    { role: 'Huấn luyện viên trưởng', name: 'Alexandre Polking', image: '' },
+    { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' },
+  ],
+  newsPage: { banner: '' },
+  pages: {
+    'ben-le-san-co': { banner: '', intro: 'Những câu chuyện phía sau trận đấu: đời thường cầu thủ, hậu trường và văn hoá CLB.' },
+    'lan-bong': { banner: '', intro: 'Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.' },
+    'nguoi-ham-mo': { banner: '', intro: 'Tiếp lửa cho đội bóng – nơi những trái tim đỏ cùng chung nhịp đập.' },
+    'multimedia': { banner: '', intro: 'Video, hình ảnh và những khoảnh khắc đáng nhớ của CLB Công An Hà Nội.' },
+  },
   multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
@@ -76,6 +88,7 @@ const DEFAULT_SITE = {
   },
 };
 
+const PAGE_KEYS = Object.keys(DEFAULT_SITE.pages); // trang chuyên mục có ảnh nền + dòng giới thiệu riêng
 const { sanitizeHtml, stripHtml } = require('./lib/sanitize-html');
 const ABOUT_DEFAULT = require('./public/about-default.js');
 const SPONSOR_MAP = require('./public/sponsors-map.js');
@@ -158,6 +171,10 @@ function migrate(db) {
     if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
     if (p.price === undefined) { p.price = 0; p.description = p.description || ''; changed = true; }
   }
+  if (db.site && !db.site.squadPage) { db.site.squadPage = { ...DEFAULT_SITE.squadPage }; changed = true; }
+  if (db.site && !Array.isArray(db.site.staff)) { db.site.staff = DEFAULT_SITE.staff.map(x => ({ ...x })); changed = true; }
+  if (db.site && !db.site.newsPage) { db.site.newsPage = { ...DEFAULT_SITE.newsPage }; changed = true; }
+  if (db.site) for (const k of PAGE_KEYS) { db.site.pages = db.site.pages || {}; if (!db.site.pages[k]) { db.site.pages[k] = { ...DEFAULT_SITE.pages[k] }; changed = true; } }
   if (!db.site) { db.site = DEFAULT_SITE; changed = true; }
   return changed;
 }
@@ -240,7 +257,7 @@ if (!BLOB) {
   app.use(express.static(path.join(ROOT, 'public')));
 }
 
-app.get('/api/config', (req, res) => res.json({ blob: BLOB, adminPasswordSet: !!ENV_PASSWORD, adminUserIsDefault: ENV_USER.toLowerCase() === 'admin' }));
+app.get('/api/config', (req, res) => res.json({ mail: !!getMailer(), blob: BLOB, adminPasswordSet: !!ENV_PASSWORD, adminUserIsDefault: ENV_USER.toLowerCase() === 'admin' }));
 
 app.get('/api/sections', wrap(async (req, res) => res.json((await loadDb()).sections)));
 app.get('/api/articles', wrap(async (req, res) => {
@@ -258,6 +275,19 @@ app.get('/api/articles/:id', wrap(async (req, res) => {
   const a = (await loadDb(adm)).articles.find(x => x.id === req.params.id && (x.published || adm));
   a ? res.json(a) : res.status(404).json({ error: 'Không tìm thấy' });
 }));
+
+// lượt xem (kho riêng, mỗi IP chỉ tính 1 lần / bài / 6 giờ)
+const viewSeen = new Map();
+app.post('/api/articles/:id/view', wrap(async (req, res) => {
+  const id = String(req.params.id).slice(0, 40), k = req.ip + '|' + id, now = Date.now();
+  if (!/^[\w-]{2,40}$/.test(id) || now - (viewSeen.get(k) || 0) < 6 * 3600e3) return res.json({ ok: true });
+  if (viewSeen.size > 50000) viewSeen.clear();
+  viewSeen.set(k, now);
+  if (!(await loadDb()).articles.some(a => a.id === id && a.published)) return res.json({ ok: true });
+  await mutate('views', {}, v => { v[id] = (v[id] || 0) + 1; });
+  res.json({ ok: true });
+}));
+app.get('/api/views', wrap(async (req, res) => res.json(await readStore('views', {}))));
 
 // auth
 const setSession = (req, res, role, id) => res.cookie('token', makeToken(role, id), { httpOnly: true, sameSite: 'strict', secure: req.secure, maxAge: 12 * 3600 * 1000 });
@@ -378,15 +408,20 @@ function cleanAbout(a = {}) {
     stadium: { name: T(st.name, 80), capacity: T(st.capacity, 40), address: T(st.address, 200), tag: T(st.tag, 200), mapQuery: T(st.mapQuery, 200), image: MEDIA(st.image) },
   };
 }
+const POS = ['gk', 'df', 'mf', 'fw'];
 function cleanSite(i = {}) {
   const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
   return {
     hero: L(i.hero, 10, x => ({ articleId: /^[\w-]{2,24}$/.test(x.articleId || '') ? x.articleId : '', image: MEDIA(x.image), line1: T(x.line1, 120), line2: T(x.line2, 120), button: T(x.button, 40), link: LINK(x.link) })),
     tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl), saleStatus: x.saleStatus === 'soon' ? 'soon' : 'open' })),
     intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
-    squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image) })),
+    squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image), pos: POS.includes(x.pos) ? x.pos : '' })),
+    squadPage: { title: T((i.squadPage || {}).title, 40), banner: MEDIA((i.squadPage || {}).banner) },
+    staff: L(i.staff, 30, x => ({ role: T(x.role, 60), name: T(x.name, 60), image: MEDIA(x.image) })),
+    newsPage: { banner: MEDIA((i.newsPage || {}).banner) },
+    pages: Object.fromEntries(PAGE_KEYS.map(k => { const p = (i.pages || {})[k] || {}; return [k, { banner: MEDIA(p.banner), intro: T(p.intro, 240) }]; })),
     multimedia: { image: MEDIA(o.image), button: T(o.button, 40), link: LINK(o.link) },
-    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), category: ['ve', 'ao', 'bong', 'khac'].includes(x.category) ? x.category : 'khac', name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), image: MEDIA(x.image), link: LINK(x.link) })) },
+    shop: { title: T(sh.title, 80), subtitle: T(sh.subtitle, 80), products: L(sh.products, 60, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'p' + crypto.randomBytes(4).toString('hex'), category: ['ve', 'ao', 'bong', 'khac'].includes(x.category) ? x.category : 'khac', name: T(x.name, 80), price: Math.min(1e9, Math.max(0, Math.round(Number(x.price) || 0))), description: T(x.description, 600), sizes: T(x.sizes, 80), image: MEDIA(x.image), link: LINK(x.link) })) },
     honors: { title: T(h.title, 80), banner: MEDIA(h.banner), items: L(h.items, 200, x => ({ year: T(x.year, 20), name: T(x.name, 120), result: ['champion', 'runner', 'third'].includes(x.result) ? x.result : 'champion' })) },
     footer: { brand: T((i.footer || {}).brand, 80), licenses: T((i.footer || {}).licenses, 1500), copyright: T((i.footer || {}).copyright, 200), instagram: LINK((i.footer || {}).instagram), about: T((i.footer || {}).about, 300), address: T((i.footer || {}).address, 200), phone: T((i.footer || {}).phone, 40), email: T((i.footer || {}).email, 100), facebook: LINK((i.footer || {}).facebook), youtube: LINK((i.footer || {}).youtube), tiktok: LINK((i.footer || {}).tiktok), zalo: LINK((i.footer || {}).zalo), bank: T((i.footer || {}).bank, 400) },
     about: cleanAbout(i.about || ABOUT_DEFAULT),
@@ -477,12 +512,121 @@ app.post('/api/orders', wrap(async (req, res) => {
   hits.push(now); orderHits.set(req.ip, hits);
   res.json({ code: order.code, total: order.total, payment: order.payment });
 }));
+// ---------- email (SMTP qua biến môi trường; chưa cấu hình thì bỏ qua, yêu cầu vẫn được lưu) ----------
+let mailer;
+function getMailer() {
+  if (mailer !== undefined) return mailer;
+  const { SMTP_HOST, SMTP_USER, SMTP_PASS } = process.env;
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return (mailer = null);
+  const port = Number(process.env.SMTP_PORT || 465);
+  mailer = require('nodemailer').createTransport({ host: SMTP_HOST, port, secure: port === 465, auth: { user: SMTP_USER, pass: SMTP_PASS } });
+  return mailer;
+}
+async function sendMail(to, subject, html, replyTo) {
+  const m = getMailer();
+  if (!m || !to) return false;
+  try { await m.sendMail({ from: `"CLB Công An Hà Nội" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`, to, subject, html, replyTo }); return true; }
+  catch (e) { console.error('Gửi email lỗi:', e.message); return false; }
+}
+const escH = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const vnd = n => new Intl.NumberFormat('vi-VN').format(n || 0) + ' ₫';
+// khung email chung: đầu đỏ, nội dung, chân liên hệ
+function mailLayout(title, body, site) {
+  const f = (site && site.footer) || {};
+  return `<div style="background:#f4eeec;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#2b2321">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.08)">
+    <div style="background:linear-gradient(135deg,#8b0706,#d0201b);padding:22px 26px;color:#fff">
+      <div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.85">CLB Bóng đá Công An Hà Nội</div>
+      <div style="font-size:22px;font-weight:800;margin-top:6px">${escH(title)}</div>
+    </div>
+    <div style="padding:24px 26px;font-size:15px;line-height:1.6">${body}</div>
+    <div style="padding:16px 26px;background:#faf5f4;font-size:13px;color:#6f6762">
+      Hotline: <b>${escH(f.phone || '')}</b> · Email: <b>${escH(f.email || '')}</b><br>${escH(f.address || '')}
+    </div>
+  </div></div>`;
+}
+const itemsTable = o => `<table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14px">
+  ${o.items.map(i => `<tr><td style="padding:10px 0;border-bottom:1px solid #eee"><b>${escH(i.name)}</b><br><span style="color:#6f6762">${i.size ? 'Size ' + escH(i.size) + ' · ' : ''}SL ${i.qty}${i.printName || i.printNumber ? ` · In: ${escH(i.printName || '')} ${escH(i.printNumber || '')}` : ''}</span></td>
+  <td style="padding:10px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap">${i.price ? vnd(i.price * i.qty) : 'Liên hệ'}</td></tr>`).join('')}
+  <tr><td style="padding:12px 0;font-weight:800">Tạm tính</td><td style="padding:12px 0;text-align:right;font-weight:800;color:#8b0706">${o.total ? vnd(o.total) : 'Báo giá sau'}</td></tr></table>`;
+const customerBox = o => `<div style="background:#faf5f4;border-radius:10px;padding:12px 14px;font-size:14px">
+  <b>${escH(o.name)}</b> · ${escH(o.phone)} · ${escH(o.email)}${o.address ? `<br>Giao đến: ${escH(o.address)}` : ''}${o.note ? `<br>Ghi chú: ${escH(o.note)}` : ''}</div>`;
+
+// ---------- yêu cầu mua hàng (không bán trực tiếp: khách gửi yêu cầu, CLB xác nhận qua email) ----------
+const SIZES_DEFAULT = ['S', 'M', 'L', 'XL', 'XXL'];
+const CONTACT_BY = ['email', 'phone', 'zalo'];
+app.post('/api/shop/requests', wrap(async (req, res) => {
+  const now = Date.now(), hits = (orderHits.get(req.ip) || []).filter(t => now - t < 3600e3);
+  if (hits.length >= 10) return res.status(429).json({ error: 'Bạn gửi quá nhiều yêu cầu, vui lòng thử lại sau' });
+  const b = req.body || {};
+  const name = T(b.name, 80).trim(), phone = T(b.phone, 20).trim(), email = T(b.email, 120).trim().toLowerCase();
+  const address = T(b.address, 250).trim(), note = T(b.note, 500).trim();
+  if (name.length < 2) return res.status(400).json({ error: 'Vui lòng nhập họ tên' });
+  if (!/^[0-9+\s().-]{8,16}$/.test(phone)) return res.status(400).json({ error: 'Số điện thoại không hợp lệ' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Email không hợp lệ (dùng để gửi xác nhận đơn)' });
+  const site = (await loadDb()).site || DEFAULT_SITE;
+  const items = [];
+  for (const it of (Array.isArray(b.items) ? b.items : []).slice(0, 10)) {
+    const p = site.shop.products.find(x => x.id === it.id), qty = Math.round(Number(it.qty));
+    if (!p || !(qty >= 1 && qty <= 50)) continue;
+    const sizes = String(p.sizes || '').split(/[,;/]+/).map(s => s.trim()).filter(Boolean);
+    const size = T(it.size, 10).trim();
+    const needSize = (p.category || 'ao') === 'ao';
+    if (needSize && !(sizes.length ? sizes : SIZES_DEFAULT).includes(size)) return res.status(400).json({ error: 'Vui lòng chọn size cho ' + p.name });
+    items.push({ id: p.id, name: p.name, price: p.price || 0, qty, size: needSize ? size : '', printName: needSize ? T(it.printName, 20).trim() : '', printNumber: !needSize ? '' : T(it.printNumber, 3).replace(/\D/g, '') });
+  }
+  if (!items.length) return res.status(400).json({ error: 'Sản phẩm không còn bán' });
+  const order = {
+    id: crypto.randomBytes(6).toString('hex'), code: 'YC' + String(crypto.randomInt(0, 1e6)).padStart(6, '0'), kind: 'request',
+    items, total: items.reduce((t, x) => t + x.price * x.qty, 0), name, phone, email, address, note,
+    contactBy: CONTACT_BY.includes(b.contactBy) ? b.contactBy : 'email', status: 'new', createdAt: now, mails: [],
+  };
+  hits.push(now); orderHits.set(req.ip, hits);
+  const shopInbox = process.env.SHOP_EMAIL || (site.footer || {}).email;
+  const [toCustomer] = await Promise.all([
+    sendMail(email, `Đã nhận yêu cầu mua hàng ${order.code} – CLB Công An Hà Nội`, mailLayout('Cảm ơn bạn! Chúng tôi đã nhận yêu cầu', `
+      <p>Xin chào <b>${escH(name)}</b>,</p>
+      <p>CLB Công An Hà Nội đã nhận yêu cầu mua hàng <b style="color:#8b0706">${order.code}</b> của bạn. Bộ phận cửa hàng sẽ kiểm tra size, tồn kho và gửi <b>email xác nhận đơn</b> kèm hướng dẫn thanh toán trong vòng 24 giờ làm việc.</p>
+      ${itemsTable(order)}${customerBox(order)}
+      <p style="font-size:13px;color:#6f6762;margin-top:16px">Bạn chưa cần thanh toán lúc này. Nếu cần sửa thông tin, chỉ cần trả lời email này.</p>`, site), shopInbox),
+    sendMail(shopInbox, `[Cửa hàng] Yêu cầu mới ${order.code} – ${name}`, mailLayout('Yêu cầu mua hàng mới', `
+      <p>Mã yêu cầu: <b>${order.code}</b> · Liên hệ ưu tiên: <b>${{ email: 'Email', phone: 'Điện thoại', zalo: 'Zalo' }[order.contactBy]}</b></p>
+      ${itemsTable(order)}${customerBox(order)}<p>Vào trang quản trị → tab <b>Đơn hàng</b> để xác nhận (khách sẽ nhận email xác nhận tự động).</p>`, site), email),
+  ]);
+  if (toCustomer) order.mails.push({ type: 'received', at: now });
+  await mutate('orders', [], list => { list.push(order); });
+  res.json({ code: order.code, emailSent: toCustomer, email });
+}));
+// email gửi khách khi admin đổi trạng thái
+function statusMail(o, site) {
+  const f = (site && site.footer) || {};
+  if (o.status === 'confirmed') return [`Xác nhận đơn hàng ${o.code} – CLB Công An Hà Nội`, mailLayout('Đơn hàng của bạn đã được xác nhận', `
+    <p>Xin chào <b>${escH(o.name)}</b>,</p><p>Cửa hàng CLB Công An Hà Nội xác nhận đơn <b style="color:#8b0706">${o.code}</b> còn hàng và sẵn sàng chuẩn bị cho bạn.</p>
+    ${itemsTable(o)}${customerBox(o)}
+    <h3 style="margin:20px 0 6px;color:#8b0706">Bước tiếp theo</h3>
+    <p style="white-space:pre-line">${escH(f.bank || 'Nhân viên cửa hàng sẽ liên hệ để hướng dẫn thanh toán.')}</p>
+    <p>Nội dung chuyển khoản: <b>${o.code} ${escH(o.phone)}</b>. Sau khi nhận thanh toán, chúng tôi sẽ đóng gói và gửi hàng ngay.</p>`, site)];
+  if (o.status === 'shipping') return [`Đơn hàng ${o.code} đang được giao`, mailLayout('Đơn hàng đang trên đường đến bạn', `
+    <p>Xin chào <b>${escH(o.name)}</b>,</p><p>Đơn <b>${o.code}</b> đã được gửi đi${o.address ? ` tới <b>${escH(o.address)}</b>` : ''}. Vui lòng để ý điện thoại để nhận hàng nhé!</p>${itemsTable(o)}`, site)];
+  if (o.status === 'cancelled') return [`Đơn hàng ${o.code} đã huỷ`, mailLayout('Đơn hàng đã được huỷ', `
+    <p>Xin chào <b>${escH(o.name)}</b>,</p><p>Đơn <b>${o.code}</b> đã được huỷ. Nếu đây là nhầm lẫn hoặc bạn muốn đặt lại, hãy trả lời email này hoặc gọi hotline.</p>`, site)];
+  return null;
+}
 app.get('/api/admin/orders', requireAdmin, wrap(async (req, res) => res.json((await readStore('orders', [])).sort((a, b) => b.createdAt - a.createdAt))));
 app.put('/api/admin/orders/:id', requireAdmin, wrap(async (req, res) => {
   if (!STATUSES.includes((req.body || {}).status)) return res.status(400).json({ error: 'Trạng thái không hợp lệ' });
-  let ok = false;
-  await mutate('orders', [], list => { const o = list.find(x => x.id === req.params.id); if (o) { o.status = req.body.status; ok = true; } });
-  ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Không tìm thấy đơn' });
+  let ok = false, changed = null;
+  await mutate('orders', [], list => { const o = list.find(x => x.id === req.params.id); if (o) { if (o.status !== req.body.status) changed = { ...o, status: req.body.status }; o.status = req.body.status; ok = true; } });
+  if (!ok) return res.status(404).json({ error: 'Không tìm thấy đơn' });
+  // yêu cầu mua hàng: báo khách qua email khi xác nhận / giao hàng / huỷ
+  let mailed = false;
+  if (changed && changed.email) {
+    const site = (await loadDb()).site || DEFAULT_SITE, m = statusMail(changed, site);
+    if (m && (mailed = await sendMail(changed.email, m[0], m[1], process.env.SHOP_EMAIL || (site.footer || {}).email))) {
+      await mutate('orders', [], list => { const o = list.find(x => x.id === changed.id); if (o) (o.mails = o.mails || []).push({ type: changed.status, at: Date.now() }); });
+    }
+  }
+  res.json({ ok: true, mailed, mailReady: !!getMailer() });
 }));
 app.delete('/api/admin/orders/:id', requireAdmin, wrap(async (req, res) => {
   await mutate('orders', [], list => { const i = list.findIndex(x => x.id === req.params.id); if (i >= 0) list.splice(i, 1); });

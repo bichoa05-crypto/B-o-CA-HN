@@ -45,7 +45,16 @@
       { name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
     ],
     intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
-    squad: [{ name: 'Filip Nguyen', number: '1', image: '' }, { name: 'Nguyen Quang Hai', number: '19', image: '' }, { name: 'Doan Van Hau', number: '5', image: '' }, { name: 'Cầu thủ 4', number: '10', image: '' }],
+    squad: [{ name: 'Filip Nguyen', number: '1', image: '', pos: 'gk' }, { name: 'Nguyen Quang Hai', number: '19', image: '', pos: 'mf' }, { name: 'Doan Van Hau', number: '5', image: '', pos: 'df' }, { name: 'Cầu thủ 4', number: '10', image: '', pos: 'fw' }],
+    squadPage: { title: 'Đội hình', banner: '' },
+    staff: [{ role: 'Huấn luyện viên trưởng', name: 'Alexandre Polking', image: '' }, { role: 'Trợ lý huấn luyện viên', name: 'Luís Viegas', image: '' }],
+    newsPage: { banner: '' },
+    pages: {
+      'ben-le-san-co': { banner: '', intro: 'Những câu chuyện phía sau trận đấu: đời thường cầu thủ, hậu trường và văn hoá CLB.' },
+      'lan-bong': { banner: '', intro: 'Lịch thi đấu, tường thuật và nhận định các trận đấu của CLB Công An Hà Nội.' },
+      'nguoi-ham-mo': { banner: '', intro: 'Tiếp lửa cho đội bóng – nơi những trái tim đỏ cùng chung nhịp đập.' },
+      'multimedia': { banner: '', intro: 'Video, hình ảnh và những khoảnh khắc đáng nhớ của CLB Công An Hà Nội.' },
+    },
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
       { id: 'pve', category: 've', name: 'VÉ XEM TRẬN – CLB CÔNG AN HÀ NỘI', price: 0, description: 'Vé xem trực tiếp các trận sân nhà tại SVĐ Hàng Đẫy mùa giải 2026/27.', image: '' }, { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },

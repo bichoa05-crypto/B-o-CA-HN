@@ -23,6 +23,7 @@ async function showApp() {
   $('#filter').innerHTML = '<option value="">Tất cả chuyên mục</option>' + sections.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
   $('#f_section').innerHTML = sections.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
   renderSections();
+  buildSectionTabs();
   await loadList();
 }
 $('#login').addEventListener('submit', async e => {
@@ -43,10 +44,33 @@ $('#pwBtn').onclick = async () => {
 (async () => { (await fetch('/api/me').then(r => r.json())).admin ? showApp() : showLogin(); })();
 
 // ---------- tabs ----------
-document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+// mỗi chuyên mục một tab: danh sách bài của chuyên mục + phần cài đặt riêng của trang đó (nếu có)
+const SEC_SETTINGS = { 've-chung-toi': 'about', 'doi-hinh': 'squad', 'dong-chay': 'news', 'ben-le-san-co': 'ben-le-san-co', 'lan-bong': 'lan-bong', 'nguoi-ham-mo': 'nguoi-ham-mo', multimedia: 'multimedia' };
+let curSec = '';
+function buildSectionTabs() {
+  const bar = $('.tabs');
+  bar.querySelectorAll('.tab.sec,.sep').forEach(x => x.remove());
+  const after = bar.querySelector('.tab[data-tab="site"]');
+  after.insertAdjacentHTML('afterend', '<span class="sep"></span>' + sections.map(s => `<div class="tab sec" data-tab="posts" data-sec="${esc(s.id)}">${esc(s.name)}</div>`).join('') + '<span class="sep"></span>');
+  const on = bar.querySelector('.tab.on');
+  if (!on || (on.dataset.sec && !sections.some(s => s.id === on.dataset.sec))) showTab(bar.querySelector('.tab[data-tab="posts"]:not(.sec)'));
+}
+function showTab(t) {
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-  ['posts', 'secs', 'site', 'about', 'shop', 'foot', 'orders'].forEach(k => { $('#' + k).hidden = t.dataset.tab !== k; });
-});
+  ['posts', 'secs', 'site', 'shop', 'foot', 'orders'].forEach(k => { $('#' + k).hidden = t.dataset.tab !== k; });
+  if (t.dataset.tab !== 'posts') return;
+  curSec = t.dataset.sec || '';
+  $('#filter').hidden = !!curSec; $('#filter').value = curSec;
+  $('#listHead').hidden = !curSec; $('#listHead').textContent = curSec ? 'Bài viết trong chuyên mục "' + secName(curSec) + '"' : '';
+  let box = document.querySelector('.sec-set[data-sec="' + curSec + '"]');
+  if (!box && SEC_SETTINGS[curSec] && window.mountSiteEditor) {
+    box = document.createElement('div'); box.className = 'sec-set'; box.dataset.sec = curSec;
+    $('#secSets').append(box); window.mountSiteEditor(box, SEC_SETTINGS[curSec]);
+  }
+  document.querySelectorAll('.sec-set').forEach(el => { el.hidden = el.dataset.sec !== curSec; });
+  closeForm(); renderList();
+}
+$('.tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) showTab(t); });
 
 // ---------- list ----------
 async function loadList() { articles = await api('/api/admin/articles'); renderList(); }
@@ -85,9 +109,9 @@ function openForm(a) {
   $('#f_published').checked = a.id ? !!a.published : true;
   $('#ferr').textContent = '';
   syncMedia();
-  $('#listView').hidden = true; $('#formView').hidden = false; scrollTo(0, 0);
+  $('#listView').hidden = $('#secSets').hidden = true; $('#formView').hidden = false; scrollTo(0, 0);
 }
-function closeForm() { $('#formView').hidden = true; $('#listView').hidden = false; }
+function closeForm() { $('#formView').hidden = true; $('#listView').hidden = $('#secSets').hidden = false; }
 $('#cancelBtn').onclick = closeForm;
 
 function syncMedia() {

@@ -4,60 +4,116 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cửa hàng - CLB Bóng đá Công An Hà Nội</title>
+<meta name="description" content="Cửa hàng chính thức CLB Bóng đá Công An Hà Nội: áo đấu, phụ kiện chính hãng. Gửi yêu cầu, nhận xác nhận qua email.">
 <meta name="theme-color" content="#4a0d09">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,600;1,300;1,800&display=swap" rel="stylesheet">
 <script src="fit.js"></script>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sections.css">
+<link rel="stylesheet" href="shop.css">
 </head>
-<body data-header="solid">
-<section class="article-hero"><div class="wrap list-wrap"><h1 id="t">Cửa hàng chính thức</h1><p class="sub" id="sub" style="opacity:.8;margin-top:6px"></p></div></section>
-<nav class="shop-cats" id="cats" aria-label="Loại sản phẩm"></nav>
-<main class="list-page"><div class="shop-grid" id="grid"></div></main>
-<div class="toast" id="toast" role="status" hidden></div>
+<body data-header="solid" class="pg-red pg-shop">
+<main id="main">
+  <!-- đầu trang -->
+  <section class="sh-hero">
+    <div class="sh-in">
+      <div class="sh-tx">
+        <span class="sh-kick">Official Store · Hàng chính hãng</span>
+        <h1 class="sh-title" id="t">Cửa hàng chính thức</h1>
+        <p class="sh-sub" id="sub"></p>
+        <div class="sh-cta"><a class="sh-btn gold" href="#san-pham">Xem sản phẩm</a><a class="sh-btn line" href="#cach-mua">Cách đặt mua</a></div>
+        <ul class="sh-mini"><li><b>100%</b>chính hãng CLB</li><li><b>24h</b>phản hồi qua email</li><li><b>7 ngày</b>đổi size miễn phí</li></ul>
+      </div>
+      <div class="sh-feat" id="feat"></div>
+    </div>
+  </section>
+
+  <!-- quy trình -->
+  <section class="sh-steps" id="cach-mua">
+    <div class="sh-wrap">
+      <h2 class="dh-h"><b>Mua hàng thế nào?</b></h2>
+      <p class="sh-lead">Cửa hàng không thanh toán trực tuyến. Bạn chỉ cần gửi yêu cầu, CLB sẽ xác nhận qua email rồi mới thanh toán – an tâm, đúng size, đúng hàng.</p>
+      <ol class="st-list">
+        <li><span class="st-n">1</span><svg viewBox="0 0 24 24"><path d="M8 3 3 6l2 5 2-1v11h10V10l2 1 2-5-5-3c0 2-2 3-4 3S8 5 8 3z"/></svg><h3>Chọn áo &amp; size</h3><p>Chọn sản phẩm, size, số lượng. Muốn in tên – số riêng cũng được.</p></li>
+        <li><span class="st-n">2</span><svg viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3z"/><path d="M8 9h8M8 12h5"/></svg><h3>Gửi yêu cầu</h3><p>Điền họ tên, số điện thoại và email. Không cần thanh toán lúc này.</p></li>
+        <li><span class="st-n">3</span><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></svg><h3>Nhận email xác nhận</h3><p>CLB kiểm tra tồn kho và gửi email xác nhận đơn kèm hướng dẫn thanh toán.</p></li>
+        <li><span class="st-n">4</span><svg viewBox="0 0 24 24"><path d="M2 7h12v9H2zM14 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><h3>Thanh toán &amp; nhận áo</h3><p>Chuyển khoản theo hướng dẫn, áo được đóng gói và giao tận tay bạn.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- sản phẩm -->
+  <section class="sh-list" id="san-pham">
+    <div class="sh-wrap">
+      <div class="sh-list-h"><h2 class="dh-h"><b>Sản phẩm</b></h2><span class="sh-count" id="count"></span></div>
+      <nav class="shop-cats" id="cats" aria-label="Loại sản phẩm"></nav>
+      <div class="sp-grid" id="spGrid"></div>
+    </div>
+  </section>
+
+  <!-- cam kết -->
+  <section class="sh-perks">
+    <div class="sh-wrap pk-grid">
+      <div class="pk"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><h3>Chính hãng 100%</h3><p>Sản phẩm do CLB phát hành, có tem chống giả.</p></div></div>
+      <div class="pk"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M12 9v8"/></svg><div><h3>In tên &amp; số theo ý bạn</h3><p>Font chữ chuẩn áo thi đấu của đội bóng.</p></div></div>
+      <div class="pk"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg><div><h3>Hỗ trợ đổi size</h3><p>Đổi size miễn phí trong 7 ngày nếu chưa qua sử dụng.</p></div></div>
+      <div class="pk"><svg viewBox="0 0 24 24"><path d="M2 7h12v9H2zM14 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><div><h3>Giao toàn quốc</h3><p>Đóng gói cẩn thận, giao tận nhà trên cả nước.</p></div></div>
+    </div>
+  </section>
+
+  <!-- tư vấn -->
+  <section class="sh-help">
+    <div class="sh-wrap hp-in">
+      <div><h2>Cần tư vấn chọn size?</h2><p>Gọi hotline hoặc gửi email, nhân viên cửa hàng hỗ trợ bạn ngay.</p></div>
+      <div class="hp-act" id="help"></div>
+    </div>
+  </section>
+</main>
+
+<!-- khung liên hệ mua -->
+<div class="bm" id="bm" hidden>
+  <div class="bm-box" role="dialog" aria-modal="true" aria-labelledby="bmName">
+    <button type="button" class="bm-x" id="bmX" aria-label="Đóng">×</button>
+    <form id="bmForm" class="bm-grid" novalidate>
+      <div class="bm-prod">
+        <div class="bm-pic" id="bmPic"></div>
+        <h2 id="bmName"></h2>
+        <div class="bm-price" id="bmPrice"></div>
+        <div id="sizeBox"><div class="bm-lbl">Chọn size <a href="#" id="sizeGuide">Bảng size</a></div>
+        <div class="chips" id="bmSizes"></div></div>
+        <div class="sg" id="sgBox" hidden><table><tr><th>Size</th><th>Cao (cm)</th><th>Nặng (kg)</th></tr><tr><td>S</td><td>155–163</td><td>45–55</td></tr><tr><td>M</td><td>163–170</td><td>55–63</td></tr><tr><td>L</td><td>170–176</td><td>63–70</td></tr><tr><td>XL</td><td>176–182</td><td>70–78</td></tr><tr><td>XXL</td><td>182–188</td><td>78–88</td></tr></table></div>
+        <div class="bm-row">
+          <div><div class="bm-lbl">Số lượng</div><div class="qty"><button type="button" data-q="-1" aria-label="Bớt">−</button><input id="bmQty" type="number" min="1" max="50" value="1" aria-label="Số lượng"><button type="button" data-q="1" aria-label="Thêm">+</button></div></div>
+          <div class="bm-total"><span>Tạm tính</span><b id="bmTotal"></b></div>
+        </div>
+        <label class="tg"><input type="checkbox" id="bmPrint"> <span>In tên &amp; số áo theo yêu cầu</span></label>
+        <div class="print" id="printBox" hidden><input id="bmPN" maxlength="20" placeholder="Tên in (vd: QUANG HAI)"><input id="bmPNo" maxlength="2" inputmode="numeric" placeholder="Số"></div>
+      </div>
+      <div class="bm-form">
+        <h3>Thông tin liên hệ</h3>
+        <p class="bm-note">CLB sẽ gửi <b>email xác nhận</b> trước khi bạn thanh toán.</p>
+        <label>Họ và tên *<input id="fName" autocomplete="name" required></label>
+        <div class="two"><label>Số điện thoại *<input id="fPhone" type="tel" autocomplete="tel" required></label><label>Email *<input id="fEmail" type="email" autocomplete="email" required></label></div>
+        <label>Địa chỉ nhận hàng<input id="fAddr" autocomplete="street-address" placeholder="Số nhà, đường, phường/xã, tỉnh/thành"></label>
+        <label>Ghi chú<textarea id="fNote" rows="2" placeholder="Thời gian nhận hàng, yêu cầu khác…"></textarea></label>
+        <div class="bm-lbl">Liên hệ với tôi qua</div>
+        <div class="chips sm" id="fBy"><button type="button" data-v="email" class="on">Email</button><button type="button" data-v="phone">Điện thoại</button><button type="button" data-v="zalo">Zalo</button></div>
+        <div class="bm-err" id="bmErr" role="alert"></div>
+        <button class="bm-send" id="bmSend">Gửi yêu cầu mua hàng</button>
+        <p class="bm-fine">Chưa phải thanh toán. Thông tin chỉ dùng để liên hệ về đơn hàng này.</p>
+      </div>
+    </form>
+    <div class="bm-done" id="bmDone" hidden></div>
+  </div>
+</div>
+
 <script src="demo.js"></script>
 <script src="common.js"></script>
 <script src="sponsors-map.js"></script>
 <script src="layout.js"></script>
-<script>
-(async () => {
-  const siteData = await getJSON('/api/site', null);
-  const site = siteData && siteData.hero ? siteData : window.DEMO_SITE;
-  const s = site.shop;
-  $('#t').textContent = s.title; $('#sub').textContent = s.subtitle;
-  const CAT = { ve: 'Vé', ao: 'Áo', bong: 'Bóng', khac: 'Khác' }, ORDER = ['ve', 'ao', 'bong', 'khac'];
-  const prods = s.products.map((p, i) => ({ ...p, id: p.id || 'demo' + i, category: p.category || (/kit|áo/i.test(p.name) ? 'ao' : 'khac') }))
-    .sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category));
-  const present = ORDER.filter(c => prods.some(p => p.category === c));
-  let cat = new URLSearchParams(location.search).get('cat') || (/^#(ve|ao|bong|khac)$/.test(location.hash) ? location.hash.slice(1) : 'all');
-  if (cat !== 'all' && !present.includes(cat)) cat = 'all';
-  const card = p => `
-    <article class="prod rv" id="${esc(p.id)}">
-      <span class="prod-tag">${CAT[p.category]}</span>
-      <div class="prod-pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : catIcon(p.category)}</div>
-      <h3>${esc(p.name)}</h3>
-      ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
-      <div class="price">${p.price ? money(p.price) : 'Liên hệ'}</div>
-      <div class="prod-act">${p.price ? `<button class="pill ghost" data-add="${esc(p.id)}">Thêm vào giỏ</button><button class="pill solid" data-buy="${esc(p.id)}">Mua ngay</button>` : `<a class="pill solid" href="#lien-he">${p.category === 've' ? 'Liên hệ mua vé' : 'Liên hệ để mua'}</a>`}</div>
-    </article>`;
-  const draw = () => {
-    $('#cats').innerHTML = present.length > 1 ? ['all', ...present].map(c => `<button type="button" class="${c === cat ? 'on' : ''}" data-c="${c}">${c === 'all' ? 'Tất cả' : CAT[c]} <i>${c === 'all' ? prods.length : prods.filter(p => p.category === c).length}</i></button>`).join('') : '';
-    const list = cat === 'all' ? prods : prods.filter(p => p.category === cat);
-    $('#grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">Cửa hàng đang cập nhật sản phẩm.</p>';
-    reveal();
-  };
-  $('#cats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; cat = b.dataset.c; history.replaceState(null, '', cat === 'all' ? 'shop.html' : 'shop.html?cat=' + cat); draw(); });
-  draw();
-  const t = $('#toast');
-  $('#grid').addEventListener('click', e => {
-    const a = e.target.closest('[data-add]'), b = e.target.closest('[data-buy]');
-    if (a) { cart.add(a.dataset.add); t.textContent = 'Đã thêm vào giỏ hàng'; t.hidden = false; clearTimeout(t._t); t._t = setTimeout(() => t.hidden = true, 1800); }
-    if (b) { cart.add(b.dataset.buy); location.href = 'cart.html'; }
-  });
-  if (location.hash) { const el = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (el) { el.scrollIntoView({ block: 'center' }); el.classList.add('flash'); } }
-})();
-</script>
+<script src="shop.js"></script>
 </body>
 </html>

@@ -619,3 +619,4 @@ a.lb-buy:hover{background:#d5352c;transform:translateY(-2px)}
 @media(max-width:560px){.lb-cards{grid-template-columns:1fr}}
 .m-buy:not(.off){background:#1f9d57;border-color:#bfe8d1}
 .m-buy:not(.off):hover{background:#17804a}
+.sh-list .shop-cats{max-width:none;margin:0 0 22px;padding:0}
