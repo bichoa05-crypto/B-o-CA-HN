@@ -32,19 +32,8 @@ function renderHero(list) {
 /* ---------- giải đấu ---------- */
 const initials = s => String(s || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
 function renderMatches(list) {
-  $('#matches').innerHTML = list.map((m, i) => `
-    <div class="m-col rv ${i === 0 ? 'on' : ''}" style="--d:${i * .08}s">
-      <div class="m-tab">${esc(m.name)}</div>
-      <div class="m-card">
-        <div class="m-teams">
-          <div class="m-team">${m.homeLogo ? `<img class="m-logo" src="${esc(m.homeLogo)}" alt="">` : `<span class="m-logo">${esc(initials(m.homeName))}</span>`}<div class="m-name">${esc(m.homeName)}</div></div>
-          <div class="m-vs">VS</div>
-          <div class="m-team">${m.awayLogo ? `<img class="m-logo" src="${esc(m.awayLogo)}" alt="">` : `<span class="m-logo">${esc(initials(m.awayName))}</span>`}<div class="m-name">${esc(m.awayName)}</div></div>
-        </div>
-        <div class="m-when">${esc(m.date)}<i></i>${esc(m.time)}</div>
-        ${buyBtn(m)}
-      </div></div>`).join('');
-  document.querySelectorAll('.m-col').forEach(c => c.addEventListener('mouseenter', () => { document.querySelectorAll('.m-col').forEach(x => x.classList.toggle('on', x === c)); }));
+  $('#matches').innerHTML = list.map((m, i) => matchCard(m, i)).join('');
+  matchHover($('#matches'));
 }
 
 /* ---------- bài viết ---------- */

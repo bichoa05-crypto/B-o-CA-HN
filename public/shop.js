@@ -31,7 +31,10 @@
     const list = cat === 'all' ? prods : prods.filter(p => p.category === cat);
     $('#cats').innerHTML = present.length > 1 ? ['all', ...present].map(c => `<button type="button" class="${c === cat ? 'on' : ''}" data-c="${c}">${c === 'all' ? 'Tất cả' : CAT[c]} <i>${c === 'all' ? prods.length : prods.filter(p => p.category === c).length}</i></button>`).join('') : '';
     $('#count').textContent = list.length ? list.length + ' sản phẩm' : '';
-    $('#spGrid').innerHTML = list.length ? list.map((p, i) => `
+    const tk = list.filter(p => p.match), rest = list.filter(p => !p.match);
+    $('#tkGrid').innerHTML = tk.map((p, i) => matchCard(p.match, i, `<button type="button" class="m-buy" data-buy="${esc(p.id)}">${p.price ? 'Đặt vé · ' + money(p.price) : 'Đặt vé'}</button>`).replace('class="m-col', `id="${esc(p.id)}" class="m-col`)).join('');
+    $('#tkGrid').hidden = !tk.length; matchHover($('#tkGrid'));
+    $('#spGrid').innerHTML = rest.length ? rest.map((p, i) => `
     <article class="sp rv" id="${esc(p.id)}" style="--d:${(i % 4) * .07}s">
       <button type="button" class="sp-pic" data-buy="${esc(p.id)}" aria-label="Liên hệ mua ${esc(p.name)}"><span class="sp-tag">${CAT[p.category]}</span>${pic(p)}<span class="sp-quick">${p.category === 'ao' ? 'Chọn size' : 'Đặt mua'}</span></button>
       <div class="sp-body">
@@ -40,7 +43,7 @@
         ${p.category === 'ao' ? `<div class="sp-sizes">${SIZES(p).map(z => `<span>${esc(z)}</span>`).join('')}</div>` : ''}
         <div class="sp-foot"><b class="sp-price">${price(p)}</b><button type="button" class="sp-btn" data-buy="${esc(p.id)}">${p.category === 've' ? 'Đặt vé' : 'Liên hệ mua'}</button></div>
       </div>
-    </article>`).join('') : '<p class="empty">Cửa hàng đang cập nhật sản phẩm.</p>';
+    </article>`).join('') : (tk.length ? '' : '<p class="empty">Cửa hàng đang cập nhật sản phẩm.</p>');
     reveal();
   };
   $('#cats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; cat = b.dataset.c; history.replaceState(null, '', cat === 'all' ? 'shop.html' : 'shop.html?cat=' + cat); draw(); });

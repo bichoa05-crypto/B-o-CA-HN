@@ -56,3 +56,20 @@ const buyHref = m => m.ticketUrl && safeLink(m.ticketUrl) !== '#' ? safeLink(m.t
 const buyBtn = (m, cls = 'm-buy') => m.saleStatus === 'soon' ? `<span class="${cls} off">Sắp mở bán</span>` : `<a class="${cls}" href="${esc(buyHref(m))}" ${/^https?:/i.test(buyHref(m)) ? 'target="_blank" rel="noopener"' : ''}>Đã mở bán</a>`;
 const initialsOf = s => String(s || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
 const POS_NAME = { gk: 'Thủ môn', df: 'Hậu vệ', mf: 'Tiền vệ', fw: 'Tiền đạo' };
+
+// thẻ trận đấu dùng chung (trang chủ, Lăn bóng, Cửa hàng) – cùng một thiết kế
+const matchLogo = (src, n) => src ? `<img class="m-logo" src="${esc(src)}" alt="">` : `<span class="m-logo">${esc(initialsOf(n))}</span>`;
+function matchCard(m, i = 0, btn) {
+  return `<div class="m-col rv ${i === 0 ? 'on' : ''}" style="--d:${i * .08}s">
+      <div class="m-tab">${esc(m.name)}</div>
+      <div class="m-card">
+        <div class="m-teams">
+          <div class="m-team">${matchLogo(m.homeLogo, m.homeName)}<div class="m-name">${esc(m.homeName)}</div></div>
+          <div class="m-vs">VS</div>
+          <div class="m-team">${matchLogo(m.awayLogo, m.awayName)}<div class="m-name">${esc(m.awayName)}</div></div>
+        </div>
+        <div class="m-when">${esc(m.date)}<i></i>${esc(m.time)}</div>
+        ${btn || buyBtn(m)}
+      </div></div>`;
+}
+function matchHover(root) { const cols = [...(root || document).querySelectorAll('.m-col')]; cols.forEach(c => c.addEventListener('mouseenter', () => cols.forEach(x => x.classList.toggle('on', x === c)))); }

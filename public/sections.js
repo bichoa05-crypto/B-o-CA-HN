@@ -171,11 +171,8 @@ async function renderMatchPage(site, all, id, name) {
   const cfg = pageCfg(site, id), list = secList(all, id), games = (site.tournaments || []).slice(0, 4);
   const hero = `<section class="lb-hero">${cfg.banner ? `<div class="bg"${bgStyle(cfg.banner)}></div>` : ''}<div class="pitch" aria-hidden="true"></div>
     <div class="dc-wrap"><span class="lb-kick">Mùa giải ${new Date().getFullYear()}</span><h1 class="lb-title">${esc(name)}</h1>${cfg.intro ? `<p class="lb-intro">${esc(cfg.intro)}</p>` : ''}</div></section>`;
-  const fixtures = games.length ? `<section class="lb-fix"><div class="dc-wrap"><div class="lb-fix-grid">${games.map(g => `<article class="fx">
-    <h3>${esc(g.name)}</h3>
-    <div class="fx-m"><div class="tm">${teamLogo(g.homeLogo, g.homeName)}<span>${esc(g.homeName)}</span></div><div class="fx-t"><b>${esc(g.time || 'VS')}</b><span>${esc(g.date)}</span></div><div class="tm">${teamLogo(g.awayLogo, g.awayName)}<span>${esc(g.awayName)}</span></div></div>
-    ${buyBtn(g, 'fx-b')}</article>`).join('')}</div></div></section>` : '';
-  if (!list.length) { $('#special').innerHTML = hero + fixtures + `<div class="dc-wrap">${emptyMsg}</div>`; return; }
+  const fixtures = games.length ? `<section class="lb-fix"><div class="dc-wrap"><div class="m-grid">${games.map((g, i) => matchCard(g, i)).join('')}</div></div></section>` : '';
+  if (!list.length) { $('#special').innerHTML = hero + fixtures + `<div class="dc-wrap">${emptyMsg}</div>`; matchHover(); reveal(); return; }
   const lead = list.find(a => a.featured) || list[0];
   const side = list.filter(a => a !== lead).slice(0, 2);
   const more = list.filter(a => a !== lead && !side.includes(a));
@@ -183,7 +180,7 @@ async function renderMatchPage(site, all, id, name) {
     <h2 class="dh-h"><b>Tin trận đấu</b></h2>
     <div class="lb-mag">${ovCard(lead, 0, ' big')}${side.length ? `<div class="col">${side.map((a, i) => ovCard(a, i + 1)).join('')}</div>` : ''}</div>
     <div id="pgMore" class="lb-more">${more.length ? '<h2 class="dh-h"><b>Tin khác</b></h2>' : ''}${moreHtml(more)}</div></div>`;
-  wireMore(more);
+  wireMore(more); matchHover(); reveal();
 }
 
 /* ---------- NGƯỜI HÂM MỘ: ấm áp, lưới bento ---------- */
