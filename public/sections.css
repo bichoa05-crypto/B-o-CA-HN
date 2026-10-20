@@ -178,10 +178,13 @@ body.pg-news{background:#f4f4f4 linear-gradient(115deg,#f7f7f7 0%,#ececec 30%,#f
 .sd-grid .ac .th{aspect-ratio:16/9}
 .sd-grid .none{color:var(--muted)}
 .sd-side .dc-tags{margin-top:clamp(28px,calc(3 * var(--vw)),40px)}
-.sd-tg h2{margin-bottom:clamp(12px,calc(1.2 * var(--vw)),16px)}
-.tg-row{display:flex;gap:10px;margin-bottom:10px}
-.tg-row.one{padding-left:clamp(20px,calc(2.6 * var(--vw)),36px)}
-.sd-tg .tg-row a{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;padding:7px 12px;font-size:clamp(12px,calc(1 * var(--vw)),13.5px)}
+.sd-tg h2{margin-bottom:clamp(12px,calc(1.2 * var(--vw)),16px);box-shadow:0 8px 18px -8px #0006}
+#sdTags{display:flex;flex-direction:column;gap:10px;align-self:stretch}
+.tg-row{display:flex;gap:10px}
+.tg-row.one{justify-content:center}
+.sd-tg .tg-row a{flex:1 1 0;margin:0;min-width:0;max-width:none;text-align:center;overflow:hidden;text-overflow:ellipsis;padding:8px 10px;font-size:clamp(12px,calc(1 * var(--vw)),13.5px)}
+.sd-tg .tg-row.one a{flex:0 1 auto;min-width:56%}
+.sd-tg .tg-row a:hover{transform:translateY(-2px)}
 .sd-rank{background:#fff;box-shadow:0 12px 26px -10px #0004,0 1px 3px #0001}
 .sd-rank h2{background:var(--dk);font-family:var(--body);font-weight:800;text-transform:uppercase;font-size:clamp(17px,calc(1.6 * var(--vw)),22px);line-height:1;text-align:center;padding:clamp(16px,calc(1.5 * var(--vw)),20px) 10px}
 .sd-rank h2 span{background:linear-gradient(180deg,#fbe2b2,#e9bd78);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
