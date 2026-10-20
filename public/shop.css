@@ -189,3 +189,7 @@
 .bm-pic.is-match .m-buy{pointer-events:none}
 .bm-pic.is-match .m-card::before{font-size:clamp(70px,8vw,120px)}
 .bm-pic.is-match .m-col{width:100%;max-width:none}
+
+.ft-match .m-col{width:100%}
+.ft-match .m-tab{color:var(--maroon);border-bottom-color:var(--maroon);margin:30px 0 14px}
+.ft-match .m-card{margin-top:0}

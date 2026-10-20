@@ -23,9 +23,11 @@
   document.title = (s.title || 'Cửa hàng') + ' - CLB Bóng đá Công An Hà Nội';
 
   // sản phẩm nổi bật ở đầu trang (số 1 = bán chạy nhất)
-  const top = prods[0];
+  // ô nổi bật: sản phẩm bán chạy nhất (áo/bóng); nếu cửa hàng chỉ có vé thì hiện trận gần nhất bằng thẻ Giải đấu
+  const top = prods.find(p => !p.match), nextMatch = prods.find(p => p.match);
   $('#feat').innerHTML = top ? `<div class="ft-card"><span class="ft-badge">Bán chạy nhất</span><div class="ft-pic">${pic(top)}</div>
-    <div class="ft-info"><h3>${esc(top.name)}</h3><b>${price(top)}</b><button type="button" class="sh-btn gold sm" data-buy="${esc(top.id)}">Liên hệ mua</button></div></div>` : '';
+    <div class="ft-info"><h3>${esc(top.name)}</h3><b>${price(top)}</b><button type="button" class="sh-btn gold sm" data-buy="${esc(top.id)}">Liên hệ mua</button></div></div>`
+    : nextMatch ? `<div class="ft-card ft-match"><span class="ft-badge">Trận sắp tới</span>${matchCard(nextMatch.match, 0, `<button type="button" class="m-buy" data-buy="${esc(nextMatch.id)}">Đặt vé</button>`).replace(' rv ', ' ')}</div>` : '';
 
   const draw = () => {
     const list = cat === 'all' ? prods : prods.filter(p => p.category === cat);
