@@ -33,10 +33,10 @@ const SECTION_MIGRATION = { 'thoi-su': 'lan-bong', 'an-ninh': 'dong-chay', 'phap
 const DEFAULT_SITE = {
   hero: [{ image: '', line1: 'CLB CÔNG AN HÀ NỘI CHÍNH THỨC', line2: 'VÔ ĐỊCH V.LEAGUE 2025/26', button: 'Đọc bài viết', link: '#dong-chay' }],
   tournaments: [
-    { name: 'LPBANK V.LEAGUE 1 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Hà Nội', awayLogo: '', date: '18/10', time: '19:15', ticketUrl: '#' },
-    { name: 'AFC CHAMPIONS LEAGUE ELITE 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Đông Á Thanh Hóa', awayLogo: '', date: '22/10', time: '19:15', ticketUrl: '#' },
-    { name: 'ASEAN CLUB CHAMPIONSHIP SHOPEE CUP 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Sông Lam Nghệ An', awayLogo: '', date: '31/10', time: '18:00', ticketUrl: '#' },
-    { name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
+    { id: 'm1', ticketPrice: 0, name: 'LPBANK V.LEAGUE 1 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Hà Nội', awayLogo: '', date: '18/10', time: '19:15', ticketUrl: '#' },
+    { id: 'm2', ticketPrice: 0, name: 'AFC CHAMPIONS LEAGUE ELITE 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Đông Á Thanh Hóa', awayLogo: '', date: '22/10', time: '19:15', ticketUrl: '#' },
+    { id: 'm3', ticketPrice: 0, name: 'ASEAN CLUB CHAMPIONSHIP SHOPEE CUP 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Sông Lam Nghệ An', awayLogo: '', date: '31/10', time: '18:00', ticketUrl: '#' },
+    { id: 'm4', ticketPrice: 0, name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
   ],
   intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
   squad: [
@@ -60,7 +60,6 @@ const DEFAULT_SITE = {
   shop: {
     title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất',
     products: [
-      { id: 'pve', category: 've', name: 'VÉ XEM TRẬN – CLB CÔNG AN HÀ NỘI', price: 0, description: 'Vé xem trực tiếp các trận sân nhà tại SVĐ Hàng Đẫy mùa giải 2026/27.', image: '', link: '' },
       { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '', link: '' },
       { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
       { id: 'p3homei', category: 'ao', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '', link: '' },
@@ -161,11 +160,13 @@ function migrate(db) {
     db.site.footer = { ...d, facebook: o.facebook || '', youtube: o.youtube || '', tiktok: o.tiktok || '', zalo: o.zalo || '', bank: o.bank || d.bank };
     changed = true;
   }
+  if (db.site && Array.isArray(db.site.tournaments)) db.site.tournaments.forEach((t, k) => { if (!t.id) { t.id = 'm' + (k + 1) + crypto.randomBytes(2).toString('hex'); t.ticketPrice = t.ticketPrice || 0; changed = true; } });
   if (db.site && db.site.shop && Array.isArray(db.site.shop.products)) { // cửa hàng bán 3 loại: Vé, Áo, Bóng
-    const ps = db.site.shop.products;
+    let ps = db.site.shop.products;
+    const k0 = ps.findIndex(p => p.id === 'pve' && !p.price && !p.image); if (k0 >= 0) { ps.splice(k0, 1); changed = true; } // vé giờ bán theo từng trận
     ps.forEach(p => { if (!p.category) { p.category = /kit|áo|ao /i.test(p.name || '') ? 'ao' : 'khac'; changed = true; } });
     const defs = DEFAULT_SITE.shop.products;
-    for (const c of ['ve', 'bong']) if (!ps.some(p => p.category === c)) { ps.push({ ...defs.find(d => d.category === c) }); changed = true; }
+    for (const c of ['bong']) if (!ps.some(p => p.category === c)) { ps.push({ ...defs.find(d => d.category === c) }); changed = true; }
   }
   if (db.site && db.site.shop) for (const [i, p] of db.site.shop.products.entries()) {
     if (!p.id) { p.id = 'p' + (i + 1) + crypto.randomBytes(2).toString('hex'); changed = true; }
@@ -413,7 +414,7 @@ function cleanSite(i = {}) {
   const o = i.multimedia || {}, sh = i.shop || {}, h = i.honors || {}, it = i.intro || {};
   return {
     hero: L(i.hero, 10, x => ({ articleId: /^[\w-]{2,24}$/.test(x.articleId || '') ? x.articleId : '', image: MEDIA(x.image), line1: T(x.line1, 120), line2: T(x.line2, 120), button: T(x.button, 40), link: LINK(x.link) })),
-    tournaments: L(i.tournaments, 8, x => ({ name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl), saleStatus: x.saleStatus === 'soon' ? 'soon' : 'open' })),
+    tournaments: L(i.tournaments, 8, x => ({ id: /^[\w-]{2,24}$/.test(x.id || '') ? x.id : 'm' + crypto.randomBytes(4).toString('hex'), ticketPrice: Math.min(1e8, Math.max(0, Math.round(Number(x.ticketPrice) || 0))), name: T(x.name, 100), homeName: T(x.homeName, 60), homeLogo: MEDIA(x.homeLogo), awayName: T(x.awayName, 60), awayLogo: MEDIA(x.awayLogo), date: T(x.date, 20), time: T(x.time, 20), ticketUrl: LINK(x.ticketUrl), saleStatus: x.saleStatus === 'soon' ? 'soon' : 'open' })),
     intro: { line1: T(it.line1, 60), line2: T(it.line2, 60) },
     squad: L(i.squad, 60, x => ({ name: T(x.name, 60), number: T(x.number, 4), image: MEDIA(x.image), pos: POS.includes(x.pos) ? x.pos : '' })),
     squadPage: { title: T((i.squadPage || {}).title, 40), banner: MEDIA((i.squadPage || {}).banner) },
@@ -567,7 +568,9 @@ app.post('/api/shop/requests', wrap(async (req, res) => {
   const site = (await loadDb()).site || DEFAULT_SITE;
   const items = [];
   for (const it of (Array.isArray(b.items) ? b.items : []).slice(0, 10)) {
-    const p = site.shop.products.find(x => x.id === it.id), qty = Math.round(Number(it.qty));
+    const m = (site.tournaments || []).find(x => x.id === it.id && x.saleStatus !== 'soon');
+    const p = site.shop.products.find(x => x.id === it.id) || (m && { id: m.id, category: 've', price: m.ticketPrice || 0, name: `Vé ${m.homeName} vs ${m.awayName} – ${m.date} ${m.time} (${m.name})` });
+    const qty = Math.round(Number(it.qty));
     if (!p || !(qty >= 1 && qty <= 50)) continue;
     const sizes = String(p.sizes || '').split(/[,;/]+/).map(s => s.trim()).filter(Boolean);
     const size = T(it.size, 10).trim();

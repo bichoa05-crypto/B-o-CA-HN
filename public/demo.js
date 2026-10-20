@@ -39,10 +39,10 @@
   window.DEMO_SITE = {
     hero: [{ image: '', line1: 'CLB CÔNG AN HÀ NỘI CHÍNH THỨC', line2: 'VÔ ĐỊCH V.LEAGUE 2025/26', button: 'Đọc bài viết', link: '#dong-chay' }],
     tournaments: [
-      { name: 'LPBANK V.LEAGUE 1 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Hà Nội', awayLogo: '', date: '18/10', time: '19:15', ticketUrl: '#' },
-      { name: 'AFC CHAMPIONS LEAGUE ELITE 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Đông Á Thanh Hóa', awayLogo: '', date: '22/10', time: '19:15', ticketUrl: '#' },
-      { name: 'ASEAN CLUB CHAMPIONSHIP SHOPEE CUP 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Sông Lam Nghệ An', awayLogo: '', date: '31/10', time: '18:00', ticketUrl: '#' },
-      { name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
+      { id: 'm1', ticketPrice: 0, name: 'LPBANK V.LEAGUE 1 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Hà Nội', awayLogo: '', date: '18/10', time: '19:15', ticketUrl: '#' },
+      { id: 'm2', ticketPrice: 0, name: 'AFC CHAMPIONS LEAGUE ELITE 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Đông Á Thanh Hóa', awayLogo: '', date: '22/10', time: '19:15', ticketUrl: '#' },
+      { id: 'm3', ticketPrice: 0, name: 'ASEAN CLUB CHAMPIONSHIP SHOPEE CUP 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Sông Lam Nghệ An', awayLogo: '', date: '31/10', time: '18:00', ticketUrl: '#' },
+      { id: 'm4', ticketPrice: 0, name: 'CÚP QUỐC GIA SACOMBANK 2026/27', homeName: 'Công an Hà Nội', homeLogo: '', awayName: 'Công an TP.HCM', awayLogo: '', date: '07/11', time: '19:15', ticketUrl: '#' },
     ],
     intro: { line1: 'CONG AN HA NOI', line2: 'SINCE 1956' },
     squad: [{ name: 'Filip Nguyen', number: '1', image: '', pos: 'gk' }, { name: 'Nguyen Quang Hai', number: '19', image: '', pos: 'mf' }, { name: 'Doan Van Hau', number: '5', image: '', pos: 'df' }, { name: 'Cầu thủ 4', number: '10', image: '', pos: 'fw' }],
@@ -57,7 +57,7 @@
     },
     multimedia: { image: '', button: 'Xem tất cả', link: 'section.html?s=multimedia' },
     shop: { title: 'Cửa hàng chính thức', subtitle: 'Sản phẩm bán chạy nhất', products: [
-      { id: 'pve', category: 've', name: 'VÉ XEM TRẬN – CLB CÔNG AN HÀ NỘI', price: 0, description: 'Vé xem trực tiếp các trận sân nhà tại SVĐ Hàng Đẫy mùa giải 2026/27.', image: '' }, { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },
+      { id: 'p1home', category: 'ao', name: 'HOME KIT V.LEAGUE 2026', price: 350000, description: '', image: '' }, { id: 'p2away', category: 'ao', name: 'AWAY KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' },
       { id: 'p3homei', category: 'ao', name: 'HOME KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'p4third', category: 'ao', name: 'THIRD KIT INTERNATIONAL 2026', price: 350000, description: '', image: '' }, { id: 'pbong', category: 'bong', name: 'BÓNG CHÍNH THỨC CLB CÔNG AN HÀ NỘI', price: 0, description: 'Bóng lưu niệm chính thức của CLB.', image: '' }] },
     honors: { title: 'CÔNG AN HÀ NỘI FC', banner: '', items: [
       { year: '1962', name: 'Giải hạng A miền Bắc', result: 'champion' }, { year: '1962', name: 'Giải vô địch thống nhất miền Bắc', result: 'champion' },

@@ -4,13 +4,18 @@
   const site = siteData && siteData.hero ? siteData : window.DEMO_SITE;
   const s = site.shop || {}, f = site.footer || {};
   const CAT = { ve: 'Vé', ao: 'Áo', bong: 'Bóng', khac: 'Khác' }, ORDER = ['ve', 'ao', 'bong', 'khac'];
-  const prods = (s.products || []).map((p, i) => ({ ...p, id: p.id || 'demo' + i, category: p.category || (/kit|áo/i.test(p.name) ? 'ao' : 'khac') }))
+  // vé: mỗi trận đang mở bán là một sản phẩm riêng
+  const tickets = (site.tournaments || []).filter(m => m.id && m.saleStatus !== 'soon' && !(m.ticketUrl && safeLink(m.ticketUrl) !== '#')).map(m => ({
+    id: m.id, category: 've', match: m, price: m.ticketPrice || 0, name: `Vé ${m.homeName} vs ${m.awayName}`,
+    description: `${m.name} · ${m.date}${m.time ? ' · ' + m.time : ''}` }));
+  const prods = [...tickets, ...(s.products || []).filter(p => p.id !== 'pve').map((p, i) => ({ ...p, id: p.id || 'demo' + i, category: p.category || (/kit|áo/i.test(p.name) ? 'ao' : 'khac') }))]
     .sort((a, b) => ORDER.indexOf(a.category) - ORDER.indexOf(b.category));
   const present = ORDER.filter(c => prods.some(p => p.category === c));
   const qs = new URLSearchParams(location.search).get('cat');
   let cat = present.includes(qs) ? qs : 'all';
   const SIZES = p => { const l = String(p.sizes || '').split(/[,;/]+/).map(x => x.trim()).filter(Boolean); return l.length ? l : ['S', 'M', 'L', 'XL', 'XXL']; };
-  const pic = p => p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : catIcon(p.category);
+  const logo = (src, n) => src ? `<img src="${esc(src)}" alt="${esc(n)}">` : `<span>${esc(initialsOf(n))}</span>`;
+  const pic = p => p.match ? `<div class="tk-pic"><div class="tk-t">${logo(p.match.homeLogo, p.match.homeName)}</div><b>VS</b><div class="tk-t">${logo(p.match.awayLogo, p.match.awayName)}</div><em>${esc(p.match.date)}${p.match.time ? ' · ' + esc(p.match.time) : ''}</em></div>` : p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : catIcon(p.category);
   const price = p => p.price ? money(p.price) : 'Liên hệ báo giá';
 
   $('#t').textContent = s.title || 'Cửa hàng chính thức';
@@ -105,7 +110,7 @@
   // mở từ trang chủ (shop.html#ma-san-pham): cuộn tới và mở khung liên hệ
   if (location.hash.length > 1) {
     const id = decodeURIComponent(location.hash.slice(1)), el = document.getElementById(id);
-    if (!el && prods.some(p => p.id === id)) { cat = 'all'; draw(); }
+    if (!el && prods.some(p => p.id === id)) { const pp = prods.find(p => p.id === id); cat = present.includes(pp.category) ? pp.category : 'all'; draw(); }
     const el2 = document.getElementById(id);
     if (el2 && prods.some(p => p.id === id)) { el.scrollIntoView({ block: 'center' }); el.classList.add('flash'); setTimeout(() => open(id), 500); }
   }
