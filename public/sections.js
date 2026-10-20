@@ -100,8 +100,8 @@ async function renderNewsPage(site, all, id, name) {
 const secList = (all, id) => demoOr(all).filter(a => a.section === id).sort((a, b) => b.createdAt - a.createdAt);
 const hotTags = (all, n = 9) => {
   const cnt = new Map();
-  demoOr(all).forEach(a => (a.tags || []).forEach(t => { const k = String(t).trim(); if (k) cnt.set(k, (cnt.get(k) || 0) + 1); }));
-  return [...cnt].sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]);
+  demoOr(all).forEach(a => (a.tags || []).forEach(t => { const v = String(t).trim(), k = v.toLowerCase(); if (k) { const c = cnt.get(k) || [v, 0]; c[1]++; cnt.set(k, c); } }));
+  return [...cnt.values()].sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]);
 };
 const byViews = async list => { const v = await getJSON('/api/views', {}); return [...list].sort((a, b) => (v[b.id] || 0) - (v[a.id] || 0) || b.createdAt - a.createdAt); };
 const pageCfg = (site, id) => ((site.pages || {})[id]) || {};
@@ -133,16 +133,16 @@ async function renderSidePage(site, all, id, name) {
   const most = (await byViews(list)).slice(0, 5);
   const shown = new Set([feat, ...latest]);
   const more = list.filter(a => !shown.has(a));
-  const tags = hotTags(all, 12);
+  const tags = hotTags(all, 6);
   $('#special').innerHTML = head + `
     <div class="dc-feat rev"><a href="${href(feat)}"><div class="tx">${t2(feat.title, 'h2')}${feat.summary ? `<p>${esc(feat.summary)}</p>` : ''}<time>${dmy(feat.createdAt)}</time></div><div class="ph-wrap">${thumb(feat, 0)}</div></a></div>
     <div class="sd-row">
       <div><div class="dc-head"><h2>Tin mới nhất</h2><div class="ln"><a href="#pgMore" data-all>Xem tất cả</a></div></div>
         <div class="sd-grid">${latest.map((a, i) => acCard(a, i + 1, ' box-c sm')).join('') || '<p class="none">Chưa có bài khác.</p>'}</div></div>
-      <aside class="sd-rank"><h2><span>Đọc nhiều nhất</span></h2><ol>${most.map((a, i) => `<li><a href="${href(a)}"><b>${p2(i + 1)}</b><div>${t2(a.title)}<time>${dmy(a.createdAt)}</time></div></a></li>`).join('')}</ol></aside>
+      <aside class="sd-side"><div class="sd-rank"><h2><span>Đọc nhiều nhất</span></h2><ol>${most.map((a, i) => `<li><a href="${href(a)}"><b>${p2(i + 1)}</b><div>${t2(a.title)}<time>${dmy(a.createdAt)}</time></div></a></li>`).join('')}</ol></div>
+        ${tags.length ? `<div class="dc-tags"><h2><span>Tags hot trend</span></h2>${tags.map((t, i) => `<a href="search.html?tag=${encodeURIComponent(t)}" style="--x:${TAG_X[i % TAG_X.length]}px">#${esc(t)}</a>`).join('')}</div>` : ''}</aside>
     </div>
   </div>
-  ${tags.length ? `<section class="sd-tags"><div class="dc-wrap"><h2>Tags hot trend</h2><div>${tags.map(t => `<a href="search.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div></div></section>` : ''}
   <div class="dc-more" id="pgMore"><div class="dc-wrap">${more.length ? '<div class="dc-head"><h2>Bài viết khác</h2><div class="ln"></div></div><div style="height:clamp(16px,calc(2 * var(--vw)),28px)"></div>' : ''}${moreHtml(more)}</div></div>`;
   wireMore(more);
 }
