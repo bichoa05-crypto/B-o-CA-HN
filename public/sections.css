@@ -415,3 +415,5 @@ a:hover>.mv-play,a:hover .th .mv-play{transform:translate(-50%,-50%) scale(1.1);
 .mv-card{transition:transform .35s var(--ease)}
 @media(max-width:900px){.mm-grid3{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.mm-grid3{grid-template-columns:1fr}.mm-sh{flex-direction:column;align-items:flex-start}}
+.lb-hero .pitch,.lb-hero .pitch::before,.lb-hero .pitch::after{display:none}
+.lb-hero::before,.lb-hero::after{content:none;display:none}
