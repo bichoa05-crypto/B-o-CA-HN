@@ -97,14 +97,16 @@ $('#newBtn').onclick = () => openForm({});
 let state = {};
 function openForm(a) {
   editing = a;
-  state = { image: a.image || '', video: a.video || '' };
+  state = { image: a.image || '', video: a.video || '', gallery: (a.gallery || []).map(g => ({ ...g })) };
   $('#formTitle').textContent = a.id ? 'Sửa bài viết' : 'Bài viết mới';
   $('#f_title').value = a.title || '';
   $('#f_section').value = a.section || ($('#filter').value || sections[0].id);
   $('#f_summary').value = a.summary || '';
   rte.setHTML(a.content || '');
   $('#f_tags').value = (a.tags || []).join(', ');
-  $('#f_videoUrl').value = a.videoUrl || '';
+  $('#f_videoUrl').value = a.videoUrl || ''; vuCheck();
+  $('#f_author').value = a.author || '';
+  drawGal();
   $('#f_featured').checked = !!a.featured;
   $('#f_published').checked = a.id ? !!a.published : true;
   $('#ferr').textContent = '';
@@ -127,7 +129,7 @@ $('#formView').addEventListener('submit', async e => {
   e.preventDefault();
   const body = {
     title: $('#f_title').value.trim(), section: $('#f_section').value, summary: $('#f_summary').value,
-    content: rte.getHTML(), tags: $('#f_tags').value, videoUrl: $('#f_videoUrl').value.trim(), image: state.image, video: state.video,
+    content: rte.getHTML(), tags: $('#f_tags').value, videoUrl: $('#f_videoUrl').value.trim(), author: $('#f_author').value.trim(), gallery: state.gallery, image: state.image, video: state.video,
     featured: $('#f_featured').checked, published: $('#f_published').checked,
   };
   try {
@@ -135,6 +137,44 @@ $('#formView').addEventListener('submit', async e => {
     closeForm(); loadList();
   } catch (err) { $('#ferr').textContent = err.message; }
 });
+
+// ---------- link video + chùm ảnh ----------
+function vuCheck() {
+  const v = $('#f_videoUrl').value.trim(), e = v && embedVideo(v);
+  $('#vuHint').textContent = !v ? '' : e ? '✓ Nhận diện: ' + { yt: 'YouTube', fb: 'Facebook', gd: 'Google Drive (nhớ bật chia sẻ "Bất kỳ ai có liên kết")', tt: 'TikTok', vm: 'Vimeo' }[e.kind] : '✗ Chưa nhận ra link video này';
+  $('#vuHint').style.color = !v ? '' : e ? '#1f8a4c' : '#c8201a';
+}
+$('#f_videoUrl').addEventListener('input', vuCheck);
+function drawGal() {
+  const g = state.gallery || [];
+  $('#galList').innerHTML = g.map((x, i) => `<div class="gal-it"><img src="${esc(x.src)}" alt=""><div class="b"><span>Ảnh ${i + 1}</span><span><button type="button" data-mv="-1" data-i="${i}" title="Lên trước">←</button> <button type="button" data-mv="1" data-i="${i}" title="Ra sau">→</button> <button type="button" data-rm="${i}" title="Xoá">✕</button></span></div><textarea data-cap="${i}" placeholder="Chú thích ảnh…">${esc(x.caption || '')}</textarea></div>`).join('');
+}
+$('#galList').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const g = state.gallery;
+  if (b.dataset.rm != null) g.splice(+b.dataset.rm, 1);
+  else { const i = +b.dataset.i, j = i + +b.dataset.mv; if (j < 0 || j >= g.length) return; [g[i], g[j]] = [g[j], g[i]]; }
+  drawGal();
+});
+$('#galList').addEventListener('input', e => { const t = e.target.closest('[data-cap]'); if (t) state.gallery[+t.dataset.cap].caption = t.value; });
+async function shrinkImg(file) {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 900 * 1024) return file;
+  const bmp = await createImageBitmap(file).catch(() => null); if (!bmp) return file;
+  const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height)), c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k); c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
+  return blob && blob.size < file.size ? new File([blob], 'anh.jpg', { type: 'image/jpeg' }) : file;
+}
+$('#galPick').onclick = () => $('#galFile').click();
+$('#galFile').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  for (let k = 0; k < files.length; k++) {
+    $('#galMsg').textContent = `Đang tải ảnh ${k + 1}/${files.length}…`;
+    try { const url = await upload(await shrinkImg(files[k])); state.gallery.push({ src: url, caption: '' }); drawGal(); }
+    catch (err) { $('#galMsg').textContent = err.message; return; }
+  }
+  $('#galMsg').textContent = files.length ? `Đã thêm ${files.length} ảnh.` : '';
+  if (!state.image && state.gallery[0]) { state.image = state.gallery[0].src; syncMedia(); }
+};
 
 // ---------- trình soạn thảo bài viết ----------
 const rte = new RTE('#f_content', { upload: file => upload(file) });

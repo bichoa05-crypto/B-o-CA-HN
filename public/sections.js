@@ -205,9 +205,9 @@ async function renderMediaPage(site, all, id, name) {
   $('#special').innerHTML = `<section class="mm-hero">${cfg.banner ? `<div class="bg"${bgStyle(cfg.banner)}></div>` : ''}<div class="dc-wrap"><h1 class="mm-title">${esc(name)}</h1>${cfg.intro ? `<p class="mm-intro">${esc(cfg.intro)}</p>` : ''}
     <div class="mm-tabs"><button type="button" class="on" data-f="">Tất cả</button><button type="button" data-f="v">Video</button><button type="button" data-f="p">Hình ảnh</button></div></div></section>
     <div class="dc-wrap mm-body" id="mmBody"></div>`;
-  const mmCard = (a, i) => `<a class="mc" href="${href(a)}"><div class="th">${thumb(a, i)}<span class="tag">${hasVideo(a) ? 'Video' : 'Ảnh'}</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`;
+  const mmCard = (a, i) => `<a class="mc" href="${href(a)}"><div class="th">${thumb(a, i)}<span class="tag">${hasGallery(a) ? 'Ảnh · ' + a.gallery.length : hasVideo(a) ? 'Video' : 'Ảnh'}</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`;
   const draw = f => {
-    const list = full.filter(a => !f || (f === 'v') === hasVideo(a));
+    const list = full.filter(a => !f || (f === 'v' ? hasVideo(a) && !hasGallery(a) : hasGallery(a) || !hasVideo(a)));
     if (!list.length) { $('#mmBody').innerHTML = '<p class="dc-empty">Chưa có nội dung.</p>'; return; }
     const top = list[0], pl = list.slice(1, 5), more = list.slice(5);
     $('#mmBody').innerHTML = `<div class="mm-top"><a class="mm-main" href="${href(top)}">${thumb(top, 0)}<div class="ov-tx">${t2(top.title)}<time>${dmy(top.createdAt)}</time></div></a>

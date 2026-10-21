@@ -13,6 +13,12 @@ const ago = t => {
 };
 const href = a => 'article.html?id=' + encodeURIComponent(a.id);
 const hasVideo = a => !!(a.video || a.videoUrl);
+const hasGallery = a => Array.isArray(a.gallery) && a.gallery.length > 0;
+function videoBlock(a) {
+  if (a.video) return `<div class="vbox"><video src="${esc(a.video)}" controls controlsList="nodownload noplaybackrate" disablepictureinpicture poster="${esc(a.image || '')}"></video></div>`;
+  const e = embedVideo(a.videoUrl); if (!e) return '';
+  return `<div class="vbox${e.tall ? ' tall' : ''}"><iframe src="${esc(e.src)}" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+}
 const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
 const ICON_LONG = '<svg class="feat-arrow" viewBox="0 0 70 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9h64M58 2l8 7-8 7"/></svg>';
 const ICON_CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';

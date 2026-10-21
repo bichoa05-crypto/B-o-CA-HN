@@ -342,7 +342,7 @@ app.post('/api/password', requireAdmin, wrap(async (req, res) => {
 }));
 
 // articles
-const FIELDS = ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'featured', 'published', 'tags'];
+const FIELDS = ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'featured', 'published', 'tags', 'gallery', 'author'];
 const normTag = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/\s+/g, ' ').trim();
 const HASHTAG_P = /<p\b[^>]*>\s*(?:<[^>]+>\s*)*(?:hashtag|hash tag|thẻ)\s*:?\s*([\s\S]*?)<\/p>/i;
 function pullHashtags(html) { // dòng "Hashtag: #A; #B" ở cuối bài -> chuyển thành thẻ hashtag riêng
@@ -354,7 +354,10 @@ const cleanTags = v => { const out = [], seen = new Set(); (Array.isArray(v) ? v
 function pick(body) {
   const o = {};
   for (const f of FIELDS) if (body[f] !== undefined) o[f] = body[f];
-  for (const f of ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl']) if (o[f] !== undefined) o[f] = String(o[f]);
+  for (const f of ['title', 'section', 'summary', 'content', 'image', 'video', 'videoUrl', 'author']) if (o[f] !== undefined) o[f] = String(o[f]);
+  if (o.author !== undefined) o.author = o.author.replace(/[<>]/g, '').trim().slice(0, 80);
+  if (o.videoUrl !== undefined) o.videoUrl = o.videoUrl.trim().slice(0, 500);
+  if (o.gallery !== undefined) o.gallery = (Array.isArray(o.gallery) ? o.gallery : []).slice(0, 80).map(x => ({ src: String((x || {}).src || ''), caption: String((x || {}).caption || '').replace(/[<>]/g, '').slice(0, 300) })).filter(x => MEDIA_URL.test(x.src));
   if (o.content !== undefined) o.content = sanitizeHtml(o.content);
   if (o.tags !== undefined) o.tags = cleanTags(o.tags);
   if (o.content) { const h = pullHashtags(o.content); if (h && h.tags.length) { o.content = h.html; o.tags = cleanTags([...(o.tags || []), ...h.tags]); } }
@@ -365,7 +368,7 @@ const MEDIA_URL = /^(\/uploads\/[\w.-]+|https:\/\/[a-z0-9-]+\.public\.blob\.verc
 const validate = (db, o) => {
   if (o.section !== undefined && !db.sections.some(s => s.id === o.section)) return 'Chuyên mục không hợp lệ';
   for (const f of ['image', 'video']) if (o[f] && !MEDIA_URL.test(o[f])) return 'Đường dẫn tệp không hợp lệ';
-  if (o.videoUrl && !/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(o.videoUrl)) return 'Chỉ hỗ trợ link YouTube';
+  if (o.videoUrl && !/^https:\/\/([\w-]+\.)*(youtube\.com|youtu\.be|facebook\.com|fb\.watch|drive\.google\.com|docs\.google\.com|vimeo\.com|tiktok\.com)\//i.test(o.videoUrl)) return 'Link video chỉ hỗ trợ YouTube, Facebook, Google Drive, TikTok hoặc Vimeo';
 };
 
 app.get('/api/admin/articles', requireAdmin, wrap(async (req, res) =>

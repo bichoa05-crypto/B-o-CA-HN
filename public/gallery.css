@@ -1,0 +1,118 @@
+/* ===== Khung lướt ảnh ===== */
+.gal{--gal-bg:#2a2d31}
+.gal-stage{position:relative;overflow:hidden;background:var(--gal-bg);border-radius:6px;aspect-ratio:16/9;user-select:none}
+.gal-track{display:flex;height:100%;transition:transform .6s cubic-bezier(.22,.8,.24,1);cursor:zoom-in}
+.gal-slide{flex:0 0 100%;height:100%;margin:0;display:grid;place-items:center}
+.gal-slide img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border:0;border-radius:50%;background:#0006;color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .2s,opacity .2s}
+.gal-nav:hover{background:#c8201a}
+.gal-nav svg{width:26px;height:26px}
+.gal-nav.p{left:14px}.gal-nav.n{right:14px}
+.gal-tools{position:absolute;top:12px;right:12px;display:flex;gap:6px;align-items:center}
+.gal-n{background:#000a;color:#fff;border-radius:99px;padding:5px 12px;font-size:13px;font-weight:700;letter-spacing:.04em}
+.gal-tools button{width:36px;height:36px;border:0;border-radius:50%;background:#000a;color:#fff;cursor:pointer;display:grid;place-items:center}
+.gal-tools button:hover{background:#c8201a}
+.gal-tools svg{width:18px;height:18px}
+.gal-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff26}
+.gal-bar i{display:block;height:100%;width:100%;background:#f3c93c;transform-origin:left;animation:galbar 5s linear}
+.gal.paused .gal-bar i{animation:none;transform:scaleX(0)}
+@keyframes galbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.gal-cap{margin:10px 0 0;min-height:1.5em;text-align:center;font-size:13.5px;color:#b9bec5;font-style:italic}
+.gal-th{display:flex;gap:10px;overflow-x:auto;padding:16px 2px 4px;justify-content:safe center;scrollbar-width:thin}
+.gal-th button{flex:0 0 auto;width:76px;height:56px;padding:0;border:2px solid transparent;border-radius:4px;overflow:hidden;cursor:pointer;opacity:.55;background:none;transition:opacity .2s,border-color .2s}
+.gal-th button.on,.gal-th button:hover{opacity:1;border-color:#fff}
+.gal-th img{width:100%;height:100%;object-fit:cover;display:block}
+.gal.single .gal-nav,.gal.single .gal-th,.gal.single .gal-play,.gal.single .gal-bar{display:none}
+
+/* ===== Trình xem toàn màn hình ===== */
+.lbx{position:fixed;inset:0;z-index:200;background:#0b0b0c;color:#fff;display:flex;flex-direction:column;animation:lbxIn .25s}
+.lbx[hidden]{display:none}
+@keyframes lbxIn{from{opacity:0}}
+.lbx-top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;gap:10px;flex-wrap:wrap}
+.lbx-n{font-weight:700;letter-spacing:.06em;font-size:14px;opacity:.85}
+.lbx-tools{display:flex;gap:4px;flex-wrap:wrap}
+.lbx-tools button{width:40px;height:40px;border:0;border-radius:8px;background:#ffffff14;color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .2s}
+.lbx-tools button:hover{background:#ffffff33}
+.lbx-tools button.x:hover{background:#c8201a}
+.lbx.playing .lbx-tools [data-a=play]{background:#c8201a}
+.lbx-tools svg{width:20px;height:20px}
+.lbx-stage{position:relative;flex:1;min-height:0;overflow:hidden;display:grid;place-items:center;touch-action:none;cursor:grab}
+.lbx-stage.zoomed{cursor:move}
+.lbx-stage img{max-width:94vw;max-height:100%;object-fit:contain;user-select:none;transition:opacity .25s}
+.lbx-nav{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:54px;border:0;border-radius:50%;background:#ffffff1a;color:#fff;cursor:pointer;display:grid;place-items:center}
+.lbx-nav:hover{background:#c8201a}
+.lbx-nav svg{width:28px;height:28px}
+.lbx-nav.p{left:16px}.lbx-nav.n{right:16px}
+.lbx-bot{padding:6px 14px 12px}
+.lbx-cap{text-align:center;font-size:14px;opacity:.85;min-height:1.4em;margin:0 0 8px}
+.lbx-bar{height:3px;background:#ffffff1f;margin:0 auto 8px;max-width:600px;border-radius:3px;overflow:hidden;visibility:hidden}
+.lbx.playing .lbx-bar{visibility:visible}
+.lbx-bar i{display:block;height:100%;background:#f3c93c;transform-origin:left;animation:galbar 4s linear infinite}
+.lbx-th{display:flex;gap:8px;overflow-x:auto;justify-content:safe center;padding:2px}
+.lbx-th button{flex:0 0 auto;width:64px;height:46px;padding:0;border:2px solid transparent;border-radius:4px;overflow:hidden;opacity:.5;cursor:pointer;background:none}
+.lbx-th button.on,.lbx-th button:hover{opacity:1;border-color:#f3c93c}
+.lbx-th img{width:100%;height:100%;object-fit:cover}
+@media(max-width:640px){.lbx-nav,.gal-nav{width:40px;height:40px}.gal-th button{width:60px;height:44px}.lbx-tools button{width:36px;height:36px}}
+
+/* ===== Video nhúng ===== */
+.vbox{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;margin:0 0 26px}
+.vbox.tall{aspect-ratio:9/16;max-width:420px;margin-left:auto;margin-right:auto}
+.vbox iframe,.vbox video{position:absolute;inset:0;width:100%;height:100%;border:0;margin:0;border-radius:0;box-shadow:none}
+
+/* ===== Bố cục bài VIDEO (kiểu báo điện tử, nền sáng) ===== */
+body.art-v .article-hero{display:none}
+body.art-v .article-page{max-width:1160px;padding-top:calc(var(--header) + 34px)}
+.av-kick{font-family:var(--nav);font-weight:700;color:var(--red);font-size:16px;text-decoration:none}
+.av-title{font-family:'Noto Serif',Georgia,serif;font-weight:700;font-size:clamp(26px,calc(2.6 * var(--vw)),38px);line-height:1.3;color:#1a1210;margin:8px 0 16px;text-wrap:balance}
+.av-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:16px}
+.av-au{display:flex;align-items:center;gap:10px;padding-right:16px;border-right:1px solid var(--line)}
+.av-au i{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#e0453b,#8a1c14);color:#fff;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:14px}
+.av-au b{font-family:var(--nav);font-size:15px}
+.av-meta time{font-size:13.5px;color:var(--muted)}
+.share{display:flex;gap:8px;margin-left:auto}
+.share button,.share a{width:38px;height:38px;border-radius:50%;border:1px solid #d9cfcb;background:#fff;color:#2b2321;display:grid;place-items:center;cursor:pointer;transition:.2s}
+.share button:hover,.share a:hover{background:var(--red);border-color:var(--red);color:#fff}
+.share svg{width:17px;height:17px}
+.av-lead{font-family:var(--nav);font-weight:600;font-size:clamp(16px,calc(1.3 * var(--vw)),19px);line-height:1.6;color:#3a302c;margin:0 0 20px}
+body.art-v .article-page .lead{display:none}
+.av-end{display:flex;justify-content:flex-end;padding:16px 0;border-top:1px solid var(--line);margin-top:18px}
+.av-end::before{content:"";width:120px;border-top:1px solid #cfc4c0;margin-right:auto;margin-top:-17px}
+.rel-list{border-top:2px solid #1a1210;margin-top:20px;padding-top:18px}
+.rel-list h2{font-family:'Noto Serif',Georgia,serif;font-weight:700;font-size:20px;color:var(--maroon);margin:0 0 6px}
+.rel-list a{display:flex;gap:12px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);font-family:'Noto Serif',Georgia,serif;font-size:17.5px;color:#1a1210;text-decoration:none}
+.rel-list a::before{content:"";flex:none;width:11px;height:11px;background:#1a1210;transform:translateY(1px)}
+.rel-list a:hover{color:var(--red)}
+.kw{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:16px 0;border-top:2px solid #1a1210;border-bottom:1px solid #1a1210;margin-top:22px}
+.kw h2{font-family:'Noto Serif',Georgia,serif;font-size:19px;font-weight:700;color:var(--maroon);margin:0 6px 0 0}
+.kw a{background:#f1ecea;border-radius:99px;padding:5px 12px;font-size:13.5px;color:#3a302c;text-decoration:none}
+.kw a:hover{background:var(--red);color:#fff}
+body.art-v .article-page .tags{display:none}
+
+/* ===== Bố cục bài ẢNH (nền tối, chùm ảnh) ===== */
+body.art-p{background:#202327}
+body.art-p .article-hero{display:none}
+body.art-p .article-page{max-width:900px;padding-top:var(--header);color:#d9dce0}
+.ap-sec{display:block;text-align:center;font-family:'Noto Serif',Georgia,serif;font-weight:700;text-transform:uppercase;font-size:clamp(26px,calc(2.6 * var(--vw)),40px);color:#fff;padding:18px 0;margin:0 calc(50% - 50vw) 22px;border-bottom:1px solid #ffffff1f;text-decoration:none}
+body.art-p .gal{margin:0 calc(-1 * clamp(0px,calc(8 * var(--vw)),120px))}
+.ap-title{font-family:'Noto Serif',Georgia,serif;font-weight:700;text-align:center;color:#fff;font-size:clamp(26px,calc(2.6 * var(--vw)),40px);line-height:1.3;margin:28px auto 14px;max-width:780px;text-wrap:balance}
+.ap-lead{text-align:center;font-style:italic;color:#e7e9ec;max-width:780px;margin:0 auto 18px;line-height:1.6;font-size:15.5px}
+.ap-meta{display:flex;align-items:center;gap:12px;max-width:780px;margin:0 auto 14px;padding-top:14px;border-top:1px solid #ffffff1f;font-size:13px;color:#aeb3ba}
+.ap-meta .share{margin-left:0}
+.ap-meta .share button,.ap-meta .share a{background:#3a3e44;border-color:#3a3e44;color:#fff}
+body.art-p .article-page .lead{display:none}
+body.art-p .article-page .tags{max-width:780px;margin:4px auto 22px;border-top:0;padding-top:0}
+body.art-p .article-page .tags span{color:#8f959c}
+body.art-p .article-page .tags a{background:#fff;color:#1a1210}
+body.art-p .article-page .tags a:hover{background:var(--red);color:#fff}
+body.art-p .rich{color:#d9dce0;max-width:780px;margin:0 auto}
+body.art-p .rich h2,body.art-p .rich h3,body.art-p .rich h4{color:#fff}
+body.art-p .rich a{color:#ff8a80}
+body.art-p .copyright{color:#8f959c;max-width:780px;margin-left:auto;margin-right:auto}
+body.art-p .extra{color:#d9dce0}
+body.art-p .extra .sec-h{background:none;-webkit-text-fill-color:#fff;color:#fff;filter:none}
+body.art-p .c-form textarea{background:#2e3237;border-color:#43484e;color:#fff}
+body.art-p .cmt{border-color:#3a3e44}
+body.art-p .n-card h3{color:#fff}
+body.art-p .n-card time{color:#9aa0a7}
+body.art-p .c-login{color:#c9cdd2}
+body.art-p .footer{margin-top:0}
