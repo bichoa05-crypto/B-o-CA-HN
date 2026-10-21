@@ -33,8 +33,25 @@ async function getJSON(url, fallback) { try { const r = await fetch(url); if (!r
 const demoOr = (list) => (Array.isArray(list) && list.length ? list : (window.DEMO_ARTICLES || []));
 
 /* ---------- thành tích ---------- */
-const MEDAL = { champion: ['#f6d35b', '#d79a16', '1'], runner: ['#e4e4e8', '#9a9aa3', '2'], third: ['#e2a77f', '#b36d3e', '3'] };
-const medal = r => { const [a, b, n] = MEDAL[r] || MEDAL.champion; return `<svg class="medal" viewBox="0 0 40 52" aria-hidden="true"><path d="M9 0h8l5 22H12zM31 0h-8l-5 22h10z" fill="#d23a30"/><circle cx="20" cy="33" r="16" fill="${b}"/><circle cx="20" cy="33" r="13.5" fill="${a}" stroke="#fff8" stroke-width="1"/><text x="20" y="39" text-anchor="middle" font-family="Be Vietnam Pro,Arial" font-weight="800" font-size="17" fill="${b}">${n}</text></svg>`; };
+// huy chương: dây vải 2 màu + đĩa kim loại ánh sáng, viền khía, số thứ hạng nổi
+const MEDAL = {
+  champion: { hi: '#fff6c4', mid: '#f4c84a', lo: '#b9810e', edge: '#8d5f05', txt: '#7a4d00', n: '1' },
+  runner: { hi: '#ffffff', mid: '#d5d7de', lo: '#8e929d', edge: '#6b6f7a', txt: '#4c505a', n: '2' },
+  third: { hi: '#ffe1c8', mid: '#d9935f', lo: '#9a5528', edge: '#73401c', txt: '#5c2f10', n: '3' },
+};
+const medal = r => { const k = MEDAL[r] ? r : 'champion', m = MEDAL[k], id = 'md-' + k;
+  const teeth = Array.from({ length: 24 }, (_, i) => { const t = i / 24 * Math.PI * 2, R = i % 2 ? 19 : 20.6; return (i ? 'L' : 'M') + (24 + R * Math.cos(t)).toFixed(2) + ' ' + (22 + R * Math.sin(t)).toFixed(2); }).join('') + 'Z';
+  return `<svg class="medal" viewBox="0 0 48 56" aria-hidden="true">
+  <defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${m.hi}"/><stop offset=".5" stop-color="${m.mid}"/><stop offset="1" stop-color="${m.lo}"/></radialGradient></defs>
+  <path d="M13 34 8 52l5-3 4 4 6-17z" fill="#c8201a"/><path d="M35 34l5 18-5-3-4 4-6-17z" fill="#c8201a"/>
+  <path d="M13 34l-2.6 9.6 3 .8 2.5-9z M35 34l2.6 9.6-3 .8-2.5-9z" fill="#8b0706" opacity=".55"/>
+  <path d="${teeth}" fill="${m.lo}"/>
+  <circle cx="24" cy="22" r="17.6" fill="url(#${id})"/>
+  <circle cx="24" cy="22" r="12.6" fill="none" stroke="${m.lo}" stroke-opacity=".6" stroke-width="1.1"/>
+  <circle cx="24" cy="22" r="11.4" fill="url(#${id})" stroke="${m.hi}" stroke-width=".8"/>
+  <path d="M11 17a14 14 0 0 1 18-9" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/>
+  <text x="24.6" y="28.4" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="16" fill="${m.edge}" opacity=".55">${m.n}</text>
+  <text x="24" y="27.6" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="16" fill="${m.hi}">${m.n}</text></svg>`; };
 const LABEL = { champion: 'Vô địch', runner: 'Á quân', third: 'Hạng ba' };
 const period = y => { const n = parseInt(y, 10) || 0; return n < 1990 ? 0 : n < 2010 ? 1 : 2; };
 let honors = [], hPeriod = 0;

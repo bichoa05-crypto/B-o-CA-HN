@@ -670,3 +670,6 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .h-card{margin-top:clamp(18px,calc(3 * var(--vw)),46px)}
 .h-banner h2{padding:.1em .12em .16em;max-width:calc(100% - 24px);line-height:1.02}
 @media(max-width:600px){.h-banner{aspect-ratio:auto;height:300px}.h-banner h2{font-size:clamp(28px,8.6vw,40px)}.h-banner>img{height:76%}}
+
+.medal{width:clamp(32px,calc(3.6 * var(--vw)),48px);filter:drop-shadow(0 4px 6px #5a0b0840);transition:transform .35s var(--ease)}
+.h-row:hover .medal{transform:rotate(-8deg) scale(1.08)}
