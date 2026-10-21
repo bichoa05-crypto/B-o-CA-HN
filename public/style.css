@@ -692,3 +692,4 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .pd .pic img{object-position:50% 30%}
 .n-card .th .mk-ph{position:absolute;z-index:2;right:8px;bottom:8px;padding:4px 10px;border-radius:99px;background:#000c;color:#fff;font-weight:700;font-size:12px}
 #mmList[hidden]{display:none}
+.h-banner h2{padding:.32em .14em .22em;line-height:1.12;margin-top:clamp(-6px,calc(.6 * var(--vw)),14px);overflow:visible}
