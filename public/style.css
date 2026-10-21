@@ -673,3 +673,14 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 
 .medal{width:clamp(32px,calc(3.6 * var(--vw)),48px);filter:drop-shadow(0 4px 6px #5a0b0840);transition:transform .35s var(--ease)}
 .h-row:hover .medal{transform:rotate(-8deg) scale(1.08)}
+
+/* ===== Bục sản phẩm trang chủ: ảnh cùng khung 4:5 đặt trên cột, thẳng hàng ===== */
+.pd .pic,.pd.r1 .pic,.pd.r2 .pic,.pd.r3 .pic,.pd.r4 .pic{height:auto;aspect-ratio:4/5;margin-bottom:0;border-radius:14px 14px 0 0;overflow:hidden;box-shadow:0 18px 30px -18px #3d0506;background:#f3e3df}
+.pd .pic img{width:100%;height:100%;max-height:none;object-fit:cover;filter:none;transition:transform .6s var(--ease)}
+.pd:hover .pic{transform:none}.pd:hover .pic img{transform:scale(1.05)}
+.pd .pic svg{width:55%}
+.pd .pic:has(svg){display:grid;place-items:center}
+.pd.r4 .col{height:clamp(24px,calc(3 * var(--vw)),44px)}.pd.r3 .col{height:clamp(50px,calc(6.5 * var(--vw)),96px)}
+.pd.r2 .col{height:clamp(76px,calc(10 * var(--vw)),148px)}.pd.r1 .col{height:clamp(104px,calc(13.5 * var(--vw)),200px)}
+.pd .col b{font-size:clamp(30px,calc(4.6 * var(--vw)),70px);bottom:-4%}
+.pd .nm{min-height:2.8em}

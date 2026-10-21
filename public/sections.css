@@ -361,3 +361,11 @@ body.pg-media{background:#12090a}
 .pl-empty{flex-basis:100%}
 @media(max-width:1000px){.pl-grid{--n:3}}
 @media(max-width:760px){.pl-grid{--n:2;--g:14px}.co-grid{--n:1}}
+
+/* ===== Banner Đội hình: ảnh tập thể hiển thị trọn, chữ tiêu đề nằm dưới ảnh, không che mặt ===== */
+.dh-banner{aspect-ratio:auto;min-height:0;display:flex;flex-direction:column;background:linear-gradient(#2a0604,#5a0e0a)}
+.dh-banner>img{position:relative;inset:auto;width:100%;height:auto;max-height:calc(100 * var(--vh) - var(--header));object-fit:cover;object-position:center 40%;display:block}
+.dh-banner>.bg-art{position:relative;inset:auto;aspect-ratio:1366/420}
+.dh-title{position:relative;top:auto;width:min(860px,72%);margin:0 auto;padding:clamp(14px,calc(2 * var(--vw)),30px) 0 clamp(10px,calc(1.4 * var(--vw)),22px);font-size:clamp(46px,calc(8.6 * var(--vw)),132px);line-height:1.15}
+.dh-title span{margin-top:0}
+.dh-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#0000,#e9c27a,#0000)}
