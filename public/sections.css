@@ -369,3 +369,49 @@ body.pg-media{background:#12090a}
 .dh-title{position:relative;top:auto;width:min(860px,72%);margin:0 auto;padding:clamp(14px,calc(2 * var(--vw)),30px) 0 clamp(10px,calc(1.4 * var(--vw)),22px);font-size:clamp(46px,calc(8.6 * var(--vw)),132px);line-height:1.15}
 .dh-title span{margin-top:0}
 .dh-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#0000,#e9c27a,#0000)}
+
+/* ===== MULTIMEDIA – chỉn chu: video & album ===== */
+.mm-tabs button i{font-style:normal;margin-left:6px;font-size:12px;background:#ffffff26;border-radius:99px;padding:2px 8px}
+.mm-sec{margin-top:clamp(28px,calc(3.4 * var(--vw)),48px)}
+.mm-sec:first-child{margin-top:0}
+.mm-sh{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:clamp(14px,calc(1.8 * var(--vw)),24px);border-bottom:1px solid #ffffff1f;padding-bottom:12px}
+.mm-sh .mm-h{margin:0}
+.mm-sh span{font-family:var(--nav);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12.5px;color:#ffffff80}
+/* nút play */
+.mv-play{position:absolute;z-index:3;left:50%;top:50%;width:clamp(52px,calc(5.4 * var(--vw)),78px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;background:#c8201ae6;color:#fff;box-shadow:0 0 0 6px #ffffff2e,0 14px 30px -8px #000c;transition:transform .35s var(--ease),background .25s}
+.mv-play svg{width:42%;height:42%;margin-left:6%}
+a:hover>.mv-play,a:hover .th .mv-play{transform:translate(-50%,-50%) scale(1.1);background:#e0261d}
+.src{position:absolute;z-index:3;left:12px;top:12px;padding:4px 10px;border-radius:99px;background:#000b;color:#fff;font-family:var(--nav);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:11px}
+/* video nổi bật + danh sách */
+.mm-main::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,#0000 45%,#000c 100%)}
+.mm-main .ov-tx{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:clamp(16px,calc(2 * var(--vw)),28px)}
+.mm-main .mv-play{top:44%}
+.mm-pl .th .mv-play{width:34px;box-shadow:0 0 0 3px #ffffff2e}
+.mm-pl .th .n{position:absolute;z-index:3;left:6px;bottom:6px;font-family:var(--anton);font-size:15px;line-height:1;background:#000b;border-radius:4px;padding:3px 6px}
+.mm-pl a{transition:background .2s;border-radius:10px;padding-left:6px;padding-right:6px}
+.mm-pl a:hover{background:#ffffff0d}
+/* lưới 3 cột */
+.mm-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,calc(2.2 * var(--vw)),30px);margin-top:clamp(18px,calc(2.2 * var(--vw)),30px)}
+.mv-card,.al-card{display:block;color:#fff;min-width:0}
+.mv-card .th{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#2a0a08}
+.mv-card .th img,.mv-card .th .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+.mv-card .th::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0000 55%,#0008)}
+.mv-card .mv-play{width:54px}
+.mv-card:hover .th img{transform:scale(1.05)}
+.mv-card h3,.al-card h3{margin-top:12px;font-size:clamp(14.5px,calc(1.2 * var(--vw)),17px);font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .2s}
+.mv-card:hover h3,.al-card:hover h3{color:#f3c3bd}
+.mv-card time,.al-card time{display:block;margin-top:6px;font-size:12px;letter-spacing:.05em;color:#ffffff80}
+/* album: khảm 1 lớn + 2 nhỏ */
+.al-m{position:relative;display:grid;gap:4px;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#2a0a08}
+.al-m.n3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
+.al-m.n3>:first-child{grid-row:1/3}
+.al-m.n2{grid-template-columns:1fr 1fr}
+.al-m img,.al-m .ph{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s var(--ease),filter .4s}
+.al-card:hover .al-m img{transform:scale(1.05);filter:brightness(1.08)}
+.al-m .cnt{position:absolute;z-index:2;right:10px;bottom:10px;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:#000c;color:#fff;font-weight:700;font-size:12.5px}
+.al-m .cnt svg{width:15px;height:15px}
+.al-card{transition:transform .35s var(--ease)}
+.al-card:hover,.mv-card:hover{transform:translateY(-4px)}
+.mv-card{transition:transform .35s var(--ease)}
+@media(max-width:900px){.mm-grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.mm-grid3{grid-template-columns:1fr}.mm-sh{flex-direction:column;align-items:flex-start}}

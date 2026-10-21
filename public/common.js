@@ -14,6 +14,10 @@ const ago = t => {
 const href = a => 'article.html?id=' + encodeURIComponent(a.id);
 const hasVideo = a => !!(a.video || a.videoUrl);
 const hasGallery = a => Array.isArray(a.gallery) && a.gallery.length > 0;
+const ytId = u => { const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/); return m ? m[1] : ''; };
+// ảnh đại diện: ảnh bìa > ảnh đầu chùm ảnh > ảnh YouTube tự lấy
+const coverOf = a => a.image || (hasGallery(a) ? a.gallery[0].src : '') || (ytId(a.videoUrl) ? `https://i.ytimg.com/vi/${ytId(a.videoUrl)}/hqdefault.jpg` : '');
+const videoSrcName = a => a.video ? 'Video' : /facebook|fb\.watch/.test(a.videoUrl) ? 'Facebook' : /drive\.google|docs\.google/.test(a.videoUrl) ? 'Google Drive' : /tiktok/.test(a.videoUrl) ? 'TikTok' : /vimeo/.test(a.videoUrl) ? 'Vimeo' : 'YouTube';
 function videoBlock(a) {
   if (a.video) return `<div class="vbox"><video src="${esc(a.video)}" controls controlsList="nodownload noplaybackrate" disablepictureinpicture poster="${esc(a.image || '')}"></video></div>`;
   const e = embedVideo(a.videoUrl); if (!e) return '';

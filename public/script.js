@@ -38,7 +38,7 @@ function renderMatches(list) {
 
 /* ---------- bài viết ---------- */
 const ph = i => `<div class="ph p${(i % 5) + 1}"></div>`;
-const img = (a, i) => a.image ? `<img src="${esc(a.image)}" alt="" loading="lazy">` : ph(i);
+const img = (a, i) => coverOf(a) ? `<img src="${esc(coverOf(a))}" alt="" loading="lazy">` : ph(i);
 const empty = '<p class="empty">Chưa có bài viết trong chuyên mục này.</p>';
 function renderFlow(l) {
   if (!l.length) return empty;
@@ -52,7 +52,7 @@ const renderBento = l => l.length ? l.slice(0, 5).map((a, i) => i === 0
   : `<a class="card rv" style="--d:${i * .08}s" href="${href(a)}"><div class="th">${img(a, i)}</div><div class="body">${meta(a)}<h3>${esc(a.title)}</h3></div></a>`).join('') : empty;
 const renderList = l => l.length ? l.slice(0, 5).map((a, i) =>
   `<li class="rv" style="--d:${i * .06}s"><a href="${href(a)}"><span class="num">${p2(i + 1)}</span><span class="t">${esc(a.title)}<time>${ago(a.createdAt)}</time></span>${ICON_ARROW}</a></li>`).join('') : `<li>${empty}</li>`;
-const renderMM = l => l.length ? `<div class="n-grid">${l.slice(0, 3).map((a, i) => `<a class="n-card rv" style="--d:${i * .08}s" href="${href(a)}"><div class="th">${img(a, i)}${hasVideo(a) ? ICON_PLAY : ''}</div><h3>${esc(a.title)}</h3><time>${fmtDate(a.createdAt)}</time></a>`).join('')}</div>` : '';
+const renderMM = l => l.length ? `<div class="n-grid">${l.slice(0, 3).map((a, i) => `<a class="n-card rv" style="--d:${i * .08}s" href="${href(a)}"><div class="th">${img(a, i)}${hasGallery(a) ? `<span class="mk-ph">${a.gallery.length} ảnh</span>` : hasVideo(a) ? ICON_PLAY : ''}</div><h3>${esc(a.title)}</h3><time>${fmtDate(a.createdAt)}</time></a>`).join('')}</div>` : '';
 
 /* ---------- đội hình ---------- */
 let sqI = 0;

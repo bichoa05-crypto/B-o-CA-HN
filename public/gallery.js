@@ -69,7 +69,7 @@
   function mount(root, list) {
     if (!root || !list.length) return;
     root.classList.add('gal');
-    root.innerHTML = `<div class="gal-stage"><div class="gal-track">${list.map((g, k) => `<figure class="gal-slide"><img src="${e(g.src)}" alt="${e(g.caption)}" ${k ? 'loading="lazy"' : ''} draggable="false"></figure>`).join('')}</div>
+    root.innerHTML = `<div class="gal-stage"><div class="gal-track">${list.map((g, k) => `<figure class="gal-slide" style="--bg:url('${e(g.src)}')"><img src="${e(g.src)}" alt="${e(g.caption)}" ${k ? 'loading="lazy"' : ''} draggable="false"></figure>`).join('')}</div>
       <button class="gal-nav p" aria-label="Ảnh trước">${ic('prev')}</button><button class="gal-nav n" aria-label="Ảnh sau">${ic('next')}</button>
       <div class="gal-tools"><span class="gal-n"></span><button class="gal-play" title="Tự động chuyển ảnh">${ic('pause')}</button><button class="gal-open" title="Xem toàn màn hình, phóng to, xoay, lật">${ic('expand')}</button></div>
       <div class="gal-bar"><i></i></div></div>

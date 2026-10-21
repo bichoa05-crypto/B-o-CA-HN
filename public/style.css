@@ -690,3 +690,4 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .pd .col b{bottom:6%;right:7%;font-size:clamp(40px,calc(5 * var(--vw)),76px);line-height:.9;color:#ffffffc7;text-shadow:0 4px 14px #8b070640}
 .pd .pic,.pd.r1 .pic,.pd.r2 .pic,.pd.r3 .pic,.pd.r4 .pic{aspect-ratio:5/6}
 .pd .pic img{object-position:50% 30%}
+.n-card .th .mk-ph{position:absolute;z-index:2;right:8px;bottom:8px;padding:4px 10px;border-radius:99px;background:#000c;color:#fff;font-weight:700;font-size:12px}

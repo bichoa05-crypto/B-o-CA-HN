@@ -23,7 +23,7 @@ function splitTitle(t) {
 }
 const nobr = s => esc(s).replace(/(\S)-(\S)/g, '$1&#8209;$2'); // không ngắt dòng ở dấu gạch nối (V-League)
 const t2 = (t, tag = 'h3') => { const [a, b] = splitTitle(t); return `<${tag} class="t2">${a ? `<span class="l1">${nobr(a)}</span>` : ''}<span class="l2">${nobr(b)}</span></${tag}>`; };
-const thumb = (a, i) => (a.image ? `<img src="${esc(a.image)}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`) + (hasVideo(a) ? ICON_PLAY : '');
+const thumb = (a, i) => (coverOf(a) ? `<img src="${esc(coverOf(a))}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`) + (hasVideo(a) ? ICON_PLAY : '');
 const acCard = (a, i, cls = '') => `<a class="ac${cls}" href="${href(a)}"><div class="th">${thumb(a, i)}</div>${t2(a.title)}<time>${dmy(a.createdAt)}</time></a>`;
 const silOr = (img, alt) => img ? `<img src="${esc(img)}" alt="${esc(alt)}" loading="lazy">` : '<span class="sil"></span>';
 
@@ -199,21 +199,30 @@ async function renderFansPage(site, all, id, name) {
   wireMore(more);
 }
 
-/* ---------- MULTIMEDIA: nền tối, video lớn + danh sách phát, lọc Video/Ảnh ---------- */
+/* ---------- MULTIMEDIA: Video (trình phát nổi bật + danh sách) và Album ảnh (khảm 3 ảnh) ---------- */
+const PH_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>';
+const PLAY_BIG = '<span class="mv-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
+const coverImg = (a, i) => coverOf(a) ? `<img src="${esc(coverOf(a))}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`;
+const vCard = (a, i) => `<a class="mv-card" href="${href(a)}"><div class="th">${coverImg(a, i)}${PLAY_BIG}<span class="src">${esc(videoSrcName(a))}</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`;
+const aCard = (a, i) => { const g = hasGallery(a) ? a.gallery : (coverOf(a) ? [{ src: coverOf(a) }] : []);
+  const cells = g.slice(0, 3).map(x => `<img src="${esc(x.src)}" alt="" loading="lazy">`).join('') || `<div class="ph p${i % 5 + 1}"></div>`;
+  return `<a class="al-card" href="${href(a)}"><div class="al-m n${Math.min(3, Math.max(1, g.length))}">${cells}<span class="cnt">${PH_ICON}${g.length || 1} ảnh</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`; };
 async function renderMediaPage(site, all, id, name) {
   const cfg = pageCfg(site, id), full = secList(all, id);
+  const vids = full.filter(a => hasVideo(a) && !hasGallery(a)), albums = full.filter(a => !(hasVideo(a) && !hasGallery(a)));
   $('#special').innerHTML = `<section class="mm-hero">${cfg.banner ? `<div class="bg"${bgStyle(cfg.banner)}></div>` : ''}<div class="dc-wrap"><h1 class="mm-title">${esc(name)}</h1>${cfg.intro ? `<p class="mm-intro">${esc(cfg.intro)}</p>` : ''}
-    <div class="mm-tabs"><button type="button" class="on" data-f="">Tất cả</button><button type="button" data-f="v">Video</button><button type="button" data-f="p">Hình ảnh</button></div></div></section>
+    <div class="mm-tabs"><button type="button" class="on" data-f="">Tất cả <i>${full.length}</i></button><button type="button" data-f="v">Video <i>${vids.length}</i></button><button type="button" data-f="p">Hình ảnh <i>${albums.length}</i></button></div></div></section>
     <div class="dc-wrap mm-body" id="mmBody"></div>`;
-  const mmCard = (a, i) => `<a class="mc" href="${href(a)}"><div class="th">${thumb(a, i)}<span class="tag">${hasGallery(a) ? 'Ảnh · ' + a.gallery.length : hasVideo(a) ? 'Video' : 'Ảnh'}</span></div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></a>`;
+  const videoBlock = (list, title) => { if (!list.length) return ''; const top = list[0], pl = list.slice(1, 5);
+    return `<section class="mm-sec"><div class="mm-sh"><h2 class="mm-h">${title}</h2><span>${list.length} video</span></div>
+      <div class="mm-top"><a class="mm-main" href="${href(top)}">${coverImg(top, 0)}${PLAY_BIG}<span class="src">${esc(videoSrcName(top))}</span><div class="ov-tx">${t2(top.title)}<time>${dmy(top.createdAt)}</time></div></a>
+      ${pl.length ? `<div class="mm-pl"><h2>Tiếp theo</h2>${pl.map((a, i) => `<a href="${href(a)}"><div class="th">${coverImg(a, i + 1)}<span class="n">${i + 2}</span>${PLAY_BIG}</div><div><h3>${esc(a.title)}</h3><time>${esc(videoSrcName(a))} · ${dmy(a.createdAt)}</time></div></a>`).join('')}</div>` : ''}</div>
+      ${list.length > 5 ? `<div class="mm-grid3">${list.slice(5).map(vCard).join('')}</div>` : ''}</section>`; };
+  const albumBlock = (list, title) => list.length ? `<section class="mm-sec"><div class="mm-sh"><h2 class="mm-h">${title}</h2><span>${list.length} album</span></div><div class="mm-grid3">${list.map(aCard).join('')}</div></section>` : '';
   const draw = f => {
-    const list = full.filter(a => !f || (f === 'v' ? hasVideo(a) && !hasGallery(a) : hasGallery(a) || !hasVideo(a)));
-    if (!list.length) { $('#mmBody').innerHTML = '<p class="dc-empty">Chưa có nội dung.</p>'; return; }
-    const top = list[0], pl = list.slice(1, 5), more = list.slice(5);
-    $('#mmBody').innerHTML = `<div class="mm-top"><a class="mm-main" href="${href(top)}">${thumb(top, 0)}<div class="ov-tx">${t2(top.title)}<time>${dmy(top.createdAt)}</time></div></a>
-      ${pl.length ? `<div class="mm-pl"><h2>Tiếp theo</h2>${pl.map((a, i) => `<a href="${href(a)}"><div class="th">${thumb(a, i + 1)}</div><div><h3>${esc(a.title)}</h3><time>${dmy(a.createdAt)}</time></div></a>`).join('')}</div>` : ''}</div>
-      <div id="pgMore">${more.length ? '<h2 class="mm-h">Thư viện</h2>' : ''}${moreHtml(more, ' mm-grid')}</div>`;
-    wireMore(more, mmCard, 9);
+    const html = f === 'v' ? videoBlock(vids, 'Video') : f === 'p' ? albumBlock(albums, 'Album ảnh') : videoBlock(vids, 'Video nổi bật') + albumBlock(albums, 'Album ảnh');
+    $('#mmBody').innerHTML = html || '<p class="dc-empty">Chưa có nội dung.</p>';
+    if (typeof reveal === 'function') reveal();
   };
   document.querySelectorAll('.mm-tabs button').forEach(b => b.onclick = () => { document.querySelectorAll('.mm-tabs button').forEach(x => x.classList.toggle('on', x === b)); draw(b.dataset.f); });
   draw('');

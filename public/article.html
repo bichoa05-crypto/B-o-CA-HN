@@ -95,6 +95,17 @@
     let sc = x.section === a.section ? 3 : 0; for (const w of words(x.title + ' ' + x.summary)) if (mine.has(w)) sc += 1; return { x, sc };
   }).sort((p, q) => q.sc - p.sc || q.x.createdAt - p.x.createdAt).slice(0, 4).map(o => o.x);
   $('#extra').hidden = false;
+  if (isPhoto || isVideo) { // album / video khác cùng loại
+    const same = pool.filter(x => x.id !== a.id && (isPhoto ? hasGallery(x) : hasVideo(x) && !hasGallery(x))).sort((p, q) => q.createdAt - p.createdAt).slice(0, 3);
+    if (same.length) {
+      const PL = '<span class="mo-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
+      const card = x => isPhoto
+        ? `<a class="mo" href="${href(x)}"><div class="mo-al n${Math.min(3, x.gallery.length)}">${x.gallery.slice(0, 3).map(g => `<img src="${esc(g.src)}" alt="" loading="lazy">`).join('')}<span class="cnt">${x.gallery.length} ảnh</span></div><h3>${esc(x.title)}</h3><time>${fmtDate(x.createdAt)}</time></a>`
+        : `<a class="mo" href="${href(x)}"><div class="mo-v">${coverOf(x) ? `<img src="${esc(coverOf(x))}" alt="" loading="lazy">` : ''}${PL}<span class="src">${esc(videoSrcName(x))}</span></div><h3>${esc(x.title)}</h3><time>${fmtDate(x.createdAt)}</time></a>`;
+      $('#extra').insertAdjacentHTML('beforebegin', `<section class="mo-wrap${isPhoto ? ' dark' : ''}"><div class="mo-in"><div class="mo-h"><h2>${isPhoto ? 'Album ảnh khác' : 'Video khác'}</h2><a href="section.html?s=multimedia">Xem tất cả →</a></div><div class="mo-grid">${same.map(card).join('')}</div></div></section>`);
+    }
+    if (isPhoto) rel.length = 0;
+  }
   if (isVideo && rel.length && $('#relList')) { $('#relList').innerHTML = `<div class="rel-list"><h2>Tin liên quan</h2>${rel.slice(0, 5).map(b => `<a href="${href(b)}">${esc(b.title)}</a>`).join('')}</div>`; rel.length = 0; }
   if (rel.length) { $('#related').hidden = false; $('#rgrid').innerHTML = rel.map((b, i) => `<a class="n-card" href="${href(b)}"><div class="th">${b.image ? `<img src="${esc(b.image)}" alt="" loading="lazy">` : `<div class="ph p${i % 5 + 1}"></div>`}${hasVideo(b) ? ICON_PLAY : ''}</div><h3>${esc(b.title)}</h3><time>${fmtDate(b.createdAt)}</time></a>`).join(''); }
 
