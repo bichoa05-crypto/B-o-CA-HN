@@ -684,3 +684,9 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .pd.r2 .col{height:clamp(76px,calc(10 * var(--vw)),148px)}.pd.r1 .col{height:clamp(104px,calc(13.5 * var(--vw)),200px)}
 .pd .col b{font-size:clamp(30px,calc(4.6 * var(--vw)),70px);bottom:-4%}
 .pd .nm{min-height:2.8em}
+/* bục sản phẩm: cột đủ cao để luôn thấy trọn số thứ hạng */
+.pd.r4 .col{height:clamp(62px,calc(6.6 * var(--vw)),100px)}.pd.r3 .col{height:clamp(96px,calc(10.4 * var(--vw)),156px)}
+.pd.r2 .col{height:clamp(130px,calc(14.2 * var(--vw)),212px)}.pd.r1 .col{height:clamp(164px,calc(18 * var(--vw)),268px)}
+.pd .col b{bottom:6%;right:7%;font-size:clamp(40px,calc(5 * var(--vw)),76px);line-height:.9;color:#ffffffc7;text-shadow:0 4px 14px #8b070640}
+.pd .pic,.pd.r1 .pic,.pd.r2 .pic,.pd.r3 .pic,.pd.r4 .pic{aspect-ratio:5/6}
+.pd .pic img{object-position:50% 30%}
