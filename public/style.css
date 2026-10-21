@@ -691,3 +691,4 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .pd .pic,.pd.r1 .pic,.pd.r2 .pic,.pd.r3 .pic,.pd.r4 .pic{aspect-ratio:5/6}
 .pd .pic img{object-position:50% 30%}
 .n-card .th .mk-ph{position:absolute;z-index:2;right:8px;bottom:8px;padding:4px 10px;border-radius:99px;background:#000c;color:#fff;font-weight:700;font-size:12px}
+#mmList[hidden]{display:none}

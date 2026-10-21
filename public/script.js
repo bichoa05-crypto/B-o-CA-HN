@@ -122,8 +122,8 @@ async function load() {
   mm.insertAdjacentHTML('afterbegin', m.image ? `<img src="${esc(m.image)}" alt="">` : '<div class="bgart"></div>');
   mm.dataset.href = safeLink(m.link) !== '#' ? safeLink(m.link) : 'section.html?s=multimedia';
   mm.onclick = e => { if (!e.target.closest('a')) location.href = mm.dataset.href; };
-  if (m.button) mm.insertAdjacentHTML('beforeend', `<a class="more" href="${esc(safeLink(m.link))}">${esc(m.button)}</a>`);
-  $('#mmList').innerHTML = renderMM(by('multimedia'));
+  if (m.button) mm.insertAdjacentHTML('beforeend', `<a class="more" href="${esc(mm.dataset.href)}">${esc(m.button)}</a>`);
+  $('#mmList').hidden = true; // bài multimedia chỉ xem ở trang Multimedia
   renderShop(site.shop);
   renderHonors(site.honors);
   reveal(); sqUpdate();
