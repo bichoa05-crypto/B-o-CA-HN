@@ -714,3 +714,5 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 @media(min-width:1201px) and (max-width:1600px){.nav{gap:clamp(8px,calc(1 * var(--vw)),18px);padding:0 clamp(4px,calc(.8 * var(--vw)),14px)}.nav a{font-size:clamp(13px,calc(1 * var(--vw)),15.5px);letter-spacing:.01em}.site-header{gap:clamp(14px,calc(1.6 * var(--vw)),30px)}.actions{gap:8px}.actions .pill{padding:11px 16px}}
 @media(max-width:600px){.actions .pill.solid span,#acctLabel{display:none}.actions .pill.solid{padding:10px}.actions{gap:2px}.brand-tx b{font-size:15px}}
 @media(max-width:400px){.brand-tx small{display:none}.brand-tx b{font-size:14px}}
+/* Windows: trang được co giãn theo khung 1470px nên dùng bố cục menu gọn như màn 1201–1600 */
+@media(min-width:1201px){html.fit .nav{gap:clamp(8px,calc(1 * var(--vw)),18px);padding:0 clamp(4px,calc(.8 * var(--vw)),14px)}html.fit .nav a{font-size:clamp(13px,calc(1 * var(--vw)),15.5px);letter-spacing:.01em}html.fit .site-header{gap:clamp(14px,calc(1.6 * var(--vw)),30px)}html.fit .actions{gap:8px}html.fit .actions .pill{padding:11px 16px}}
