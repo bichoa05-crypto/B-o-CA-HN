@@ -72,7 +72,8 @@ function drawHonors() {
 }
 function renderHonors(h) {
   honors = h.items; $('#hTitle').textContent = h.title;
-  $('#hBanner').insertAdjacentHTML('afterbegin', h.banner ? `<img src="${esc(h.banner)}" alt="">` : '<div class="bgart"></div>');
+  const hb = !h.banner || /photo-Qjz2Rel23TNlSB9kIRy9Z2pIcuHNsA/.test(h.banner) ? 'assets/honors-banner.jpg' : h.banner; // ảnh cũ còn logo cũ -> dùng bản đã thay logo mới
+  $('#hBanner').insertAdjacentHTML('afterbegin', `<img src="${esc(hb)}" alt="">`);
   $('#hSel').innerHTML = '<option value="">Tất cả giải đấu</option>' + [...new Set(honors.map(x => x.name))].map(n => `<option>${esc(n)}</option>`).join('');
   $('#hSel').onchange = drawHonors;
   document.querySelectorAll('.h-per button').forEach(b => b.onclick = () => { hPeriod = +b.dataset.p; document.querySelectorAll('.h-per button').forEach(x => x.classList.toggle('on', x === b)); drawHonors(); });
