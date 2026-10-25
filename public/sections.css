@@ -417,3 +417,5 @@ a:hover>.mv-play,a:hover .th .mv-play{transform:translate(-50%,-50%) scale(1.1);
 @media(max-width:560px){.mm-grid3{grid-template-columns:1fr}.mm-sh{flex-direction:column;align-items:flex-start}}
 .lb-hero .pitch,.lb-hero .pitch::before,.lb-hero .pitch::after{display:none}
 .lb-hero::before,.lb-hero::after{content:none;display:none}
+
+.co .wm{border-radius:0;background:url(assets/logo.png) center/contain no-repeat;filter:grayscale(1) contrast(1.1);opacity:.35}

@@ -693,3 +693,24 @@ button.m-buy{font-size:clamp(11px,calc(1.1 * var(--vw)),15px);padding:7px 20px}
 .n-card .th .mk-ph{position:absolute;z-index:2;right:8px;bottom:8px;padding:4px 10px;border-radius:99px;background:#000c;color:#fff;font-weight:700;font-size:12px}
 #mmList[hidden]{display:none}
 .h-banner h2{padding:.32em .14em .22em;line-height:1.12;margin-top:clamp(-6px,calc(.6 * var(--vw)),14px);overflow:visible}
+
+/* ===== Logo mới (khiên) + tên "Nhịp đập Công An Hà Nội FC" ===== */
+.brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none}
+.brand img,.site-header .brand img{width:auto;height:62px;aspect-ratio:1;border-radius:0;object-fit:contain;filter:drop-shadow(0 4px 10px #0007)}
+.brand:hover img{transform:scale(1.06) rotate(-4deg)}
+.brand-tx{display:flex;flex-direction:column;line-height:1;white-space:nowrap}
+.brand-tx small{font-family:var(--nav);font-weight:700;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.brand-tx small::after{content:"";width:22px;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.brand-tx b{font-family:var(--anton);font-weight:400;font-style:italic;font-size:21px;letter-spacing:.02em;text-transform:uppercase;text-shadow:0 2px 10px #0006}
+@media(min-width:1201px){
+  .site-header{padding-left:clamp(14px,calc(1.8 * var(--vw)),34px)}
+  .nav{padding-left:clamp(10px,calc(1.4 * var(--vw)),26px)}
+}
+@media(min-width:1201px) and (max-width:1380px){.brand-tx b{font-size:18px}.brand-tx small{font-size:10.5px}.brand img,.site-header .brand img{height:54px}.nav a{font-size:13px}}
+@media(max-width:600px){.brand img,.site-header .brand img{height:48px}.brand-tx b{font-size:16px}.brand-tx small{font-size:9.5px;letter-spacing:.2em;margin-bottom:3px}.brand{gap:8px}}
+@media(max-width:360px){.brand-tx{display:none}}
+.f-id img{border-radius:0;height:clamp(64px,calc(7 * var(--vw)),104px);width:auto;aspect-ratio:1;object-fit:contain}
+.modal-logo{width:74px;height:auto}
+@media(min-width:1201px) and (max-width:1600px){.nav{gap:clamp(8px,calc(1 * var(--vw)),18px);padding:0 clamp(4px,calc(.8 * var(--vw)),14px)}.nav a{font-size:clamp(13px,calc(1 * var(--vw)),15.5px);letter-spacing:.01em}.site-header{gap:clamp(14px,calc(1.6 * var(--vw)),30px)}.actions{gap:8px}.actions .pill{padding:11px 16px}}
+@media(max-width:600px){.actions .pill.solid span,#acctLabel{display:none}.actions .pill.solid{padding:10px}.actions{gap:2px}.brand-tx b{font-size:15px}}
+@media(max-width:400px){.brand-tx small{display:none}.brand-tx b{font-size:14px}}
